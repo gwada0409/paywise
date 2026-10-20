@@ -96,7 +96,7 @@ export default function NotificationsPage() {
 
             <button
               onClick={handleMarkAll}
-              className="inline-flex items-center gap-1.5 rounded-full border border-border/60 bg-white/80 px-4 py-2 text-xs font-bold text-ref-navy hover:bg-slate-50 active:scale-95 transition-all min-h-[38px]"
+              className="inline-flex items-center gap-1.5 rounded-full border border-border/60 dark:border-slate-600 bg-white/80 dark:bg-slate-700 px-4 py-2 text-xs font-bold text-slate-900 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-600 active:scale-95 transition-colors min-h-[38px]"
             >
               <CheckCheck className="h-4 w-4" />
               Mark All Read
@@ -105,18 +105,18 @@ export default function NotificationsPage() {
         </div>
 
         {/* Notifications List */}
-        <div className="rounded-[28px] sm:rounded-[32px] border border-border/60 bg-white/95 backdrop-blur-md p-5 sm:p-7 shadow-xs">
-          <div className="divide-y divide-border/50">
+        <div className="rounded-[28px] sm:rounded-[32px] border border-border/60 dark:border-slate-700 bg-white/95 dark:bg-slate-800/90 backdrop-blur-md p-5 sm:p-7 shadow-xs">
+          <div className="divide-y divide-border/50 dark:divide-slate-700/60">
             {filtered.map((item) => (
               <div
                 key={item.id}
                 onClick={() => !item.is_read && markNotificationAsRead(item.id)}
                 className={`py-4 flex items-start justify-between gap-3 transition-colors rounded-2xl px-3 cursor-pointer ${
-                  !item.is_read ? "bg-sky-50/50" : "hover:bg-slate-50/60"
+                  !item.is_read ? "bg-sky-50/50 dark:bg-sky-950/40" : "hover:bg-slate-50/60 dark:hover:bg-slate-700/40"
                 }`}
               >
                 <div className="flex items-start gap-3.5">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white border border-sky-100 shadow-2xs shrink-0 mt-0.5">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white dark:bg-slate-700 border border-sky-100 dark:border-slate-600 shadow-2xs shrink-0 mt-0.5">
                     {getIcon(item.type)}
                   </div>
 

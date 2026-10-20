@@ -86,7 +86,7 @@ export default function BudgetPage() {
                 className={`rounded-full px-3 py-1 text-xs font-semibold transition-all ${
                   viewMode === "monthly"
                     ? "bg-[#4A90FF] text-white shadow-2xs"
-                    : "text-slate-500 hover:text-slate-900"
+                    : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                 }`}
               >
                 Monthly
@@ -96,7 +96,7 @@ export default function BudgetPage() {
                 className={`rounded-full px-3 py-1 text-xs font-semibold transition-all ${
                   viewMode === "payday"
                     ? "bg-[#4A90FF] text-white shadow-2xs"
-                    : "text-slate-500 hover:text-slate-900"
+                    : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                 }`}
               >
                 Per Payday
@@ -105,7 +105,7 @@ export default function BudgetPage() {
 
             <button
               onClick={() => setIsEditing(!isEditing)}
-              className="inline-flex items-center gap-1.5 rounded-full glass-pill px-3 py-1.5 text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-white/90 active:scale-95"
+              className="inline-flex items-center gap-1.5 rounded-full glass-pill px-3 py-1.5 text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-white/90 dark:hover:bg-slate-700 active:scale-95"
             >
               <Edit2 className="h-3.5 w-3.5" />
               {isEditing ? "Cancel" : "Edit"}
@@ -138,7 +138,7 @@ export default function BudgetPage() {
             </h2>
 
             <div className="grid grid-cols-3 gap-3">
-              <div className="rounded-2xl bg-[#DDF3FF] p-3 text-center">
+              <div className="rounded-2xl bg-[#DDF3FF] dark:bg-slate-700 p-3 text-center">
                 <span className="text-xs font-bold text-ref-blue">Needs (%)</span>
                 <input
                   type="number"
@@ -150,8 +150,8 @@ export default function BudgetPage() {
                 />
               </div>
 
-              <div className="rounded-2xl bg-amber-50 p-3 text-center">
-                <span className="text-xs font-bold text-amber-700">Wants (%)</span>
+              <div className="rounded-2xl bg-amber-50 dark:bg-amber-950/40 p-3 text-center">
+                <span className="text-xs font-bold text-amber-700 dark:text-amber-400">Wants (%)</span>
                 <input
                   type="number"
                   min={1}
@@ -162,7 +162,7 @@ export default function BudgetPage() {
                 />
               </div>
 
-              <div className="rounded-2xl bg-emerald-50 p-3 text-center">
+              <div className="rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 p-3 text-center">
                 <span className="text-xs font-bold text-ref-green">Savings (%)</span>
                 <input
                   type="number"

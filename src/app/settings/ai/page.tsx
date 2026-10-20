@@ -93,7 +93,7 @@ export default function AISettingsPage() {
         <div className="flex items-center gap-3">
           <Link
             href="/settings"
-            className="flex h-10 w-10 items-center justify-center rounded-full border border-border/60 bg-white/90 text-ref-navy hover:bg-slate-50 shadow-2xs"
+            className="flex h-10 w-10 items-center justify-center rounded-full border border-border/60 dark:border-slate-700 bg-white/90 dark:bg-slate-800/90 text-ref-navy hover:bg-slate-50 dark:hover:bg-slate-700 shadow-2xs"
           >
             <ArrowLeft className="h-4 w-4" />
           </Link>
@@ -109,9 +109,9 @@ export default function AISettingsPage() {
         </div>
 
         {/* Status Card */}
-        <div className="rounded-[28px] sm:rounded-[32px] border border-border/60 bg-white/95 backdrop-blur-md p-6 sm:p-7 shadow-xs space-y-6">
+        <div className="rounded-[28px] sm:rounded-[32px] border border-border/60 dark:border-slate-700 bg-white/95 dark:bg-slate-800/90 backdrop-blur-md p-6 sm:p-7 shadow-xs space-y-6">
           {/* Master Toggle */}
-          <div className="flex items-center justify-between pb-4 border-b border-border/50">
+          <div className="flex items-center justify-between pb-4 border-b border-border/50 dark:border-slate-700">
             <div>
               <h2 className="text-sm font-bold text-ref-navy">Enable PayWise AI Assistant</h2>
               <p className="text-xs text-ref-muted">
@@ -134,7 +134,7 @@ export default function AISettingsPage() {
             <select
               value={selectedModel}
               onChange={(e) => setSelectedModel(e.target.value)}
-              className="w-full rounded-2xl border border-sky-100 bg-sky-50/30 px-4 py-2.5 text-sm font-semibold text-ref-navy focus:outline-none focus:ring-2 focus:ring-ref-green min-h-[44px]"
+              className="w-full rounded-2xl border border-sky-100 dark:border-slate-700 bg-sky-50/30 dark:bg-slate-900/50 px-4 py-2.5 text-sm font-semibold text-ref-navy focus:outline-none focus:ring-2 focus:ring-ref-green min-h-[44px]"
             >
               {SUPPORTED_GEMINI_MODELS.map((m) => (
                 <option key={m.id} value={m.id}>
@@ -151,7 +151,7 @@ export default function AISettingsPage() {
             </label>
 
             {clientApiKey && (
-              <div className="flex items-center justify-between rounded-2xl border border-sky-100 bg-sky-50/40 px-4 py-3">
+              <div className="flex items-center justify-between rounded-2xl border border-sky-100 dark:border-slate-700 bg-sky-50/40 dark:bg-slate-900/50 px-4 py-3">
                 <div className="flex items-center gap-2 text-xs">
                   <ShieldCheck className="h-4 w-4 text-ref-green" />
                   <span className="font-mono text-ref-muted font-medium"> {/* taste-skill-ignore */}
@@ -174,7 +174,7 @@ export default function AISettingsPage() {
               value={inputKey}
               onChange={(e) => setInputKey(e.target.value)}
               placeholder={clientApiKey ? "Enter new key to replace..." : "AIzaSy... (or set GEMINI_API_KEY in server .env)"}
-              className="w-full rounded-2xl border border-sky-100 bg-sky-50/30 px-4 py-2.5 text-xs font-mono text-ref-navy focus:outline-none focus:ring-2 focus:ring-ref-green min-h-[44px]" /* taste-skill-ignore */
+              className="w-full rounded-2xl border border-sky-100 dark:border-slate-700 bg-sky-50/30 dark:bg-slate-900/50 px-4 py-2.5 text-xs font-mono text-ref-navy focus:outline-none focus:ring-2 focus:ring-ref-green min-h-[44px]" /* taste-skill-ignore */
             />
             <p className="text-[11px] text-ref-muted">
               Your API key is transmitted securely via authenticated server routes and never exposed to public bundles.
@@ -187,7 +187,7 @@ export default function AISettingsPage() {
               type="button"
               onClick={handleTestConnection}
               disabled={testing}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-full border border-border/60 bg-white/90 px-5 py-2.5 text-xs font-bold text-ref-navy hover:bg-slate-50 active:scale-95 transition-all disabled:opacity-50 min-h-[40px]"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-full border border-border/60 dark:border-slate-600 bg-white/90 dark:bg-slate-700 px-5 py-2.5 text-xs font-bold text-slate-900 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-600 active:scale-95 transition-colors disabled:opacity-50 min-h-[40px]"
             >
               <RefreshCw className={`h-3.5 w-3.5 ${testing ? "animate-spin" : ""}`} />
               Test Connection

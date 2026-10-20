@@ -152,10 +152,10 @@ export default function SavingsGoalsPage() {
                     </div>
 
                     <div className="flex items-center gap-2">
-                      <span className="rounded-full bg-[#DDF3FF] text-[#4A90FF] px-2.5 py-0.5 text-[10px] font-bold tabular-nums">
+                      <span className="rounded-full bg-[#DDF3FF] dark:bg-slate-700 text-[#4A90FF] dark:text-sky-300 px-2.5 py-0.5 text-[10px] font-bold tabular-nums">
                         ₱{remaining.toLocaleString()} to go
                       </span>
-                      <div className="flex h-7 w-7 items-center justify-center rounded-full bg-slate-50 dark:bg-slate-700 text-[#4A90FF]">
+                      <div className="flex h-7 w-7 items-center justify-center rounded-full bg-slate-50 dark:bg-slate-700 text-[#4A90FF] dark:text-sky-300">
                         <ChevronRight className="h-4 w-4" />
                       </div>
                     </div>
@@ -216,7 +216,7 @@ export default function SavingsGoalsPage() {
             </h3>
             <form onSubmit={handleCreateGoal} className="mt-4 space-y-4">
               <div>
-                <label className="block text-xs font-semibold uppercase text-slate-500 mb-1">
+                <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">
                   Goal Name
                 </label>
                 <input
@@ -230,14 +230,14 @@ export default function SavingsGoalsPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold uppercase text-slate-500 mb-1">
+                <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">
                   Target Amount
                 </label>
                 <CurrencyInput value={newGoalTarget} onChange={setNewGoalTarget} />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold uppercase text-slate-500 mb-1">
+                <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">
                   Target Date (Optional)
                 </label>
                 <input
@@ -252,7 +252,7 @@ export default function SavingsGoalsPage() {
                 <button
                   type="button"
                   onClick={() => setIsAddGoalOpen(false)}
-                  className="flex-1 rounded-2xl border border-border py-2.5 text-xs font-semibold text-slate-600 hover:bg-slate-100 min-h-[44px]"
+                  className="flex-1 rounded-2xl border border-border py-2.5 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 min-h-[44px]"
                 >
                   Cancel
                 </button>

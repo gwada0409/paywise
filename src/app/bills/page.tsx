@@ -98,7 +98,7 @@ export default function BillsPage() {
         </div>
 
         {/* Unpaid Bills Summary Hero */}
-        <div className="rounded-[28px] sm:rounded-[32px] border border-sky-200/80 bg-[#DDF3FF] p-6 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="rounded-[28px] sm:rounded-[32px] border border-sky-200/80 dark:border-slate-700 bg-[#DDF3FF] dark:bg-slate-800/90 p-6 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <p className="text-xs font-semibold text-ref-muted">
               Total unpaid obligations
@@ -112,7 +112,7 @@ export default function BillsPage() {
           </div>
 
           <div className="flex items-center gap-2 text-xs">
-            <span className="rounded-full bg-white/90 border border-sky-200/60 text-sky-700 px-3.5 py-1.5 font-bold shadow-2xs">
+            <span className="rounded-full bg-white/90 dark:bg-slate-700/80 border border-sky-200/60 dark:border-slate-600 text-sky-800 dark:text-sky-200 px-3.5 py-1.5 font-bold shadow-2xs">
               Automatic payday reservations active
             </span>
           </div>
@@ -121,7 +121,7 @@ export default function BillsPage() {
         {/* UPCOMING VIEW */}
         {viewTab === "upcoming" && (
           <div className="space-y-4">
-            <div className="rounded-[28px] sm:rounded-[32px] border border-border/60 bg-white/95 p-5 sm:p-7 shadow-xs">
+            <div className="rounded-[28px] sm:rounded-[32px] border border-border/60 dark:border-slate-700 bg-white/95 dark:bg-slate-800/90 p-5 sm:p-7 shadow-xs">
               <div className="divide-y divide-border/50">
                 {unpaidBills.map((bill) => {
                   const daysDiff = bill.due_day - todayDay;

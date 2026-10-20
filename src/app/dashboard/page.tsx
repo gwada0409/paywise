@@ -94,11 +94,11 @@ export default function DashboardPage() {
           </div>
 
           {/* Green Positive-Change Chip */}
-          <div className="mt-2.5 inline-flex items-center gap-2 rounded-full glass-pill px-3 py-1 shadow-2xs">
-            <span className="inline-flex items-center gap-0.5 rounded-full bg-[#45C97A]/20 px-2 py-0.5 text-[11px] font-bold text-emerald-800">
+          <div className="mt-2.5 inline-flex items-center gap-2 rounded-full glass-pill border border-white/60 dark:border-slate-700 bg-white/40 dark:bg-slate-800/60 px-3 py-1 shadow-2xs">
+            <span className="inline-flex items-center gap-0.5 rounded-full bg-emerald-500/15 dark:bg-emerald-500/25 px-2 py-0.5 text-[11px] font-bold text-emerald-700 dark:text-emerald-300">
               ↑ ₱954.23
             </span>
-            <span className="text-xs font-medium text-ref-muted">
+            <span className="text-xs font-medium text-slate-600 dark:text-slate-300">
               Nice job! You&apos;ve saved this month
             </span>
           </div>
@@ -111,9 +111,9 @@ export default function DashboardPage() {
           {/* Send pill */}
           <button
             onClick={() => setIsAddTxOpen(true)}
-            className="flex-1 flex items-center justify-center gap-2 rounded-full bg-[#DDF3FF] py-3.5 px-4 text-xs font-bold text-ref-navy shadow-xs hover:bg-[#cdeaff] active:scale-95 transition-transform transition-colors min-h-[46px]"
+            className="flex-1 flex items-center justify-center gap-2 rounded-full bg-[#DDF3FF] dark:bg-slate-800 dark:border dark:border-slate-700 py-3.5 px-4 text-xs font-bold text-slate-900 dark:text-white shadow-xs hover:bg-[#cdeaff] dark:hover:bg-slate-700 active:scale-95 transition-transform transition-colors min-h-[46px]"
           >
-            <ArrowUpRight className="h-4 w-4 text-ref-blue" />
+            <ArrowUpRight className="h-4 w-4 text-[#4A90FF] dark:text-[#70D6F7]" />
             <span>Send</span>
           </button>
 
@@ -121,7 +121,7 @@ export default function DashboardPage() {
           <button
             onClick={() => setIsAddTxOpen(true)}
             aria-label="Quick Add Transaction"
-            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-ref-blue text-white shadow-2xs hover:bg-ref-blue/90 active:scale-90 transition-transform ring-4 ring-white/80"
+            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-ref-blue text-white shadow-2xs hover:bg-ref-blue/90 active:scale-90 transition-transform ring-4 ring-white/80 dark:ring-slate-800"
           >
             <LayoutGrid className="h-5 w-5 stroke-[2.5px]" />
           </button>
@@ -129,9 +129,9 @@ export default function DashboardPage() {
           {/* Receive pill */}
           <button
             onClick={() => setIsIncomeModalOpen(true)}
-            className="flex-1 flex items-center justify-center gap-2 rounded-full bg-[#DDF3FF] py-3.5 px-4 text-xs font-bold text-ref-navy shadow-xs hover:bg-[#cdeaff] active:scale-95 transition-transform transition-colors min-h-[46px]"
+            className="flex-1 flex items-center justify-center gap-2 rounded-full bg-[#DDF3FF] dark:bg-slate-800 dark:border dark:border-slate-700 py-3.5 px-4 text-xs font-bold text-slate-900 dark:text-white shadow-xs hover:bg-[#cdeaff] dark:hover:bg-slate-700 active:scale-95 transition-transform transition-colors min-h-[46px]"
           >
-            <ArrowDownLeft className="h-4 w-4 text-ref-blue" />
+            <ArrowDownLeft className="h-4 w-4 text-[#4A90FF] dark:text-[#70D6F7]" />
             <span>Receive</span>
           </button>
         </div>
@@ -141,19 +141,19 @@ export default function DashboardPage() {
            ========================================================================= */}
         <Link
           href="/ai"
-          className="rounded-[28px] p-4.5 bg-[#E8F7FF] border border-sky-200/60 shadow-xs flex items-center justify-between hover:bg-[#deeff8] active:scale-[0.99] transition-transform transition-colors block"
+          className="rounded-[28px] p-4.5 bg-[#E8F7FF] dark:bg-slate-800/90 border border-sky-200/60 dark:border-slate-700 shadow-xs flex items-center justify-between hover:bg-[#deeff8] dark:hover:bg-slate-800 active:scale-[0.99] transition-transform transition-colors block"
         >
           <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-white shadow-2xs text-ref-blue">
+            <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-white dark:bg-slate-700 shadow-2xs text-sky-600 dark:text-sky-300">
               <Sparkles className="h-5 w-5" />
             </div>
             <div>
               <div className="flex items-center gap-1.5">
-                <span className="text-[11px] font-bold text-sky-800">
+                <span className="text-[11px] font-bold text-sky-800 dark:text-sky-300">
                   AI insight
                 </span>
               </div>
-              <p className="text-xs sm:text-sm font-semibold text-ref-navy mt-0.5">
+              <p className="text-xs sm:text-sm font-semibold text-slate-900 dark:text-slate-100 mt-0.5">
                 {budgetSummary.percent_needs > 75
                   ? `You've used ${budgetSummary.percent_needs}% of your Needs budget this cutoff.`
                   : "You're spending 12% more on dining compared to last week."}
@@ -161,7 +161,7 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white shadow-2xs text-ref-blue shrink-0 ml-3">
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white dark:bg-slate-700 shadow-2xs text-sky-600 dark:text-sky-300 shrink-0 ml-3">
             <ArrowRight className="h-4 w-4" />
           </div>
         </Link>
@@ -246,10 +246,10 @@ export default function DashboardPage() {
 
           <button
             onClick={() => setIsPlannerOpen(true)}
-            className="inline-flex items-center justify-center gap-1.5 rounded-full bg-[#DDF3FF] px-4 py-2 text-xs font-bold text-ref-blue hover:bg-[#cdeaff] active:scale-95 transition-transform transition-colors min-h-[40px]"
+            className="inline-flex items-center justify-center gap-1.5 rounded-full bg-[#DDF3FF] dark:bg-slate-700 px-4 py-2 text-xs font-bold text-slate-900 dark:text-white hover:bg-[#cdeaff] dark:hover:bg-slate-600 active:scale-95 transition-transform transition-colors min-h-[40px]"
           >
             Plan This Payday
-            <ChevronRight className="h-3.5 w-3.5" />
+            <ChevronRight className="h-3.5 w-3.5 text-[#4A90FF] dark:text-sky-300" />
           </button>
         </div>
 

@@ -33,6 +33,12 @@
     --ring: 217 100% 64%;
 
     --radius: 1rem;
+
+    --ref-navy: #17212F;
+    --ref-muted: #64748b;
+    --ref-blue: #4A90FF;
+    --ref-green: #16a34a;
+    --ref-cyan: #0284c7;
   }
 
   .dark {
@@ -63,6 +69,12 @@
     --border: 217 32% 20%;
     --input: 217 32% 20%;
     --ring: 217 100% 64%;
+
+    --ref-navy: #F8FAFC;
+    --ref-muted: #94A3B8;
+    --ref-blue: #60A5FA;
+    --ref-green: #4ade80;
+    --ref-cyan: #38bdf8;
   }
 }
 

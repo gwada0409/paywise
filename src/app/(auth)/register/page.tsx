@@ -26,7 +26,7 @@ export default function RegisterPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 ref-gradient-canvas">
-      <div className="w-full max-w-md rounded-[32px] border border-border/60 bg-white/95 backdrop-blur-md p-6 sm:p-8 shadow-sm">
+      <div className="w-full max-w-md rounded-[32px] border border-border/60 dark:border-slate-700 bg-white/95 dark:bg-slate-800/95 backdrop-blur-md p-6 sm:p-8 shadow-sm">
         <div className="text-center">
           <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-ref-blue text-white shadow-xs mb-3">
             <Wallet className="h-6 w-6" />
@@ -48,7 +48,7 @@ export default function RegisterPage() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Juan Dela Cruz"
-                className="w-full rounded-2xl border border-sky-100 bg-sky-50/30 pl-10 pr-4 py-2.5 text-sm font-semibold text-ref-navy focus:outline-none focus:ring-2 focus:ring-ref-blue min-h-[44px]"
+                className="w-full rounded-2xl border border-sky-100 dark:border-slate-700 bg-sky-50/30 dark:bg-slate-900/50 pl-10 pr-4 py-2.5 text-sm font-semibold text-ref-navy focus:outline-none focus:ring-2 focus:ring-ref-blue min-h-[44px]"
               />
             </div>
           </div>
@@ -65,7 +65,7 @@ export default function RegisterPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="juan.delacruz@paywise.ph"
-                className="w-full rounded-2xl border border-sky-100 bg-sky-50/30 pl-10 pr-4 py-2.5 text-sm font-semibold text-ref-navy focus:outline-none focus:ring-2 focus:ring-ref-blue min-h-[44px]"
+                className="w-full rounded-2xl border border-sky-100 dark:border-slate-700 bg-sky-50/30 dark:bg-slate-900/50 pl-10 pr-4 py-2.5 text-sm font-semibold text-ref-navy focus:outline-none focus:ring-2 focus:ring-ref-blue min-h-[44px]"
               />
             </div>
           </div>
@@ -82,7 +82,7 @@ export default function RegisterPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="At least 6 characters"
-                className="w-full rounded-2xl border border-sky-100 bg-sky-50/30 pl-10 pr-4 py-2.5 text-sm font-semibold text-ref-navy focus:outline-none focus:ring-2 focus:ring-ref-blue min-h-[44px]"
+                className="w-full rounded-2xl border border-sky-100 dark:border-slate-700 bg-sky-50/30 dark:bg-slate-900/50 pl-10 pr-4 py-2.5 text-sm font-semibold text-ref-navy focus:outline-none focus:ring-2 focus:ring-ref-blue min-h-[44px]"
               />
             </div>
           </div>

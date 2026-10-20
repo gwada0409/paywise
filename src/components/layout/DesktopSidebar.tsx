@@ -125,7 +125,7 @@ export function DesktopSidebar() {
                         ? item.isAI
                           ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 font-bold border border-emerald-200/60 shadow-xs"
                           : "bg-white dark:bg-slate-800 text-ref-blue font-bold shadow-xs border border-sky-100/80 dark:border-slate-700"
-                        : "text-slate-600 dark:text-slate-300 hover:bg-sky-50 dark:hover:bg-slate-800/50 hover:text-slate-900"
+                        : "text-slate-600 dark:text-slate-300 hover:bg-sky-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white"
                     }`}
                   >
                     <div className="flex items-center gap-3">

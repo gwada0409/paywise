@@ -33,7 +33,7 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 ref-gradient-canvas">
-      <div className="w-full max-w-md rounded-[32px] border border-border/60 bg-white/95 backdrop-blur-md p-6 sm:p-8 shadow-sm">
+      <div className="w-full max-w-md rounded-[32px] border border-border/60 dark:border-slate-700 bg-white/95 dark:bg-slate-800/95 backdrop-blur-md p-6 sm:p-8 shadow-sm">
         <div className="text-center">
           <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-ref-blue text-white shadow-xs mb-3">
             <Wallet className="h-6 w-6" />
@@ -43,8 +43,8 @@ export default function LoginPage() {
         </div>
 
         {/* 1-Click Demo Login Banner */}
-        <div className="mt-6 rounded-2xl border border-sky-100 bg-[#DDF3FF]/60 p-4 text-center">
-          <p className="text-xs font-semibold text-sky-800">
+        <div className="mt-6 rounded-2xl border border-sky-100 dark:border-slate-700 bg-[#DDF3FF]/60 dark:bg-slate-900/60 p-4 text-center">
+          <p className="text-xs font-semibold text-sky-800 dark:text-sky-300">
             Want to test every feature instantly with realistic data?
           </p>
           <button
@@ -58,7 +58,7 @@ export default function LoginPage() {
         </div>
 
         <div className="relative my-6 text-center text-xs text-ref-muted font-semibold">
-          <span className="bg-white px-2">or continue with email</span>
+          <span className="bg-white dark:bg-slate-800 px-2">or continue with email</span>
         </div>
 
         <form onSubmit={handleLogin} className="space-y-4">
@@ -74,7 +74,7 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="juan.delacruz@paywise.ph"
-                className="w-full rounded-2xl border border-sky-100 bg-sky-50/30 pl-10 pr-4 py-2.5 text-sm font-semibold text-ref-navy focus:outline-none focus:ring-2 focus:ring-ref-blue min-h-[44px]"
+                className="w-full rounded-2xl border border-sky-100 dark:border-slate-700 bg-sky-50/30 dark:bg-slate-900/50 pl-10 pr-4 py-2.5 text-sm font-semibold text-ref-navy focus:outline-none focus:ring-2 focus:ring-ref-blue min-h-[44px]"
               />
             </div>
           </div>
@@ -91,7 +91,7 @@ export default function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full rounded-2xl border border-sky-100 bg-sky-50/30 pl-10 pr-4 py-2.5 text-sm font-semibold text-ref-navy focus:outline-none focus:ring-2 focus:ring-ref-blue min-h-[44px]"
+                className="w-full rounded-2xl border border-sky-100 dark:border-slate-700 bg-sky-50/30 dark:bg-slate-900/50 pl-10 pr-4 py-2.5 text-sm font-semibold text-ref-navy focus:outline-none focus:ring-2 focus:ring-ref-blue min-h-[44px]"
               />
             </div>
           </div>

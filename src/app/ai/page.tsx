@@ -185,7 +185,7 @@ export default function AIPage() {
             {/* Concentric Green Radar Emblem */}
             <div className="relative flex items-center justify-center mb-6">
               <div className="absolute h-18 w-18 rounded-full border border-[#45C97A]/25" />
-              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[#EAFBF0] border border-[#45C97A]/40 text-[#45C97A] shadow-xs">
+              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[#EAFBF0] dark:bg-emerald-950/40 border border-[#45C97A]/40 text-[#45C97A] shadow-xs">
                 <Sparkles className="h-6 w-6" />
               </div>
             </div>

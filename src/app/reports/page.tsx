@@ -306,7 +306,7 @@ export default function AnalyticsPage() {
         <div className="pt-2 flex items-center justify-end gap-3 text-xs">
           <button
             onClick={handleExportCSV}
-            className="inline-flex items-center gap-1.5 rounded-full glass-pill px-4 py-2 font-bold text-slate-700 dark:text-slate-200 hover:bg-white/90 active:scale-95 transition-transform transition-colors"
+            className="inline-flex items-center gap-1.5 rounded-full glass-pill px-4 py-2 font-bold text-slate-700 dark:text-slate-200 hover:bg-white/90 dark:hover:bg-slate-700 active:scale-95 transition-transform transition-colors"
           >
             <FileSpreadsheet className="h-3.5 w-3.5 text-emerald-600" />
             Export Statement (CSV)

@@ -89,7 +89,7 @@ export default function OnboardingPage() {
 
   return (
     <div className="min-h-screen ref-gradient-canvas flex flex-col justify-center items-center p-4 sm:p-6">
-      <div className="w-full max-w-xl rounded-[32px] border border-border/60 bg-white/95 backdrop-blur-md p-6 sm:p-8 shadow-sm">
+      <div className="w-full max-w-xl rounded-[32px] border border-border/60 dark:border-slate-700 bg-white/95 dark:bg-slate-800/95 backdrop-blur-md p-6 sm:p-8 shadow-sm">
         {/* Step Progress Bar */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-2">
@@ -104,7 +104,7 @@ export default function OnboardingPage() {
           </div>
         </div>
 
-        <div className="w-full bg-slate-100 h-1.5 rounded-full mb-8 overflow-hidden">
+        <div className="w-full bg-slate-100 dark:bg-slate-700 h-1.5 rounded-full mb-8 overflow-hidden">
           <div
             className="bg-ref-blue h-full rounded-full transition-all duration-300"
             style={{ width: `${(step / 6) * 100}%` }}

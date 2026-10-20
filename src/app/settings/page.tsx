@@ -72,9 +72,9 @@ export default function SettingsPage() {
         </div>
 
         {/* Profile Card */}
-        <div className="rounded-[28px] sm:rounded-[32px] border border-border/60 bg-white/95 p-6 sm:p-7 shadow-xs space-y-4">
-          <div className="flex items-center gap-3 pb-3 border-b border-border/50">
-            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-sky-50 text-ref-blue">
+        <div className="rounded-[28px] sm:rounded-[32px] border border-border/60 dark:border-slate-700 bg-white/95 dark:bg-slate-800/90 p-6 sm:p-7 shadow-xs space-y-4">
+          <div className="flex items-center gap-3 pb-3 border-b border-border/50 dark:border-slate-700">
+            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-sky-50 dark:bg-slate-700 text-ref-blue">
               <User className="h-5 w-5" />
             </div>
             <div>
@@ -92,7 +92,7 @@ export default function SettingsPage() {
                 type="text"
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
-                className="w-full rounded-2xl border border-sky-100 bg-sky-50/30 px-4 py-2.5 text-sm font-semibold text-ref-navy focus:outline-none focus:ring-2 focus:ring-ref-blue min-h-[44px]"
+                className="w-full rounded-2xl border border-sky-100 dark:border-slate-700 bg-sky-50/30 dark:bg-slate-900/50 px-4 py-2.5 text-sm font-semibold text-ref-navy focus:outline-none focus:ring-2 focus:ring-ref-blue min-h-[44px]"
               />
             </div>
 
@@ -104,17 +104,17 @@ export default function SettingsPage() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full rounded-2xl border border-sky-100 bg-sky-50/30 px-4 py-2.5 text-sm font-semibold text-ref-navy focus:outline-none focus:ring-2 focus:ring-ref-blue min-h-[44px]"
+                className="w-full rounded-2xl border border-sky-100 dark:border-slate-700 bg-sky-50/30 dark:bg-slate-900/50 px-4 py-2.5 text-sm font-semibold text-ref-navy focus:outline-none focus:ring-2 focus:ring-ref-blue min-h-[44px]"
               />
             </div>
           </div>
         </div>
 
         {/* Currency & Appearance Card */}
-        <div className="rounded-[28px] sm:rounded-[32px] border border-border/60 bg-white/95 p-6 sm:p-7 shadow-xs space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-border/50">
+        <div className="rounded-[28px] sm:rounded-[32px] border border-border/60 dark:border-slate-700 bg-white/95 dark:bg-slate-800/90 p-6 sm:p-7 shadow-xs space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-border/50 dark:border-slate-700">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-sky-50 text-ref-blue">
+              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-sky-50 dark:bg-slate-700 text-ref-blue">
                 <Coins className="h-5 w-5" />
               </div>
               <div>
@@ -123,14 +123,14 @@ export default function SettingsPage() {
               </div>
             </div>
 
-            <span className="tabular-nums text-xs font-bold text-ref-blue px-3.5 py-1.5 bg-sky-50 rounded-full border border-sky-100">
+            <span className="tabular-nums text-xs font-bold text-ref-blue px-3.5 py-1.5 bg-sky-50 dark:bg-slate-700 rounded-full border border-sky-100 dark:border-slate-600">
               PHP (₱)
             </span>
           </div>
 
           <div className="flex items-center justify-between pt-1">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-amber-50 text-amber-700">
+              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-amber-50 dark:bg-slate-700 text-amber-700 dark:text-amber-400">
                 <Palette className="h-5 w-5" />
               </div>
               <div>
@@ -146,7 +146,7 @@ export default function SettingsPage() {
         {/* Gemini AI Config Quick Link */}
         <Link
           href="/settings/ai"
-          className="rounded-[28px] sm:rounded-[32px] border border-sky-200/80 bg-[#DDF3FF]/60 p-6 sm:p-7 shadow-xs flex items-center justify-between hover:bg-[#DDF3FF] transition-colors block group"
+          className="rounded-[28px] sm:rounded-[32px] border border-sky-200/80 dark:border-slate-700 bg-[#DDF3FF]/60 dark:bg-slate-800/90 p-6 sm:p-7 shadow-xs flex items-center justify-between hover:bg-[#DDF3FF] dark:hover:bg-slate-800 transition-colors block group"
         >
           <div className="flex items-center gap-3.5">
             <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-ref-blue text-white shadow-2xs">
@@ -164,13 +164,13 @@ export default function SettingsPage() {
               </p>
             </div>
           </div>
-          <div className="h-8 w-8 rounded-full bg-white flex items-center justify-center text-ref-blue group-hover:bg-ref-blue group-hover:text-white transition-colors">
+          <div className="h-8 w-8 rounded-full bg-white dark:bg-slate-700 flex items-center justify-center text-ref-blue group-hover:bg-ref-blue group-hover:text-white transition-colors">
             <ChevronRight className="h-4 w-4" />
           </div>
         </Link>
 
         {/* Demo Mode & Data Management */}
-        <div className="rounded-[28px] sm:rounded-[32px] border border-border/60 bg-white/95 backdrop-blur-md p-6 sm:p-7 shadow-xs space-y-4">
+        <div className="rounded-[28px] sm:rounded-[32px] border border-border/60 dark:border-slate-700 bg-white/95 dark:bg-slate-800/90 backdrop-blur-md p-6 sm:p-7 shadow-xs space-y-4">
           <div className="flex items-center gap-3 pb-3 border-b border-border/50">
             <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-amber-50 text-amber-600">
               <Database className="h-5 w-5" />

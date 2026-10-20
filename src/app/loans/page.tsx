@@ -66,7 +66,7 @@ export default function LoansPage() {
         </div>
 
         {/* Total Debt Summary Hero */}
-        <div className="rounded-[28px] sm:rounded-[32px] border border-sky-200/80 bg-[#DDF3FF] p-6 sm:p-7 shadow-xs">
+        <div className="rounded-[28px] sm:rounded-[32px] border border-sky-200/80 dark:border-slate-700 bg-[#DDF3FF] dark:bg-slate-800/90 p-6 sm:p-7 shadow-xs">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
             <div>
               <p className="text-xs font-semibold text-ref-muted">
@@ -119,7 +119,7 @@ export default function LoansPage() {
             return (
               <div
                 key={loan.id}
-                className="rounded-[28px] sm:rounded-[32px] border border-border/60 bg-white/95 p-6 shadow-xs flex flex-col justify-between"
+                className="rounded-[28px] sm:rounded-[32px] border border-border/60 dark:border-slate-700 bg-white/95 dark:bg-slate-800/90 p-6 shadow-xs flex flex-col justify-between"
               >
                 <div>
                   <div className="flex items-center justify-between">
@@ -188,7 +188,7 @@ export default function LoansPage() {
 
                   <button
                     onClick={() => setViewScheduleLoan(loan)}
-                    className="inline-flex items-center justify-center rounded-full border border-border/60 bg-white/80 px-4 py-2.5 text-xs font-bold text-ref-navy hover:bg-slate-50 active:scale-95 min-h-[40px] transition-all"
+                    className="inline-flex items-center justify-center rounded-full border border-border/60 dark:border-slate-600 bg-white/80 dark:bg-slate-700 px-4 py-2.5 text-xs font-bold text-slate-900 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-600 active:scale-95 min-h-[40px] transition-colors"
                   >
                     Amortization
                   </button>

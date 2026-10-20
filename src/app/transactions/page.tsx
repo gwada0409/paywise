@@ -90,8 +90,8 @@ export default function TransactionsPage() {
                 onClick={() => setSelectedType(t)}
                 className={`rounded-full px-3 py-1 font-semibold transition-all text-[11px] ${
                   selectedType === t
-                    ? "bg-[#DDF3FF] text-[#4A90FF] font-bold"
-                    : "text-slate-500 hover:text-slate-900 dark:hover:text-slate-200"
+                    ? "bg-[#DDF3FF] dark:bg-slate-700 text-[#4A90FF] dark:text-sky-300 font-bold"
+                    : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                 }`}
               >
                 {t === "all" ? "All Types" : t.replace("_", " ").toUpperCase()}

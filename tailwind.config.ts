@@ -63,6 +63,12 @@ const config: Config = {
           warningYellow: "#F5CA46",
           negativeRed: "#EF6B6B",
           accentPurple: "#A18CFF",
+
+          navy: "var(--ref-navy)",
+          muted: "var(--ref-muted)",
+          blue: "var(--ref-blue)",
+          green: "var(--ref-green)",
+          cyan: "var(--ref-cyan)",
         },
         // Fintech domain colors
         fintech: {

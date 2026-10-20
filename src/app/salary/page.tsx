@@ -70,7 +70,7 @@ export default function SalaryPage() {
           <div className="flex items-center gap-2">
             <button
               onClick={() => setIsPlannerOpen(true)}
-              className="inline-flex items-center gap-1.5 rounded-full glass-pill px-3.5 py-1.5 text-xs font-bold text-[#4A90FF] hover:bg-white/90 active:scale-95"
+              className="inline-flex items-center gap-1.5 rounded-full glass-pill px-3.5 py-1.5 text-xs font-bold text-[#4A90FF] hover:bg-white/90 dark:hover:bg-slate-700 active:scale-95"
             >
               Plan Payday
             </button>
@@ -190,14 +190,14 @@ export default function SalaryPage() {
 
         {/* PAYDAY 1 VS PAYDAY 2 CARDS */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="rounded-4xl p-5 bg-[#DDF3FF] dark:bg-slate-800/95 border border-sky-200/60 shadow-xs">
+          <div className="rounded-4xl p-5 bg-[#DDF3FF] dark:bg-slate-800/95 border border-sky-200/60 dark:border-slate-700 shadow-xs">
             <span className="text-xs font-bold text-ref-blue">
               1st Payday (Day {salarySettings.payday_1_day})
             </span>
             <div className="mt-2">
               <CurrencyDisplay amount={salarySettings.payday_1_expected} size="2xl" weight="bold" />
             </div>
-            <div className="mt-3 pt-3 border-t border-sky-200/60 text-xs space-y-1 text-slate-600 dark:text-slate-300">
+            <div className="mt-3 pt-3 border-t border-sky-200/60 dark:border-slate-700 text-xs space-y-1 text-slate-600 dark:text-slate-300">
               <div className="flex justify-between">
                 <span>Needs (50%):</span>
                 <span className="tabular-nums font-bold">₱{(salarySettings.payday_1_expected * 0.5).toLocaleString()}</span>
@@ -217,14 +217,14 @@ export default function SalaryPage() {
             </div>
           </div>
 
-          <div className="rounded-4xl p-5 bg-[#DDF3FF] dark:bg-slate-800/95 border border-sky-200/60 shadow-xs">
+          <div className="rounded-4xl p-5 bg-[#DDF3FF] dark:bg-slate-800/95 border border-sky-200/60 dark:border-slate-700 shadow-xs">
             <span className="text-xs font-bold text-ref-blue">
               2nd Payday (Day {salarySettings.payday_2_day})
             </span>
             <div className="mt-2">
               <CurrencyDisplay amount={salarySettings.payday_2_expected} size="2xl" weight="bold" />
             </div>
-            <div className="mt-3 pt-3 border-t border-sky-200/60 text-xs space-y-1 text-slate-600 dark:text-slate-300">
+            <div className="mt-3 pt-3 border-t border-sky-200/60 dark:border-slate-700 text-xs space-y-1 text-slate-600 dark:text-slate-300">
               <div className="flex justify-between">
                 <span>Needs (50%):</span>
                 <span className="tabular-nums font-bold">₱{(salarySettings.payday_2_expected * 0.5).toLocaleString()}</span>

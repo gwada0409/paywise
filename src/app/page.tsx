@@ -67,7 +67,7 @@ export default function LandingPage() {
 
           <Link
             href="/onboarding"
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-full border border-border/60 bg-white/90 px-6 py-3.5 text-sm font-bold text-ref-navy hover:bg-slate-50 active:scale-95 transition-all shadow-2xs"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-full border border-border/60 dark:border-slate-700 bg-white/90 dark:bg-slate-800 px-6 py-3.5 text-sm font-bold text-slate-900 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-700 active:scale-95 transition-all shadow-2xs"
           >
             Setup Wizard (Onboarding)
           </Link>
@@ -75,8 +75,8 @@ export default function LandingPage() {
 
         {/* Key Feature Highlights */}
         <div className="mt-16 sm:mt-24 grid grid-cols-1 sm:grid-cols-3 gap-6 text-left w-full">
-          <div className="rounded-[28px] border border-border/60 bg-white/95 p-6 shadow-xs">
-            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-sky-50 text-ref-blue mb-4">
+          <div className="rounded-[28px] border border-border/60 dark:border-slate-700 bg-white/95 dark:bg-slate-800/95 p-6 shadow-xs">
+            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-sky-50 dark:bg-slate-700 text-ref-blue mb-4">
               <CalendarDays className="h-5 w-5" />
             </div>
             <h3 className="text-base font-bold text-ref-navy">Semi-Monthly Paydays</h3>
@@ -85,8 +85,8 @@ export default function LandingPage() {
             </p>
           </div>
 
-          <div className="rounded-[28px] border border-border/60 bg-white/95 p-6 shadow-xs">
-            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-amber-50 text-amber-700 mb-4">
+          <div className="rounded-[28px] border border-border/60 dark:border-slate-700 bg-white/95 dark:bg-slate-800/95 p-6 shadow-xs">
+            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-amber-50 dark:bg-slate-700 text-amber-700 dark:text-amber-400 mb-4">
               <PieChart className="h-5 w-5" />
             </div>
             <h3 className="text-base font-bold text-ref-navy">50/30/20 Smart Budget</h3>
@@ -95,8 +95,8 @@ export default function LandingPage() {
             </p>
           </div>
 
-          <div className="rounded-[28px] border border-border/60 bg-white/95 p-6 shadow-xs">
-            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-emerald-50 text-ref-green mb-4">
+          <div className="rounded-[28px] border border-border/60 dark:border-slate-700 bg-white/95 dark:bg-slate-800/95 p-6 shadow-xs">
+            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-emerald-50 dark:bg-slate-700 text-ref-green mb-4">
               <Sparkles className="h-5 w-5" />
             </div>
             <h3 className="text-base font-bold text-ref-navy">PayWise AI Assistant</h3>
