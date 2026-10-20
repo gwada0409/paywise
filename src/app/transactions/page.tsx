@@ -103,10 +103,10 @@ export default function TransactionsPage() {
         {/* Transactions List */}
         <div className="rounded-4xl p-5 bg-white/95 dark:bg-slate-800/95 border border-sky-100/80 dark:border-slate-700 shadow-xs">
           <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-700">
-            <h2 className="text-xs font-bold uppercase tracking-wider text-[#788493]">
-              {filteredTransactions.length} Record{filteredTransactions.length === 1 ? "" : "s"}
+            <h2 className="text-xs font-semibold text-ref-muted">
+              {filteredTransactions.length} record{filteredTransactions.length === 1 ? "" : "s"}
             </h2>
-            <div className="text-xs text-[#788493]">
+            <div className="text-xs text-ref-muted">
               Net: <CurrencyDisplay amount={totalFilteredAmount} colored size="sm" weight="bold" />
             </div>
           </div>
@@ -116,26 +116,26 @@ export default function TransactionsPage() {
               <div key={tx.id} className="py-3.5 flex items-center justify-between gap-3">
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">
-                    <p className="text-sm font-bold text-[#17212F] dark:text-white truncate">
+                    <p className="text-sm font-bold text-ref-navy dark:text-white truncate">
                       {tx.title}
                     </p>
                     <span
-                      className={`rounded px-1.5 py-0.2 text-[9px] font-bold uppercase ${
+                      className={`rounded-full px-2 py-0.5 text-[10px] font-bold capitalize ${
                         tx.type === "need"
-                          ? "bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300"
+                          ? "bg-sky-50 text-sky-800"
                           : tx.type === "want"
-                          ? "bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300"
+                          ? "bg-amber-50 text-amber-800"
                           : tx.type === "income"
-                          ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300"
-                          : "bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300"
+                          ? "bg-emerald-50 text-emerald-800"
+                          : "bg-slate-100 text-slate-800"
                       }`}
                     >
                       {tx.type.replace("_", " ")}
                     </span>
                   </div>
 
-                  <p className="text-xs text-[#788493] mt-0.5 truncate">
-                    {formatDate(tx.date)} • {tx.payment_method.toUpperCase()} • {tx.category}
+                  <p className="text-xs text-ref-muted mt-0.5 truncate">
+                    {formatDate(tx.date)} • {tx.payment_method} • {tx.category}
                   </p>
                 </div>
 

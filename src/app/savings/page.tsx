@@ -89,7 +89,7 @@ export default function SavingsGoalsPage() {
                 amount={salaryAmount}
                 size="sm"
                 weight="bold"
-                className="text-[#17212F] dark:text-white font-mono"
+                className="text-[#17212F] dark:text-white tabular-nums"
               />
               <span className="block text-[#788493] text-[11px] mt-0.5">Salary</span>
             </div>
@@ -101,7 +101,7 @@ export default function SavingsGoalsPage() {
                 amount={otherIncome || 10842.22}
                 size="sm"
                 weight="bold"
-                className="text-[#17212F] dark:text-white font-mono"
+                className="text-[#17212F] dark:text-white tabular-nums"
               />
               <span className="block text-[#788493] text-[11px] mt-0.5">Side Hustles / Other</span>
             </div>
@@ -152,7 +152,7 @@ export default function SavingsGoalsPage() {
                     </div>
 
                     <div className="flex items-center gap-2">
-                      <span className="rounded-full bg-[#DDF3FF] text-[#4A90FF] px-2.5 py-0.5 text-[10px] font-bold font-mono">
+                      <span className="rounded-full bg-[#DDF3FF] text-[#4A90FF] px-2.5 py-0.5 text-[10px] font-bold tabular-nums">
                         ₱{remaining.toLocaleString()} to go
                       </span>
                       <div className="flex h-7 w-7 items-center justify-center rounded-full bg-slate-50 dark:bg-slate-700 text-[#4A90FF]">
@@ -165,7 +165,7 @@ export default function SavingsGoalsPage() {
                   <div className="mt-4 relative">
                     <div className="flex justify-end mb-1">
                       <span
-                        className={`rounded-full px-2 py-0.5 text-[10px] font-mono font-bold ${
+                        className={`rounded-full px-2 py-0.5 text-[10px] tabular-nums font-bold ${
                           colorTheme === "green"
                             ? "bg-[#D1FAE5] text-[#059669] dark:bg-emerald-950/60 dark:text-[#45C97A]"
                             : "bg-[#FEF3C7] text-[#B45309] dark:bg-amber-950/60 dark:text-[#F5CA46]"
@@ -177,7 +177,7 @@ export default function SavingsGoalsPage() {
 
                     <div className="h-2 w-full rounded-full bg-slate-100 dark:bg-slate-700 overflow-hidden">
                       <div
-                        className={`h-full rounded-full transition-all duration-500 ${
+                        className={`h-full rounded-full transition-[width] duration-500 ${
                           colorTheme === "green" ? "bg-[#45C97A]" : "bg-[#F5CA46]"
                         }`}
                         style={{ width: `${pct}%` }}
@@ -196,7 +196,7 @@ export default function SavingsGoalsPage() {
                     <span className="text-[#4A90FF] font-semibold text-[11px]">
                       Monthly Contribution
                     </span>
-                    <span className="font-mono font-bold text-[#4A90FF]">
+                    <span className="tabular-nums font-bold text-[#4A90FF]">
                       ₱{Math.round(goal.target_amount / 12).toLocaleString()}
                     </span>
                   </div>

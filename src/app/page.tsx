@@ -75,7 +75,7 @@ export default function LandingPage() {
 
         {/* Key Feature Highlights */}
         <div className="mt-16 sm:mt-24 grid grid-cols-1 sm:grid-cols-3 gap-6 text-left w-full">
-          <div className="rounded-[28px] border border-border/60 bg-white/95 backdrop-blur-md p-6 shadow-xs">
+          <div className="rounded-[28px] border border-border/60 bg-white/95 p-6 shadow-xs">
             <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-sky-50 text-ref-blue mb-4">
               <CalendarDays className="h-5 w-5" />
             </div>
@@ -85,8 +85,8 @@ export default function LandingPage() {
             </p>
           </div>
 
-          <div className="rounded-[28px] border border-border/60 bg-white/95 backdrop-blur-md p-6 shadow-xs">
-            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-purple-50 text-purple-600 mb-4">
+          <div className="rounded-[28px] border border-border/60 bg-white/95 p-6 shadow-xs">
+            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-amber-50 text-amber-700 mb-4">
               <PieChart className="h-5 w-5" />
             </div>
             <h3 className="text-base font-bold text-ref-navy">50/30/20 Smart Budget</h3>
@@ -95,7 +95,7 @@ export default function LandingPage() {
             </p>
           </div>
 
-          <div className="rounded-[28px] border border-border/60 bg-white/95 backdrop-blur-md p-6 shadow-xs">
+          <div className="rounded-[28px] border border-border/60 bg-white/95 p-6 shadow-xs">
             <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-emerald-50 text-ref-green mb-4">
               <Sparkles className="h-5 w-5" />
             </div>

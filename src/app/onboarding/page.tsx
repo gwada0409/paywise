@@ -151,16 +151,16 @@ export default function OnboardingPage() {
             </div>
 
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">
-                Monthly Net Salary (Take-Home)
+              <label className="block text-xs font-semibold text-ref-muted mb-1">
+                Monthly net salary (take-home)
               </label>
               <CurrencyInput value={monthlySalary} onChange={handleSalaryChange} />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">
-                  1st Payday Date
+                <label className="block text-xs font-semibold text-ref-muted mb-1">
+                  1st payday date
                 </label>
                 <div className="flex items-center rounded-xl border border-input bg-card px-3 py-2">
                   <span className="text-xs font-semibold text-muted-foreground mr-1.5">Day</span>
@@ -170,15 +170,15 @@ export default function OnboardingPage() {
                     max={31}
                     value={p1Day}
                     onChange={(e) => setP1Day(Number(e.target.value))}
-                    className="w-full bg-transparent font-mono text-sm font-semibold focus:outline-none"
+                    className="w-full bg-transparent tabular-nums text-sm font-semibold focus:outline-none"
                   />
                 </div>
                 <p className="text-[11px] text-muted-foreground mt-1">Usually the 15th</p>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">
-                  2nd Payday Date
+                <label className="block text-xs font-semibold text-ref-muted mb-1">
+                  2nd payday date
                 </label>
                 <div className="flex items-center rounded-xl border border-input bg-card px-3 py-2">
                   <span className="text-xs font-semibold text-muted-foreground mr-1.5">Day</span>
@@ -188,7 +188,7 @@ export default function OnboardingPage() {
                     max={31}
                     value={p2Day}
                     onChange={(e) => setP2Day(Number(e.target.value))}
-                    className="w-full bg-transparent font-mono text-sm font-semibold focus:outline-none"
+                    className="w-full bg-transparent tabular-nums text-sm font-semibold focus:outline-none"
                   />
                 </div>
                 <p className="text-[11px] text-muted-foreground mt-1">Usually 30th (or month-end)</p>
@@ -197,14 +197,14 @@ export default function OnboardingPage() {
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">
-                  1st Expected Payout
+                <label className="block text-xs font-semibold text-ref-muted mb-1">
+                  1st expected payout
                 </label>
                 <CurrencyInput value={p1Expected} onChange={setP1Expected} />
               </div>
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">
-                  2nd Expected Payout
+                <label className="block text-xs font-semibold text-ref-muted mb-1">
+                  2nd expected payout
                 </label>
                 <CurrencyInput value={p2Expected} onChange={setP2Expected} />
               </div>
@@ -217,7 +217,7 @@ export default function OnboardingPage() {
           <div className="space-y-5">
             <div>
               <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
-                <PieChart className="h-5 w-5 text-purple-600" />
+                <PieChart className="h-5 w-5 text-ref-blue" />
                 Budget Allocation
               </h2>
               <p className="text-xs text-muted-foreground mt-1">
@@ -229,7 +229,7 @@ export default function OnboardingPage() {
               <div className="rounded-xl border border-blue-500/20 bg-blue-500/5 p-3.5">
                 <div className="flex items-center justify-between mb-1.5">
                   <span className="text-xs font-bold text-blue-600 dark:text-blue-400">Needs (Bills, Groceries, Rent)</span>
-                  <span className="text-sm font-bold font-mono text-blue-600">{needsPercent}%</span>
+                  <span className="text-sm font-bold tabular-nums text-blue-600">{needsPercent}%</span>
                 </div>
                 <input
                   type="range"
@@ -244,10 +244,10 @@ export default function OnboardingPage() {
                 </div>
               </div>
 
-              <div className="rounded-xl border border-purple-500/20 bg-purple-500/5 p-3.5">
+              <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-3.5">
                 <div className="flex items-center justify-between mb-1.5">
-                  <span className="text-xs font-bold text-purple-600 dark:text-purple-400">Wants (Dining, Shopping, Fun)</span>
-                  <span className="text-sm font-bold font-mono text-purple-600">{wantsPercent}%</span>
+                  <span className="text-xs font-bold text-amber-700">Wants (Dining, Shopping, Fun)</span>
+                  <span className="text-sm font-bold tabular-nums text-amber-700">{wantsPercent}%</span>
                 </div>
                 <input
                   type="range"
@@ -255,7 +255,7 @@ export default function OnboardingPage() {
                   max={60}
                   value={wantsPercent}
                   onChange={(e) => setWantsPercent(Number(e.target.value))}
-                  className="w-full accent-purple-600"
+                  className="w-full accent-amber-500"
                 />
                 <div className="text-[11px] text-muted-foreground mt-1">
                   Projected: ₱{((monthlySalary * wantsPercent) / 100).toLocaleString()}/month
@@ -265,7 +265,7 @@ export default function OnboardingPage() {
               <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-3.5">
                 <div className="flex items-center justify-between mb-1.5">
                   <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">Savings & Investments</span>
-                  <span className="text-sm font-bold font-mono text-emerald-600">{savingsPercent}%</span>
+                  <span className="text-sm font-bold tabular-nums text-emerald-600">{savingsPercent}%</span>
                 </div>
                 <input
                   type="range"
@@ -305,22 +305,22 @@ export default function OnboardingPage() {
             </div>
 
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">
-                Cash on Hand
+              <label className="block text-xs font-semibold text-ref-muted mb-1">
+                Cash on hand
               </label>
               <CurrencyInput value={cashBalance} onChange={setCashBalance} />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">
-                GCash / Maya Balance
+              <label className="block text-xs font-semibold text-ref-muted mb-1">
+                GCash / Maya balance
               </label>
               <CurrencyInput value={gcashBalance} onChange={setGcashBalance} />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">
-                Bank / Payroll Account Balance
+              <label className="block text-xs font-semibold text-ref-muted mb-1">
+                Bank / payroll account balance
               </label>
               <CurrencyInput value={bankBalance} onChange={setBankBalance} />
             </div>
@@ -332,7 +332,7 @@ export default function OnboardingPage() {
           <div className="space-y-4">
             <div>
               <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
-                <Sparkles className="h-5 w-5 text-indigo-600" />
+                <Sparkles className="h-5 w-5 text-ref-blue" />
                 Google Gemini AI Assistant
               </h2>
               <p className="text-xs text-muted-foreground mt-1">
@@ -340,14 +340,14 @@ export default function OnboardingPage() {
               </p>
             </div>
 
-            <div className="rounded-xl border border-indigo-500/25 bg-indigo-500/5 p-4 space-y-3">
+            <div className="rounded-xl border border-sky-200/60 bg-sky-50/40 p-4 space-y-3">
               <label className="flex items-center justify-between cursor-pointer">
                 <span className="text-xs font-semibold text-foreground">Enable Gemini Financial Assistant</span>
                 <input
                   type="checkbox"
                   checked={aiEnabled}
                   onChange={(e) => setAiEnabled(e.target.checked)}
-                  className="h-4 w-4 accent-indigo-600 rounded"
+                  className="h-4 w-4 accent-ref-blue rounded"
                 />
               </label>
 
@@ -362,7 +362,7 @@ export default function OnboardingPage() {
                       value={geminiApiKey}
                       onChange={(e) => setGeminiApiKey(e.target.value)}
                       placeholder="AIzaSy... (Leave empty if server configured)"
-                      className="w-full rounded-xl border border-input bg-card px-3 py-2 text-xs font-mono text-foreground focus:outline-none focus:ring-2 focus:ring-indigo-500 min-h-[40px]"
+                      className="w-full rounded-xl border border-input bg-card px-3 py-2 text-xs font-mono text-foreground focus:outline-none focus:ring-2 focus:ring-ref-blue min-h-[40px]"
                     />
                   </div>
 
@@ -371,7 +371,7 @@ export default function OnboardingPage() {
                       type="checkbox"
                       checked={shareContext}
                       onChange={(e) => setShareContext(e.target.checked)}
-                      className="h-3.5 w-3.5 accent-indigo-600 rounded"
+                      className="h-3.5 w-3.5 accent-ref-blue rounded"
                     />
                     <span className="text-[11px] text-muted-foreground">
                       Allow Gemini to reference my spending summary to answer &quot;Can I afford this?&quot;
@@ -415,7 +415,7 @@ export default function OnboardingPage() {
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Gemini AI:</span>
-                <span className="font-semibold text-indigo-600 dark:text-indigo-400">
+                <span className="font-semibold text-ref-blue">
                   {aiEnabled ? "Enabled" : "Disabled"}
                 </span>
               </div>
@@ -424,7 +424,7 @@ export default function OnboardingPage() {
             <button
               type="button"
               onClick={handleFinish}
-              className="mt-4 w-full inline-flex items-center justify-center gap-2 rounded-xl bg-primary py-3.5 text-sm font-bold text-primary-foreground shadow-md hover:opacity-95 active:scale-95 transition-all min-h-[44px]"
+              className="mt-4 w-full inline-flex items-center justify-center gap-2 rounded-full bg-ref-blue py-3.5 text-xs font-bold text-white shadow-xs hover:bg-ref-blue/90 active:scale-95 transition-transform min-h-[44px]"
             >
               Enter PayWise Dashboard
               <ArrowRight className="h-4 w-4" />
@@ -438,7 +438,7 @@ export default function OnboardingPage() {
             <button
               type="button"
               onClick={() => setStep((s) => s - 1)}
-              className="inline-flex items-center gap-1.5 rounded-xl border border-border px-4 py-2.5 text-xs font-semibold text-foreground hover:bg-muted/50 active:scale-95 min-h-[44px]"
+              className="inline-flex items-center gap-1.5 rounded-full border border-border px-4 py-2.5 text-xs font-semibold text-foreground hover:bg-muted/50 active:scale-95 min-h-[40px]"
             >
               <ArrowLeft className="h-3.5 w-3.5" />
               Back
@@ -448,7 +448,7 @@ export default function OnboardingPage() {
               type="button"
               disabled={step === 3 && totalPercent !== 100}
               onClick={() => setStep((s) => s + 1)}
-              className="inline-flex items-center gap-1.5 rounded-xl bg-primary px-5 py-2.5 text-xs font-bold text-primary-foreground shadow-sm hover:opacity-95 active:scale-95 disabled:opacity-50 min-h-[44px]"
+              className="inline-flex items-center gap-1.5 rounded-full bg-ref-blue px-5 py-2.5 text-xs font-bold text-white shadow-xs hover:bg-ref-blue/90 active:scale-95 disabled:opacity-50 min-h-[40px]"
             >
               Next Step
               <ArrowRight className="h-3.5 w-3.5" />

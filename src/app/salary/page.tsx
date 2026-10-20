@@ -191,7 +191,7 @@ export default function SalaryPage() {
         {/* PAYDAY 1 VS PAYDAY 2 CARDS */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="rounded-4xl p-5 bg-[#DDF3FF] dark:bg-slate-800/95 border border-sky-200/60 shadow-xs">
-            <span className="text-xs font-bold text-[#4A90FF] uppercase tracking-wider">
+            <span className="text-xs font-bold text-ref-blue">
               1st Payday (Day {salarySettings.payday_1_day})
             </span>
             <div className="mt-2">
@@ -200,25 +200,25 @@ export default function SalaryPage() {
             <div className="mt-3 pt-3 border-t border-sky-200/60 text-xs space-y-1 text-slate-600 dark:text-slate-300">
               <div className="flex justify-between">
                 <span>Needs (50%):</span>
-                <span className="font-mono font-bold">₱{(salarySettings.payday_1_expected * 0.5).toLocaleString()}</span>
+                <span className="tabular-nums font-bold">₱{(salarySettings.payday_1_expected * 0.5).toLocaleString()}</span>
               </div>
               <div className="flex justify-between">
                 <span>Wants (30%):</span>
-                <span className="font-mono font-bold">₱{(salarySettings.payday_1_expected * 0.3).toLocaleString()}</span>
+                <span className="tabular-nums font-bold">₱{(salarySettings.payday_1_expected * 0.3).toLocaleString()}</span>
               </div>
               <div className="flex justify-between">
                 <span>Savings (20%):</span>
-                <span className="font-mono font-bold">₱{(salarySettings.payday_1_expected * 0.2).toLocaleString()}</span>
+                <span className="tabular-nums font-bold">₱{(salarySettings.payday_1_expected * 0.2).toLocaleString()}</span>
               </div>
               <div className="flex justify-between text-amber-700 dark:text-amber-400 font-bold pt-1">
                 <span>Bills in 1st Half:</span>
-                <span className="font-mono">₱{p1BillsTotal.toLocaleString()}</span>
+                <span className="tabular-nums font-bold">₱{p1BillsTotal.toLocaleString()}</span>
               </div>
             </div>
           </div>
 
           <div className="rounded-4xl p-5 bg-[#DDF3FF] dark:bg-slate-800/95 border border-sky-200/60 shadow-xs">
-            <span className="text-xs font-bold text-[#4A90FF] uppercase tracking-wider">
+            <span className="text-xs font-bold text-ref-blue">
               2nd Payday (Day {salarySettings.payday_2_day})
             </span>
             <div className="mt-2">
@@ -227,19 +227,19 @@ export default function SalaryPage() {
             <div className="mt-3 pt-3 border-t border-sky-200/60 text-xs space-y-1 text-slate-600 dark:text-slate-300">
               <div className="flex justify-between">
                 <span>Needs (50%):</span>
-                <span className="font-mono font-bold">₱{(salarySettings.payday_2_expected * 0.5).toLocaleString()}</span>
+                <span className="tabular-nums font-bold">₱{(salarySettings.payday_2_expected * 0.5).toLocaleString()}</span>
               </div>
               <div className="flex justify-between">
                 <span>Wants (30%):</span>
-                <span className="font-mono font-bold">₱{(salarySettings.payday_2_expected * 0.3).toLocaleString()}</span>
+                <span className="tabular-nums font-bold">₱{(salarySettings.payday_2_expected * 0.3).toLocaleString()}</span>
               </div>
               <div className="flex justify-between">
                 <span>Savings (20%):</span>
-                <span className="font-mono font-bold">₱{(salarySettings.payday_2_expected * 0.2).toLocaleString()}</span>
+                <span className="tabular-nums font-bold">₱{(salarySettings.payday_2_expected * 0.2).toLocaleString()}</span>
               </div>
               <div className="flex justify-between text-amber-700 dark:text-amber-400 font-bold pt-1">
                 <span>Bills in 2nd Half:</span>
-                <span className="font-mono">₱{p2BillsTotal.toLocaleString()}</span>
+                <span className="tabular-nums font-bold">₱{p2BillsTotal.toLocaleString()}</span>
               </div>
             </div>
           </div>
@@ -247,7 +247,7 @@ export default function SalaryPage() {
 
         {/* Received Salary History */}
         <div className="rounded-4xl p-5 bg-white/95 dark:bg-slate-800/95 border border-sky-100/80 dark:border-slate-700 shadow-xs">
-          <h2 className="text-xs font-bold uppercase tracking-wider text-[#788493] mb-3">
+          <h2 className="text-xs font-semibold text-ref-muted mb-3">
             Received Salary History
           </h2>
 

@@ -128,8 +128,8 @@ export default function AISettingsPage() {
 
           {/* Model Selection */}
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-ref-muted mb-1.5">
-              Gemini Model
+            <label className="block text-xs font-semibold text-ref-muted mb-1.5">
+              Gemini model
             </label>
             <select
               value={selectedModel}
@@ -146,8 +146,8 @@ export default function AISettingsPage() {
 
           {/* API Key Configuration */}
           <div className="space-y-3">
-            <label className="block text-xs font-bold uppercase tracking-wider text-ref-muted">
-              Gemini API Key
+            <label className="block text-xs font-semibold text-ref-muted">
+              Gemini API key
             </label>
 
             {clientApiKey && (

@@ -9,6 +9,7 @@ import {
   AlertCircle,
   CheckCircle2,
   Check,
+  X,
 } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
 import { useFinance } from "@/lib/store/finance-context";
@@ -65,11 +66,11 @@ export default function LoansPage() {
         </div>
 
         {/* Total Debt Summary Hero */}
-        <div className="rounded-[28px] sm:rounded-[32px] border border-sky-100 bg-gradient-to-br from-[#DDF3FF] to-white/95 backdrop-blur-md p-6 sm:p-7 shadow-xs">
+        <div className="rounded-[28px] sm:rounded-[32px] border border-sky-200/80 bg-[#DDF3FF] p-6 sm:p-7 shadow-xs">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
             <div>
-              <p className="text-xs font-bold uppercase tracking-wider text-ref-muted">
-                Total Outstanding Debt
+              <p className="text-xs font-semibold text-ref-muted">
+                Total outstanding debt
               </p>
               <div className="mt-1">
                 <CurrencyDisplay amount={debtOverview.totalCurrentBalance} size="3xl" weight="bold" />
@@ -80,8 +81,8 @@ export default function LoansPage() {
             </div>
 
             <div>
-              <p className="text-xs font-bold uppercase tracking-wider text-ref-muted">
-                Monthly Debt Installments
+              <p className="text-xs font-semibold text-ref-muted">
+                Monthly debt installments
               </p>
               <div className="mt-1">
                 <CurrencyDisplay amount={debtOverview.totalMonthlyObligations} size="2xl" weight="bold" />
@@ -92,10 +93,10 @@ export default function LoansPage() {
             </div>
 
             <div>
-              <p className="text-xs font-bold uppercase tracking-wider text-ref-muted">
-                Projected Debt-Free
+              <p className="text-xs font-semibold text-ref-muted">
+                Projected debt-free
               </p>
-              <div className="mt-1 font-mono text-2xl font-extrabold text-ref-navy">
+              <div className="mt-1 tabular-nums text-2xl font-extrabold text-ref-navy">
                 {debtOverview.projectedDebtFreeMonths > 0
                   ? `~${debtOverview.projectedDebtFreeMonths} Months`
                   : "Debt Free!"}
@@ -118,7 +119,7 @@ export default function LoansPage() {
             return (
               <div
                 key={loan.id}
-                className="rounded-[28px] sm:rounded-[32px] border border-border/60 bg-white/95 backdrop-blur-md p-6 shadow-xs flex flex-col justify-between"
+                className="rounded-[28px] sm:rounded-[32px] border border-border/60 bg-white/95 p-6 shadow-xs flex flex-col justify-between"
               >
                 <div>
                   <div className="flex items-center justify-between">
@@ -126,8 +127,8 @@ export default function LoansPage() {
                       <h3 className="text-base font-bold text-ref-navy">{loan.name}</h3>
                       <p className="text-xs text-ref-muted">{loan.lender}</p>
                     </div>
-                    <span className={`rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wider ${
-                      isZero ? "bg-emerald-500/15 text-emerald-600" : "bg-rose-500/15 text-rose-600"
+                    <span className={`rounded-full px-3 py-1 text-[10px] font-bold ${
+                      isZero ? "bg-emerald-50 text-emerald-700" : "bg-rose-50 text-rose-600"
                     }`}>
                       {isZero ? "Fully Paid" : "Active"}
                     </span>
@@ -135,7 +136,7 @@ export default function LoansPage() {
 
                   <div className="mt-4 flex items-baseline justify-between">
                     <div>
-                      <span className="text-xs text-ref-muted block font-medium">Remaining Balance</span>
+                      <span className="text-xs text-ref-muted block font-medium">Remaining balance</span>
                       <CurrencyDisplay amount={loan.current_balance} size="xl" weight="bold" />
                     </div>
                     <div className="text-right">
@@ -147,12 +148,12 @@ export default function LoansPage() {
                   {/* Progress bar (paid off percentage) */}
                   <div className="mt-3">
                     <div className="flex justify-between text-[11px] text-ref-muted mb-1 font-medium">
-                      <span>Repayment Progress</span>
-                      <span className="font-mono font-bold text-ref-green">{progress}%</span>
+                      <span>Repayment progress</span>
+                      <span className="tabular-nums font-bold text-ref-green">{progress}%</span>
                     </div>
                     <div className="h-2 w-full rounded-full bg-slate-100 overflow-hidden">
                       <div
-                        className="h-full bg-ref-green rounded-full transition-all"
+                        className="h-full bg-ref-green rounded-full transition-[width] duration-300"
                         style={{ width: `${Math.min(100, Math.max(0, progress))}%` }}
                       />
                     </div>
@@ -207,9 +208,9 @@ export default function LoansPage() {
                 </h3>
                 <button
                   onClick={() => setViewScheduleLoan(null)}
-                  className="rounded-lg p-1 text-muted-foreground hover:bg-muted"
+                  className="rounded-lg p-1.5 text-muted-foreground hover:bg-muted"
                 >
-                  ✕
+                  <X className="h-4 w-4" />
                 </button>
               </div>
 
@@ -224,7 +225,7 @@ export default function LoansPage() {
                       <th className="py-2 text-right">Remaining</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-border/60 font-mono">
+                  <tbody className="divide-y divide-border/60 tabular-nums">
                     {generateAmortizationSchedule(
                       viewScheduleLoan.current_balance,
                       viewScheduleLoan.interest_rate,

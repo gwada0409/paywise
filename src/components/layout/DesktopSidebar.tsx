@@ -120,11 +120,11 @@ export function DesktopSidebar() {
                   <Link
                     key={item.href}
                     href={item.href}
-                    className={`flex items-center justify-between rounded-2xl px-3 py-2 text-sm font-medium transition-all ${
+                    className={`flex items-center justify-between rounded-2xl px-3 py-2 text-sm font-medium transition-colors ${
                       isActive
                         ? item.isAI
-                          ? "bg-gradient-to-r from-emerald-50 to-green-50 dark:from-green-950/40 dark:to-emerald-950/40 text-emerald-600 dark:text-emerald-400 font-bold border border-emerald-200/60 shadow-xs"
-                          : "bg-white dark:bg-slate-800 text-[#4A90FF] font-bold shadow-xs border border-sky-100/80 dark:border-slate-700"
+                          ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 font-bold border border-emerald-200/60 shadow-xs"
+                          : "bg-white dark:bg-slate-800 text-ref-blue font-bold shadow-xs border border-sky-100/80 dark:border-slate-700"
                         : "text-slate-600 dark:text-slate-300 hover:bg-sky-50 dark:hover:bg-slate-800/50 hover:text-slate-900"
                     }`}
                   >

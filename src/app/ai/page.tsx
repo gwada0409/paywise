@@ -120,9 +120,8 @@ export default function AIPage() {
             ? {
                 ...m,
                 content:
-                  "⚠️ " +
-                  (err.message ||
-                    "Could not connect to Gemini AI. Check your API Key in Settings > Gemini AI Config."),
+                  err.message ||
+                  "Could not connect to Gemini AI. Check your API Key in Settings > Gemini AI Config.",
               }
             : m
         )
@@ -183,11 +182,11 @@ export default function AIPage() {
       <main className="flex-1 overflow-y-auto py-4">
         {messages.length === 0 ? (
           <div className="flex flex-col items-center justify-center text-center h-full px-2 py-8">
-            {/* Glowing Green Radar Emblem */}
+            {/* Concentric Green Radar Emblem */}
             <div className="relative flex items-center justify-center mb-6">
-              <div className="absolute h-18 w-18 rounded-full bg-[#45C97A]/15 animate-ping" />
-              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#45C97A]/20 border border-[#45C97A]/40 text-[#45C97A] shadow-md shadow-[#45C97A]/20">
-                <Sparkles className="h-7 w-7" />
+              <div className="absolute h-18 w-18 rounded-full border border-[#45C97A]/25" />
+              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[#EAFBF0] border border-[#45C97A]/40 text-[#45C97A] shadow-xs">
+                <Sparkles className="h-6 w-6" />
               </div>
             </div>
 

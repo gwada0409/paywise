@@ -37,8 +37,8 @@ export default function RegisterPage() {
 
         <form onSubmit={handleRegister} className="mt-6 space-y-4">
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-ref-muted mb-1.5">
-              Full Name
+            <label className="block text-xs font-semibold text-ref-muted mb-1.5">
+              Full name
             </label>
             <div className="relative flex items-center">
               <User className="absolute left-3.5 h-4 w-4 text-ref-muted" />
@@ -54,8 +54,8 @@ export default function RegisterPage() {
           </div>
 
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-ref-muted mb-1.5">
-              Email Address
+            <label className="block text-xs font-semibold text-ref-muted mb-1.5">
+              Email address
             </label>
             <div className="relative flex items-center">
               <Mail className="absolute left-3.5 h-4 w-4 text-ref-muted" />
@@ -64,14 +64,14 @@ export default function RegisterPage() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="juan@example.com"
+                placeholder="juan.delacruz@paywise.ph"
                 className="w-full rounded-2xl border border-sky-100 bg-sky-50/30 pl-10 pr-4 py-2.5 text-sm font-semibold text-ref-navy focus:outline-none focus:ring-2 focus:ring-ref-blue min-h-[44px]"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-ref-muted mb-1.5">
+            <label className="block text-xs font-semibold text-ref-muted mb-1.5">
               Password
             </label>
             <div className="relative flex items-center">

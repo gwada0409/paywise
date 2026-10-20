@@ -149,9 +149,9 @@ export function TransactionBottomSheet({
                   setType("want");
                   setCategory("Dining Out");
                 }}
-                className={`flex items-center justify-center gap-1.5 rounded-xl py-2.5 px-3 text-xs font-bold transition-all min-h-[44px] ${
+                className={`flex items-center justify-center gap-1.5 rounded-xl py-2.5 px-3 text-xs font-bold transition-colors min-h-[44px] ${
                   type === "want"
-                    ? "bg-purple-600 text-white shadow-sm ring-2 ring-purple-500/20"
+                    ? "bg-amber-500 text-white shadow-2xs ring-2 ring-amber-500/20"
                     : "border border-border bg-card text-muted-foreground hover:bg-muted/40"
                 }`}
               >

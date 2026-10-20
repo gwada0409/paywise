@@ -50,7 +50,7 @@ export function SpendingEqualizerCard({
         {bars.map((heightPct, idx) => (
           <div
             key={idx}
-            className={`w-1 sm:w-1.5 rounded-full ${themeColors.bar} transition-all duration-300`}
+            className={`w-1 sm:w-1.5 rounded-full ${themeColors.bar} transition-[height] duration-300`}
             style={{ height: `${heightPct}%` }}
           />
         ))}
@@ -58,10 +58,10 @@ export function SpendingEqualizerCard({
 
       {/* Amount and Status Badge */}
       <div className="text-center pt-1 border-t border-slate-100/60 dark:border-slate-700/60">
-        <div className="font-mono text-sm font-extrabold text-slate-900 dark:text-white">
+        <div className="tabular-nums text-sm font-extrabold text-ref-navy">
           <CurrencyDisplay amount={amount} size="sm" weight="bold" />
         </div>
-        <span className={`inline-block mt-1 px-2 py-0.5 rounded-md text-[9px] font-extrabold tracking-wider uppercase ${themeColors.badge}`}>
+        <span className={`inline-block mt-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold ${themeColors.badge}`}>
           {status}
         </span>
       </div>

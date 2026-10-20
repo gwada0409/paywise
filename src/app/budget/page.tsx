@@ -139,51 +139,51 @@ export default function BudgetPage() {
 
             <div className="grid grid-cols-3 gap-3">
               <div className="rounded-2xl bg-[#DDF3FF] p-3 text-center">
-                <span className="text-xs font-bold text-[#4A90FF]">Needs (%)</span>
+                <span className="text-xs font-bold text-ref-blue">Needs (%)</span>
                 <input
                   type="number"
                   min={1}
                   max={99}
                   value={needsP}
                   onChange={(e) => setNeedsP(Number(e.target.value))}
-                  className="mt-1 w-full bg-transparent font-mono text-center text-xl font-extrabold text-[#17212F] focus:outline-none"
+                  className="mt-1 w-full bg-transparent tabular-nums text-center text-xl font-extrabold text-ref-navy focus:outline-none"
                 />
               </div>
 
-              <div className="rounded-2xl bg-purple-50 p-3 text-center">
-                <span className="text-xs font-bold text-purple-600">Wants (%)</span>
+              <div className="rounded-2xl bg-amber-50 p-3 text-center">
+                <span className="text-xs font-bold text-amber-700">Wants (%)</span>
                 <input
                   type="number"
                   min={1}
                   max={99}
                   value={wantsP}
                   onChange={(e) => setWantsP(Number(e.target.value))}
-                  className="mt-1 w-full bg-transparent font-mono text-center text-xl font-extrabold text-[#17212F] focus:outline-none"
+                  className="mt-1 w-full bg-transparent tabular-nums text-center text-xl font-extrabold text-ref-navy focus:outline-none"
                 />
               </div>
 
               <div className="rounded-2xl bg-emerald-50 p-3 text-center">
-                <span className="text-xs font-bold text-emerald-600">Savings (%)</span>
+                <span className="text-xs font-bold text-ref-green">Savings (%)</span>
                 <input
                   type="number"
                   min={1}
                   max={99}
                   value={savingsP}
                   onChange={(e) => setSavingsP(Number(e.target.value))}
-                  className="mt-1 w-full bg-transparent font-mono text-center text-xl font-extrabold text-[#17212F] focus:outline-none"
+                  className="mt-1 w-full bg-transparent tabular-nums text-center text-xl font-extrabold text-ref-navy focus:outline-none"
                 />
               </div>
             </div>
 
             <div className="flex items-center justify-between pt-2">
-              <span className={`text-xs font-bold ${totalP === 100 ? "text-emerald-600" : "text-rose-600"}`}>
+              <span className={`text-xs font-bold ${totalP === 100 ? "text-ref-green" : "text-rose-500"}`}>
                 Total: {totalP}% {totalP !== 100 && "(Must equal 100%)"}
               </span>
 
               <button
                 onClick={handleSave}
                 disabled={totalP !== 100}
-                className="inline-flex items-center gap-1.5 rounded-full bg-[#4A90FF] px-5 py-2 text-xs font-bold text-white shadow-sm hover:opacity-95 disabled:opacity-50"
+                className="inline-flex items-center gap-1.5 rounded-full bg-ref-blue px-5 py-2 text-xs font-bold text-white shadow-xs hover:bg-ref-blue/90 disabled:opacity-50 transition-transform active:scale-95"
               >
                 <Check className="h-4 w-4" />
                 Save Allocations
@@ -198,10 +198,10 @@ export default function BudgetPage() {
           <div className="rounded-4xl p-5 bg-white/95 dark:bg-slate-800/95 border border-sky-100/80 dark:border-slate-700 shadow-xs flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold uppercase tracking-wider text-[#4A90FF]">
+                <span className="text-xs font-bold text-ref-blue">
                   Needs ({budgetRules.needs_percent}%)
                 </span>
-                <span className="font-mono text-xs font-bold text-[#4A90FF]">
+                <span className="tabular-nums text-xs font-bold text-ref-blue">
                   {budgetSummary.percent_needs}%
                 </span>
               </div>
@@ -215,13 +215,13 @@ export default function BudgetPage() {
 
               <div className="mt-3 h-2 w-full rounded-full bg-slate-100 dark:bg-slate-700 overflow-hidden">
                 <div
-                  className="h-full rounded-full bg-[#4A90FF] transition-all"
+                  className="h-full rounded-full bg-ref-blue transition-[width] duration-300"
                   style={{ width: `${Math.min(100, budgetSummary.percent_needs)}%` }}
                 />
               </div>
 
               <p className="mt-3 text-xs text-[#788493]">
-                Remaining: <span className="font-bold text-slate-900 dark:text-white">₱{allocatedNeeds - budgetSummary.spent_needs}</span>
+                Remaining: <span className="font-bold text-slate-900 dark:text-white tabular-nums">₱{allocatedNeeds - budgetSummary.spent_needs}</span>
               </p>
             </div>
           </div>
@@ -230,10 +230,10 @@ export default function BudgetPage() {
           <div className="rounded-4xl p-5 bg-white/95 dark:bg-slate-800/95 border border-sky-100/80 dark:border-slate-700 shadow-xs flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold uppercase tracking-wider text-purple-600">
+                <span className="text-xs font-bold text-amber-700">
                   Wants ({budgetRules.wants_percent}%)
                 </span>
-                <span className="font-mono text-xs font-bold text-purple-600">
+                <span className="tabular-nums text-xs font-bold text-amber-700">
                   {budgetSummary.percent_wants}%
                 </span>
               </div>
@@ -247,13 +247,13 @@ export default function BudgetPage() {
 
               <div className="mt-3 h-2 w-full rounded-full bg-slate-100 dark:bg-slate-700 overflow-hidden">
                 <div
-                  className="h-full rounded-full bg-purple-600 transition-all"
+                  className="h-full rounded-full bg-amber-500 transition-[width] duration-300"
                   style={{ width: `${Math.min(100, budgetSummary.percent_wants)}%` }}
                 />
               </div>
 
               <p className="mt-3 text-xs text-[#788493]">
-                Remaining: <span className="font-bold text-slate-900 dark:text-white">₱{allocatedWants - budgetSummary.spent_wants}</span>
+                Remaining: <span className="font-bold text-slate-900 dark:text-white tabular-nums">₱{allocatedWants - budgetSummary.spent_wants}</span>
               </p>
             </div>
           </div>
@@ -262,10 +262,10 @@ export default function BudgetPage() {
           <div className="rounded-4xl p-5 bg-white/95 dark:bg-slate-800/95 border border-sky-100/80 dark:border-slate-700 shadow-xs flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold uppercase tracking-wider text-[#45C97A]">
+                <span className="text-xs font-bold text-ref-green">
                   Savings ({budgetRules.savings_percent}%)
                 </span>
-                <span className="font-mono text-xs font-bold text-[#45C97A]">
+                <span className="tabular-nums text-xs font-bold text-ref-green">
                   {budgetSummary.percent_savings}%
                 </span>
               </div>
@@ -279,13 +279,13 @@ export default function BudgetPage() {
 
               <div className="mt-3 h-2 w-full rounded-full bg-slate-100 dark:bg-slate-700 overflow-hidden">
                 <div
-                  className="h-full rounded-full bg-[#45C97A] transition-all"
+                  className="h-full rounded-full bg-ref-green transition-[width] duration-300"
                   style={{ width: `${Math.min(100, budgetSummary.percent_savings)}%` }}
                 />
               </div>
 
               <p className="mt-3 text-xs text-[#788493]">
-                Saved so far this cycle
+                Total Saved: <span className="font-bold text-slate-900 dark:text-white tabular-nums">₱{budgetSummary.saved_amount}</span>
               </p>
             </div>
           </div>

@@ -365,7 +365,7 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
       setNotifications((prev) => [
         {
           id: `notif-${Date.now()}`,
-          title: "Goal Reached! 🎉",
+          title: "Goal Reached!",
           message: `Congratulations! You've reached your target of ₱${targetGoal.target_amount.toLocaleString()} for ${targetGoal.name}.`,
           type: "savings_milestone",
           is_read: false,

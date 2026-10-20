@@ -29,7 +29,7 @@ export default function SettingsPage() {
   } = useFinance();
 
   const [displayName, setDisplayName] = useState("Juan Dela Cruz");
-  const [email, setEmail] = useState("juan@example.com");
+  const [email, setEmail] = useState("juan.delacruz@paywise.ph");
 
   const handleResetData = () => {
     if (confirm("Are you sure you want to reset all financial records? This will clear all transactions, bills, and goals.")) {
@@ -72,21 +72,21 @@ export default function SettingsPage() {
         </div>
 
         {/* Profile Card */}
-        <div className="rounded-[28px] sm:rounded-[32px] border border-border/60 bg-white/95 backdrop-blur-md p-6 sm:p-7 shadow-xs space-y-4">
+        <div className="rounded-[28px] sm:rounded-[32px] border border-border/60 bg-white/95 p-6 sm:p-7 shadow-xs space-y-4">
           <div className="flex items-center gap-3 pb-3 border-b border-border/50">
             <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-sky-50 text-ref-blue">
               <User className="h-5 w-5" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-ref-navy">User Profile</h2>
+              <h2 className="text-base font-bold text-ref-navy">User profile</h2>
               <p className="text-xs text-ref-muted">Account and display preferences</p>
             </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-ref-muted mb-1.5">
-                Display Name
+              <label className="block text-xs font-semibold text-ref-muted mb-1.5">
+                Display name
               </label>
               <input
                 type="text"
@@ -97,8 +97,8 @@ export default function SettingsPage() {
             </div>
 
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-ref-muted mb-1.5">
-                Email Address
+              <label className="block text-xs font-semibold text-ref-muted mb-1.5">
+                Email address
               </label>
               <input
                 type="email"
@@ -111,30 +111,30 @@ export default function SettingsPage() {
         </div>
 
         {/* Currency & Appearance Card */}
-        <div className="rounded-[28px] sm:rounded-[32px] border border-border/60 bg-white/95 backdrop-blur-md p-6 sm:p-7 shadow-xs space-y-4">
+        <div className="rounded-[28px] sm:rounded-[32px] border border-border/60 bg-white/95 p-6 sm:p-7 shadow-xs space-y-4">
           <div className="flex items-center justify-between pb-3 border-b border-border/50">
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-sky-50 text-ref-blue">
                 <Coins className="h-5 w-5" />
               </div>
               <div>
-                <h2 className="text-base font-bold text-ref-navy">Currency & Localization</h2>
+                <h2 className="text-base font-bold text-ref-navy">Currency & localization</h2>
                 <p className="text-xs text-ref-muted">Philippine Peso default</p>
               </div>
             </div>
 
-            <span className="font-mono text-xs font-bold text-ref-blue px-3.5 py-1.5 bg-sky-50 rounded-full border border-sky-100">
+            <span className="tabular-nums text-xs font-bold text-ref-blue px-3.5 py-1.5 bg-sky-50 rounded-full border border-sky-100">
               PHP (₱)
             </span>
           </div>
 
           <div className="flex items-center justify-between pt-1">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-purple-50 text-purple-600">
+              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-amber-50 text-amber-700">
                 <Palette className="h-5 w-5" />
               </div>
               <div>
-                <h2 className="text-sm font-bold text-ref-navy">Theme Appearance</h2>
+                <h2 className="text-sm font-bold text-ref-navy">Theme appearance</h2>
                 <p className="text-xs text-ref-muted">Toggle light or dark theme</p>
               </div>
             </div>
@@ -146,10 +146,10 @@ export default function SettingsPage() {
         {/* Gemini AI Config Quick Link */}
         <Link
           href="/settings/ai"
-          className="rounded-[28px] sm:rounded-[32px] border border-sky-100 bg-gradient-to-r from-[#DDF3FF] via-white to-white p-6 sm:p-7 shadow-xs flex items-center justify-between hover:shadow-md transition-all block group"
+          className="rounded-[28px] sm:rounded-[32px] border border-sky-200/80 bg-[#DDF3FF]/60 p-6 sm:p-7 shadow-xs flex items-center justify-between hover:bg-[#DDF3FF] transition-colors block group"
         >
           <div className="flex items-center gap-3.5">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-tr from-sky-400 to-ref-blue text-white shadow-xs">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-ref-blue text-white shadow-2xs">
               <Sparkles className="h-5 w-5" />
             </div>
             <div>
@@ -164,7 +164,7 @@ export default function SettingsPage() {
               </p>
             </div>
           </div>
-          <div className="h-8 w-8 rounded-full bg-sky-50 flex items-center justify-center text-ref-blue group-hover:bg-ref-blue group-hover:text-white transition-all">
+          <div className="h-8 w-8 rounded-full bg-white flex items-center justify-center text-ref-blue group-hover:bg-ref-blue group-hover:text-white transition-colors">
             <ChevronRight className="h-4 w-4" />
           </div>
         </Link>

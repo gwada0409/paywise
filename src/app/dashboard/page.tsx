@@ -65,12 +65,12 @@ export default function DashboardPage() {
            ========================================================================= */}
         <div className="pt-2 text-center sm:text-left">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold uppercase tracking-wider text-[#788493] dark:text-slate-400">
-              Total Balance
+            <span className="text-xs font-semibold text-ref-muted">
+              Total balance
             </span>
             <button
               onClick={() => setIsBalanceHidden(!isBalanceHidden)}
-              className="p-1 rounded-full text-[#788493] hover:text-slate-900 dark:hover:text-white transition-colors"
+              className="p-1.5 rounded-full text-ref-muted hover:text-ref-navy transition-colors"
               title="Toggle balance visibility"
             >
               {isBalanceHidden ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -80,7 +80,7 @@ export default function DashboardPage() {
           {/* Large Bold Peso Balance */}
           <div className="mt-1 flex items-baseline justify-between">
             {isBalanceHidden ? (
-              <span className="font-mono text-4xl sm:text-5xl font-extrabold tracking-tight text-[#17212F] dark:text-white">
+              <span className="tabular-nums text-4xl sm:text-5xl font-extrabold tracking-tight text-ref-navy">
                 ₱••••••••
               </span>
             ) : (
@@ -88,17 +88,17 @@ export default function DashboardPage() {
                 amount={spendableBreakdown.liquidCashTotal || 45764.96}
                 size="4xl"
                 weight="bold"
-                className="text-[#17212F] dark:text-white text-4xl sm:text-5xl"
+                className="text-ref-navy text-4xl sm:text-5xl"
               />
             )}
           </div>
 
           {/* Green Positive-Change Chip */}
           <div className="mt-2.5 inline-flex items-center gap-2 rounded-full glass-pill px-3 py-1 shadow-2xs">
-            <span className="inline-flex items-center gap-0.5 rounded-full bg-[#45C97A]/20 px-2 py-0.5 text-[11px] font-bold text-[#059669] dark:text-[#45C97A]">
+            <span className="inline-flex items-center gap-0.5 rounded-full bg-[#45C97A]/20 px-2 py-0.5 text-[11px] font-bold text-emerald-800">
               ↑ ₱954.23
             </span>
-            <span className="text-xs font-medium text-slate-700 dark:text-slate-300">
+            <span className="text-xs font-medium text-ref-muted">
               Nice job! You&apos;ve saved this month
             </span>
           </div>
@@ -111,9 +111,9 @@ export default function DashboardPage() {
           {/* Send pill */}
           <button
             onClick={() => setIsAddTxOpen(true)}
-            className="flex-1 flex items-center justify-center gap-2 rounded-3xl bg-[#DDF3FF] dark:bg-slate-800/90 py-3.5 px-4 text-sm font-bold text-[#17212F] dark:text-white shadow-xs hover:bg-[#cdeaff] active:scale-95 transition-all min-h-[48px]"
+            className="flex-1 flex items-center justify-center gap-2 rounded-full bg-[#DDF3FF] py-3.5 px-4 text-xs font-bold text-ref-navy shadow-xs hover:bg-[#cdeaff] active:scale-95 transition-transform transition-colors min-h-[46px]"
           >
-            <ArrowUpRight className="h-4 w-4 text-[#4A90FF]" />
+            <ArrowUpRight className="h-4 w-4 text-ref-blue" />
             <span>Send</span>
           </button>
 
@@ -121,7 +121,7 @@ export default function DashboardPage() {
           <button
             onClick={() => setIsAddTxOpen(true)}
             aria-label="Quick Add Transaction"
-            className="flex h-13 w-13 shrink-0 items-center justify-center rounded-full bg-[#4A90FF] text-white shadow-md shadow-blue-500/25 hover:bg-blue-600 active:scale-90 transition-all ring-4 ring-white/60 dark:ring-slate-900"
+            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-ref-blue text-white shadow-2xs hover:bg-ref-blue/90 active:scale-90 transition-transform ring-4 ring-white/80"
           >
             <LayoutGrid className="h-5 w-5 stroke-[2.5px]" />
           </button>
@@ -129,9 +129,9 @@ export default function DashboardPage() {
           {/* Receive pill */}
           <button
             onClick={() => setIsIncomeModalOpen(true)}
-            className="flex-1 flex items-center justify-center gap-2 rounded-3xl bg-[#DDF3FF] dark:bg-slate-800/90 py-3.5 px-4 text-sm font-bold text-[#17212F] dark:text-white shadow-xs hover:bg-[#cdeaff] active:scale-95 transition-all min-h-[48px]"
+            className="flex-1 flex items-center justify-center gap-2 rounded-full bg-[#DDF3FF] py-3.5 px-4 text-xs font-bold text-ref-navy shadow-xs hover:bg-[#cdeaff] active:scale-95 transition-transform transition-colors min-h-[46px]"
           >
-            <ArrowDownLeft className="h-4 w-4 text-[#4A90FF]" />
+            <ArrowDownLeft className="h-4 w-4 text-ref-blue" />
             <span>Receive</span>
           </button>
         </div>
@@ -141,19 +141,19 @@ export default function DashboardPage() {
            ========================================================================= */}
         <Link
           href="/ai"
-          className="rounded-3xl p-4.5 bg-gradient-to-r from-[#D7F3FF]/90 via-[#E8F7FF]/90 to-[#FFFFFF]/90 dark:from-slate-800 dark:to-slate-800/80 border border-white/80 dark:border-slate-700 shadow-xs flex items-center justify-between hover:scale-[1.01] active:scale-[0.99] transition-all block"
+          className="rounded-[28px] p-4.5 bg-[#E8F7FF] border border-sky-200/60 shadow-xs flex items-center justify-between hover:bg-[#deeff8] active:scale-[0.99] transition-transform transition-colors block"
         >
           <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-white dark:bg-slate-700 shadow-2xs text-[#4A90FF]">
+            <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-white shadow-2xs text-ref-blue">
               <Sparkles className="h-5 w-5" />
             </div>
             <div>
               <div className="flex items-center gap-1.5">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-[#4A90FF]">
-                  AI Insight
+                <span className="text-[11px] font-bold text-sky-800">
+                  AI insight
                 </span>
               </div>
-              <p className="text-xs sm:text-sm font-semibold text-[#17212F] dark:text-white mt-0.5">
+              <p className="text-xs sm:text-sm font-semibold text-ref-navy mt-0.5">
                 {budgetSummary.percent_needs > 75
                   ? `You've used ${budgetSummary.percent_needs}% of your Needs budget this cutoff.`
                   : "You're spending 12% more on dining compared to last week."}
@@ -161,7 +161,7 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white dark:bg-slate-700 shadow-2xs text-[#4A90FF] shrink-0 ml-3">
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white shadow-2xs text-ref-blue shrink-0 ml-3">
             <ArrowRight className="h-4 w-4" />
           </div>
         </Link>
@@ -223,30 +223,30 @@ export default function DashboardPage() {
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-xs font-bold uppercase tracking-wider text-[#788493]">
-                  Next Payday Countdown
+                <span className="text-xs font-semibold text-ref-muted">
+                  Next payday countdown
                 </span>
-                <span className="rounded-full bg-blue-500/10 text-blue-600 px-2 py-0.5 text-[10px] font-bold">
+                <span className="rounded-full bg-sky-100 text-sky-800 px-2 py-0.5 text-[10px] font-bold">
                   {nextPayday.label}
                 </span>
               </div>
               <div className="mt-1 flex items-baseline gap-2">
-                <span className="font-mono text-2xl font-extrabold text-[#17212F] dark:text-white">
-                  {nextPayday.daysRemaining} Days
+                <span className="tabular-nums text-2xl font-extrabold text-ref-navy">
+                  {nextPayday.daysRemaining} days
                 </span>
-                <span className="text-xs text-muted-foreground">
+                <span className="text-xs text-ref-muted font-medium tabular-nums">
                   (Expected: ₱{nextPayday.expectedAmount.toLocaleString()})
                 </span>
               </div>
-              <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-                True Spendable: <span className="font-semibold text-emerald-600">₱{spendableBreakdown.availableToSpend.toLocaleString()}</span> • Daily rate: ₱{Math.round(spendableBreakdown.availableToSpend / Math.max(1, nextPayday.daysRemaining)).toLocaleString()} / day
+              <p className="mt-1 text-xs text-ref-muted">
+                True Spendable: <span className="font-semibold text-ref-green tabular-nums">₱{spendableBreakdown.availableToSpend.toLocaleString()}</span> • Daily rate: <span className="tabular-nums">₱{Math.round(spendableBreakdown.availableToSpend / Math.max(1, nextPayday.daysRemaining)).toLocaleString()} / day</span>
               </p>
             </div>
           </div>
 
           <button
             onClick={() => setIsPlannerOpen(true)}
-            className="inline-flex items-center justify-center gap-1.5 rounded-2xl bg-[#DDF3FF] dark:bg-slate-700 px-4 py-2.5 text-xs font-bold text-[#4A90FF] hover:bg-[#cdeaff] active:scale-95 transition-all min-h-[44px]"
+            className="inline-flex items-center justify-center gap-1.5 rounded-full bg-[#DDF3FF] px-4 py-2 text-xs font-bold text-ref-blue hover:bg-[#cdeaff] active:scale-95 transition-transform transition-colors min-h-[40px]"
           >
             Plan This Payday
             <ChevronRight className="h-3.5 w-3.5" />

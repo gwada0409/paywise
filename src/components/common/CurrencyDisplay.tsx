@@ -8,7 +8,7 @@ interface CurrencyDisplayProps {
   weight?: "normal" | "medium" | "semibold" | "bold";
   className?: string;
   colored?: boolean; // if positive -> green, negative -> red
-  type?: "income" | "expense" | "neutral";
+  type?: "income" | "expense" | "deficit" | "neutral";
   includeDecimals?: boolean;
 }
 
@@ -43,17 +43,20 @@ export function CurrencyDisplay({
     bold: "font-bold",
   }[weight];
 
-  let colorClass = "text-foreground";
+  let colorClass = "text-ref-navy";
   if (colored || type !== "neutral") {
     if (type === "income" || (colored && numeric > 0)) {
-      colorClass = "text-emerald-600 dark:text-emerald-400";
-    } else if (type === "expense" || (colored && numeric < 0)) {
-      colorClass = "text-rose-600 dark:text-rose-400";
+      colorClass = "text-ref-green";
+    } else if (type === "deficit" || (colored && numeric < 0)) {
+      colorClass = "text-rose-500";
+    } else if (type === "expense") {
+      // Quiet money polarity: normal expenses are natural ink, not red alert
+      colorClass = "text-ref-navy";
     }
   }
 
   return (
-    <span className={`inline-flex items-baseline font-mono ${sizeClasses} ${weightClasses} ${colorClass} ${className}`}>
+    <span className={`inline-flex items-baseline tabular-nums select-none ${sizeClasses} ${weightClasses} ${colorClass} ${className}`}>
       {type === "income" && !formatted.startsWith("+") && "+"}
       {formatted}
     </span>

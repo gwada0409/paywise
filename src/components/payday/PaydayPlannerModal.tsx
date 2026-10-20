@@ -168,17 +168,17 @@ export function PaydayPlannerModal({ isOpen, onClose }: PaydayPlannerModalProps)
                   type="number"
                   value={needsAlloc}
                   onChange={(e) => setNeedsAlloc(Number(e.target.value))}
-                  className="mt-1 w-full bg-transparent font-mono text-center text-sm font-bold text-foreground focus:outline-none"
+                  className="mt-1 w-full bg-transparent tabular-nums text-center text-sm font-bold text-foreground focus:outline-none"
                 />
               </div>
 
-              <div className="rounded-xl border border-purple-500/20 bg-card p-3 text-center">
-                <span className="text-[11px] font-bold text-purple-600">Wants (30%)</span>
+              <div className="rounded-xl border border-amber-500/20 bg-card p-3 text-center">
+                <span className="text-[11px] font-bold text-amber-700">Wants (30%)</span>
                 <input
                   type="number"
                   value={wantsAlloc}
                   onChange={(e) => setWantsAlloc(Number(e.target.value))}
-                  className="mt-1 w-full bg-transparent font-mono text-center text-sm font-bold text-foreground focus:outline-none"
+                  className="mt-1 w-full bg-transparent tabular-nums text-center text-sm font-bold text-foreground focus:outline-none"
                 />
               </div>
 
@@ -188,7 +188,7 @@ export function PaydayPlannerModal({ isOpen, onClose }: PaydayPlannerModalProps)
                   type="number"
                   value={savingsAlloc}
                   onChange={(e) => setSavingsAlloc(Number(e.target.value))}
-                  className="mt-1 w-full bg-transparent font-mono text-center text-sm font-bold text-foreground focus:outline-none"
+                  className="mt-1 w-full bg-transparent tabular-nums text-center text-sm font-bold text-foreground focus:outline-none"
                 />
               </div>
             </div>

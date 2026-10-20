@@ -51,10 +51,10 @@ export default function BillsPage() {
 
           <div className="flex items-center gap-2.5">
             {/* View Switcher */}
-            <div className="flex rounded-full border border-border/60 bg-white/90 backdrop-blur-md p-1 shadow-xs">
+            <div className="flex rounded-full border border-border/60 bg-white/90 p-1 shadow-xs">
               <button
                 onClick={() => setViewTab("upcoming")}
-                className={`flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-bold transition-all ${
+                className={`flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-bold transition-colors ${
                   viewTab === "upcoming"
                     ? "bg-ref-blue text-white shadow-xs"
                     : "text-ref-muted hover:text-ref-navy"
@@ -65,7 +65,7 @@ export default function BillsPage() {
               </button>
               <button
                 onClick={() => setViewTab("calendar")}
-                className={`flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-bold transition-all ${
+                className={`flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-bold transition-colors ${
                   viewTab === "calendar"
                     ? "bg-ref-blue text-white shadow-xs"
                     : "text-ref-muted hover:text-ref-navy"
@@ -76,7 +76,7 @@ export default function BillsPage() {
               </button>
               <button
                 onClick={() => setViewTab("paid")}
-                className={`flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-bold transition-all ${
+                className={`flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-bold transition-colors ${
                   viewTab === "paid"
                     ? "bg-ref-blue text-white shadow-xs"
                     : "text-ref-muted hover:text-ref-navy"
@@ -89,7 +89,7 @@ export default function BillsPage() {
 
             <button
               onClick={() => setIsAddBillOpen(true)}
-              className="inline-flex items-center gap-2 rounded-full bg-ref-blue px-4 py-2.5 text-xs font-bold text-white shadow-xs hover:bg-ref-blue/90 active:scale-95 transition-all min-h-[40px]"
+              className="inline-flex items-center gap-2 rounded-full bg-ref-blue px-4 py-2.5 text-xs font-bold text-white shadow-xs hover:bg-ref-blue/90 active:scale-95 transition-transform min-h-[40px]"
             >
               <Plus className="h-4 w-4" />
               Add Bill
@@ -98,10 +98,10 @@ export default function BillsPage() {
         </div>
 
         {/* Unpaid Bills Summary Hero */}
-        <div className="rounded-[28px] sm:rounded-[32px] border border-sky-100 bg-gradient-to-br from-[#DDF3FF] to-white/90 backdrop-blur-md p-6 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="rounded-[28px] sm:rounded-[32px] border border-sky-200/80 bg-[#DDF3FF] p-6 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <p className="text-xs font-bold uppercase tracking-wider text-ref-muted">
-              Total Unpaid Obligations
+            <p className="text-xs font-semibold text-ref-muted">
+              Total unpaid obligations
             </p>
             <div className="mt-1">
               <CurrencyDisplay amount={totalUnpaid} size="3xl" weight="bold" />
@@ -121,7 +121,7 @@ export default function BillsPage() {
         {/* UPCOMING VIEW */}
         {viewTab === "upcoming" && (
           <div className="space-y-4">
-            <div className="rounded-[28px] sm:rounded-[32px] border border-border/60 bg-white/95 backdrop-blur-md p-5 sm:p-7 shadow-xs">
+            <div className="rounded-[28px] sm:rounded-[32px] border border-border/60 bg-white/95 p-5 sm:p-7 shadow-xs">
               <div className="divide-y divide-border/50">
                 {unpaidBills.map((bill) => {
                   const daysDiff = bill.due_day - todayDay;
@@ -148,12 +148,12 @@ export default function BillsPage() {
                         <div>
                           <div className="flex items-center gap-2">
                             <h3 className="text-sm font-bold text-ref-navy">{bill.name}</h3>
-                            <span className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider ${
+                            <span className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold ${
                               isOverdue
-                                ? "bg-rose-500/15 text-rose-600"
+                                ? "bg-rose-50 text-rose-600"
                                 : isDueToday
-                                ? "bg-amber-500/15 text-amber-600"
-                                : "bg-sky-100 text-sky-800"
+                                ? "bg-amber-50 text-amber-700"
+                                : "bg-sky-50 text-sky-800"
                             }`}>
                               {isOverdue ? "Overdue" : isDueToday ? "Due Today" : `Due Day ${bill.due_day}`}
                             </span>

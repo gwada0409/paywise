@@ -51,7 +51,7 @@ export default function NotificationsPage() {
       case "savings_milestone":
         return <PiggyBank className="h-5 w-5 text-emerald-600" />;
       default:
-        return <Sparkles className="h-5 w-5 text-indigo-600" />;
+        return <Sparkles className="h-5 w-5 text-ref-blue" />;
     }
   };
 

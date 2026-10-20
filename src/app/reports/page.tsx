@@ -135,7 +135,7 @@ export default function AnalyticsPage() {
 
             <button
               onClick={handleExportPDF}
-              className="flex h-10 w-10 items-center justify-center rounded-full bg-white dark:bg-slate-700 text-[#4A90FF] shadow-xs active:scale-95 transition-all"
+              className="flex h-10 w-10 items-center justify-center rounded-full bg-white dark:bg-slate-700 text-[#4A90FF] shadow-xs active:scale-95 transition-transform hover:bg-slate-50"
               title="Download Statement"
             >
               <ArrowRight className="h-5 w-5" />
@@ -196,7 +196,7 @@ export default function AnalyticsPage() {
             </ResponsiveContainer>
 
             {/* Reference tooltip badge floating over day 25 */}
-            <div className="absolute right-12 top-2 bg-[#D1FAE5] dark:bg-emerald-950/80 border border-[#45C97A] text-[#059669] dark:text-[#45C97A] px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold shadow-xs">
+            <div className="absolute right-12 top-2 bg-[#D1FAE5] dark:bg-emerald-950/80 border border-[#45C97A] text-[#059669] dark:text-[#45C97A] px-2.5 py-0.5 rounded-full text-[10px] tabular-nums font-bold shadow-xs">
               ₱3,564.52
             </div>
           </div>
@@ -276,7 +276,7 @@ export default function AnalyticsPage() {
           <div className="grid grid-cols-2 gap-3.5">
             <Link
               href="/budget"
-              className="rounded-3xl p-4.5 bg-white/95 dark:bg-slate-800/90 border border-sky-100/80 dark:border-slate-700 shadow-xs hover:border-[#4A90FF]/40 active:scale-95 transition-all flex items-center justify-between"
+              className="rounded-3xl p-4.5 bg-white/95 dark:bg-slate-800/90 border border-sky-100/80 dark:border-slate-700 shadow-xs hover:border-[#4A90FF]/40 active:scale-95 transition-transform transition-colors flex items-center justify-between"
             >
               <div>
                 <p className="text-xs font-bold text-[#17212F] dark:text-white">
@@ -289,7 +289,7 @@ export default function AnalyticsPage() {
 
             <Link
               href="/transactions"
-              className="rounded-3xl p-4.5 bg-white/95 dark:bg-slate-800/90 border border-sky-100/80 dark:border-slate-700 shadow-xs hover:border-[#4A90FF]/40 active:scale-95 transition-all flex items-center justify-between"
+              className="rounded-3xl p-4.5 bg-white/95 dark:bg-slate-800/90 border border-sky-100/80 dark:border-slate-700 shadow-xs hover:border-[#4A90FF]/40 active:scale-95 transition-transform transition-colors flex items-center justify-between"
             >
               <div>
                 <p className="text-xs font-bold text-[#17212F] dark:text-white">
@@ -306,7 +306,7 @@ export default function AnalyticsPage() {
         <div className="pt-2 flex items-center justify-end gap-3 text-xs">
           <button
             onClick={handleExportCSV}
-            className="inline-flex items-center gap-1.5 rounded-full glass-pill px-4 py-2 font-bold text-slate-700 dark:text-slate-200 hover:bg-white/90 active:scale-95 transition-all"
+            className="inline-flex items-center gap-1.5 rounded-full glass-pill px-4 py-2 font-bold text-slate-700 dark:text-slate-200 hover:bg-white/90 active:scale-95 transition-transform transition-colors"
           >
             <FileSpreadsheet className="h-3.5 w-3.5 text-emerald-600" />
             Export Statement (CSV)
