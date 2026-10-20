@@ -1,0 +1,281 @@
+import {
+  SalarySettings,
+  BudgetRules,
+  FinancialAccount,
+  FinancialTransaction,
+  SavingsGoal,
+  SavingsMovement,
+  Bill,
+  Loan,
+  NotificationItem,
+  IncomeRecord,
+} from "@/types";
+
+export const DEMO_SALARY_SETTINGS: SalarySettings = {
+  monthly_net: 30000,
+  payday_1_day: 15,
+  payday_2_day: 30,
+  payday_1_expected: 15000,
+  payday_2_expected: 15000,
+  is_semi_monthly: true,
+};
+
+export const DEMO_BUDGET_RULES: BudgetRules = {
+  needs_percent: 50,
+  wants_percent: 30,
+  savings_percent: 20,
+  alert_threshold_80: true,
+  alert_threshold_90: true,
+  alert_threshold_100: true,
+};
+
+export const DEMO_ACCOUNTS: FinancialAccount[] = [
+  {
+    id: "acc-1",
+    name: "Cash on Hand",
+    type: "cash",
+    balance: 2800,
+    is_default: false,
+  },
+  {
+    id: "acc-2",
+    name: "GCash Wallet",
+    type: "gcash",
+    balance: 5450,
+    is_default: true,
+  },
+  {
+    id: "acc-3",
+    name: "Maya Savings & Wallet",
+    type: "maya",
+    balance: 4200,
+    is_default: false,
+  },
+  {
+    id: "acc-4",
+    name: "BDO Payroll Bank Account",
+    type: "bank",
+    balance: 15200,
+    is_default: false,
+  },
+];
+
+export const DEMO_INCOME_RECORDS: IncomeRecord[] = [
+  {
+    id: "inc-1",
+    amount: 15000,
+    date: "2026-10-15",
+    payday_period: "payday_1",
+    type: "salary",
+    notes: "1st Half October Salary credited to BDO",
+  },
+];
+
+export const DEMO_TRANSACTIONS: FinancialTransaction[] = [
+  {
+    id: "tx-1",
+    title: "SM Supermarket Groceries",
+    amount: 2850,
+    type: "need",
+    category: "Groceries",
+    payment_method: "maya",
+    payday_period: "payday_1",
+    date: "2026-10-16",
+    notes: "Weekly pantry essentials, rice, meat, veggies",
+  },
+  {
+    id: "tx-2",
+    title: "Grab Car & MRT Commute",
+    amount: 680,
+    type: "need",
+    category: "Transportation",
+    payment_method: "gcash",
+    payday_period: "payday_1",
+    date: "2026-10-16",
+    notes: "Office commute reload",
+  },
+  {
+    id: "tx-3",
+    title: "Jollibee Chickenjoy Lunch",
+    amount: 320,
+    type: "want",
+    category: "Dining Out",
+    payment_method: "cash",
+    payday_period: "payday_1",
+    date: "2026-10-17",
+    notes: "Friday payday lunch with team",
+  },
+  {
+    id: "tx-4",
+    title: "Mercury Drug Vitamins & Meds",
+    amount: 450,
+    type: "need",
+    category: "Healthcare",
+    payment_method: "gcash",
+    payday_period: "payday_1",
+    date: "2026-10-17",
+    notes: "Vitamin C and paracetamol",
+  },
+  {
+    id: "tx-5",
+    title: "Shopee Tech Accessory",
+    amount: 790,
+    type: "want",
+    category: "Online Shopping",
+    payment_method: "maya",
+    payday_period: "payday_1",
+    date: "2026-10-18",
+    notes: "Phone stand & USB-C cable",
+  },
+  {
+    id: "tx-6",
+    title: "Milk Tea Craving",
+    amount: 175,
+    type: "want",
+    category: "Dining Out",
+    payment_method: "gcash",
+    payday_period: "payday_1",
+    date: "2026-10-19",
+    notes: "Weekend afternoon treat",
+  },
+];
+
+export const DEMO_SAVINGS_GOALS: SavingsGoal[] = [
+  {
+    id: "goal-1",
+    name: "Emergency Fund (6 Months)",
+    target_amount: 100000,
+    current_amount: 32000,
+    target_date: "2027-12-31",
+    color: "emerald",
+    icon: "shield",
+  },
+  {
+    id: "goal-2",
+    name: "Japan Vacation Fund",
+    target_amount: 45000,
+    current_amount: 15000,
+    target_date: "2027-05-15",
+    color: "purple",
+    icon: "plane",
+  },
+  {
+    id: "goal-3",
+    name: "New Laptop / Workstation",
+    target_amount: 40000,
+    current_amount: 8500,
+    target_date: "2027-09-30",
+    color: "blue",
+    icon: "laptop",
+  },
+];
+
+export const DEMO_SAVINGS_MOVEMENTS: SavingsMovement[] = [
+  {
+    id: "sm-1",
+    goal_id: "goal-1",
+    amount: 3000,
+    type: "deposit",
+    date: "2026-10-15",
+    notes: "Auto-allocated from 15th payday (20% rule)",
+  },
+];
+
+export const DEMO_BILLS: Bill[] = [
+  {
+    id: "bill-1",
+    name: "Meralco Electric Bill",
+    amount: 2450,
+    due_day: 22,
+    recurrence: "monthly",
+    category: "Electricity",
+    status: "upcoming",
+    notes: "Account # 0123456789",
+  },
+  {
+    id: "bill-2",
+    name: "PLDT Home Fiber Internet",
+    amount: 1699,
+    due_day: 26,
+    recurrence: "monthly",
+    category: "Internet",
+    status: "upcoming",
+    notes: "Plan 1699 200Mbps",
+  },
+  {
+    id: "bill-3",
+    name: "Manila Water",
+    amount: 420,
+    due_day: 28,
+    recurrence: "monthly",
+    category: "Water",
+    status: "upcoming",
+    notes: "Monthly water utility",
+  },
+  {
+    id: "bill-4",
+    name: "Apartment Rental",
+    amount: 6000,
+    due_day: 5,
+    recurrence: "monthly",
+    category: "Rent",
+    status: "paid",
+    notes: "Paid on Oct 5",
+  },
+];
+
+export const DEMO_LOANS: Loan[] = [
+  {
+    id: "loan-1",
+    name: "SSS Salary Loan",
+    lender: "Social Security System",
+    principal: 20000,
+    current_balance: 11200,
+    interest_rate: 10,
+    interest_type: "reducing",
+    monthly_payment: 980,
+    next_due_date: "2026-10-31",
+    payment_frequency: "monthly",
+    notes: "24-month installment via payroll deduction",
+  },
+  {
+    id: "loan-2",
+    name: "Gadget Installment (0% Interest)",
+    lender: "Home Credit / Store",
+    principal: 15000,
+    current_balance: 5000,
+    interest_rate: 0,
+    interest_type: "zero",
+    monthly_payment: 2500,
+    next_due_date: "2026-11-05",
+    payment_frequency: "monthly",
+    notes: "6 months promo, 2 months left",
+  },
+];
+
+export const DEMO_NOTIFICATIONS: NotificationItem[] = [
+  {
+    id: "notif-1",
+    title: "Upcoming Bill Reminder",
+    message: "Meralco (₱2,450.00) is due in 2 days (Oct 22). Keep sufficient GCash balance.",
+    type: "bill_due",
+    is_read: false,
+    created_at: "2026-10-20T08:00:00Z",
+  },
+  {
+    id: "notif-2",
+    title: "10 Days to Next Payday",
+    message: "Your next payday is on Oct 30. Your daily flexible spendable budget is ₱450.00/day.",
+    type: "payday",
+    is_read: false,
+    created_at: "2026-10-20T06:00:00Z",
+  },
+  {
+    id: "notif-3",
+    title: "Savings Milestone",
+    message: "You've reached 32% of your Emergency Fund goal! Great job keeping on track.",
+    type: "savings_milestone",
+    is_read: true,
+    created_at: "2026-10-15T10:00:00Z",
+  },
+];
