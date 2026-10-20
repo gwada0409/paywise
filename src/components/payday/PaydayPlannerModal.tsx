@@ -82,7 +82,7 @@ export function PaydayPlannerModal({ isOpen, onClose }: PaydayPlannerModalProps)
         <div className="mt-4 space-y-4">
           {/* Salary received input */}
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
+            <label className="block text-xs font-semibold text-muted-foreground mb-1.5">
               Salary Received for this Payday
             </label>
             <CurrencyInput
@@ -112,7 +112,7 @@ export function PaydayPlannerModal({ isOpen, onClose }: PaydayPlannerModalProps)
               {upcomingBills.map((b) => (
                 <div key={b.id} className="flex justify-between text-xs text-muted-foreground">
                   <span>{b.name} (Due day {b.due_day})</span>
-                  <span className="font-mono font-medium text-foreground">₱{b.amount.toLocaleString()}</span>
+                  <span className="tabular-nums font-medium text-foreground">₱{b.amount.toLocaleString()}</span>
                 </div>
               ))}
               {upcomingBills.length === 0 && (
@@ -157,7 +157,7 @@ export function PaydayPlannerModal({ isOpen, onClose }: PaydayPlannerModalProps)
             <div className="flex justify-between text-xs font-semibold text-muted-foreground">
               <span>Payday Distribution</span>
               <span>
-                Remaining: <span className="font-mono">₱{remainingUnallocated.toLocaleString()}</span>
+                Remaining: <span className="tabular-nums">₱{remainingUnallocated.toLocaleString()}</span>
               </span>
             </div>
 

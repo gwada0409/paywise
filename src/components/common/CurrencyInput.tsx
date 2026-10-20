@@ -37,7 +37,7 @@ export function CurrencyInput({
 
   return (
     <div className={`relative flex items-center rounded-xl border border-input bg-card shadow-sm focus-within:ring-2 focus-within:ring-primary ${className}`}>
-      <span className="pl-3.5 pr-1 font-mono text-base font-semibold text-muted-foreground select-none">
+      <span className="pl-3.5 pr-1 tabular-nums text-base font-semibold text-muted-foreground select-none">
         {symbol}
       </span>
       <input
@@ -49,7 +49,7 @@ export function CurrencyInput({
         value={value === 0 ? "" : value}
         onChange={handleChange}
         placeholder={placeholder}
-        className="w-full bg-transparent py-2.5 pr-4 pl-1 font-mono text-lg font-semibold text-foreground placeholder:text-muted-foreground/50 focus:outline-none"
+        className="w-full bg-transparent py-2.5 pr-4 pl-1 tabular-nums text-lg font-semibold text-foreground placeholder:text-muted-foreground/50 focus:outline-none"
       />
     </div>
   );

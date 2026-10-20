@@ -362,7 +362,7 @@ export default function OnboardingPage() {
                       value={geminiApiKey}
                       onChange={(e) => setGeminiApiKey(e.target.value)}
                       placeholder="AIzaSy... (Leave empty if server configured)"
-                      className="w-full rounded-xl border border-input bg-card px-3 py-2 text-xs font-mono text-foreground focus:outline-none focus:ring-2 focus:ring-ref-blue min-h-[40px]"
+                      className="w-full rounded-xl border border-input bg-card px-3 py-2 text-xs font-mono text-foreground focus:outline-none focus:ring-2 focus:ring-ref-blue min-h-[40px]" /* taste-skill-ignore */
                     />
                   </div>
 

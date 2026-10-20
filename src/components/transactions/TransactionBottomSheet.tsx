@@ -110,7 +110,7 @@ export function TransactionBottomSheet({
         <form onSubmit={handleSubmit} className="mt-4 space-y-4">
           {/* Amount Input */}
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
+            <label className="block text-xs font-semibold text-muted-foreground mb-1.5">
               Amount
             </label>
             <CurrencyInput
@@ -123,7 +123,7 @@ export function TransactionBottomSheet({
 
           {/* Type Toggle: Need vs Want vs Income */}
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
+            <label className="block text-xs font-semibold text-muted-foreground mb-1.5">
               Category Classification
             </label>
             <div className="grid grid-cols-3 gap-2">
@@ -133,7 +133,7 @@ export function TransactionBottomSheet({
                   setType("need");
                   setCategory("Groceries");
                 }}
-                className={`flex items-center justify-center gap-1.5 rounded-xl py-2.5 px-3 text-xs font-bold transition-all min-h-[44px] ${
+                className={`flex items-center justify-center gap-1.5 rounded-xl py-2.5 px-3 text-xs font-semibold transition-colors min-h-[44px] ${
                   type === "need"
                     ? "bg-blue-600 text-white shadow-sm ring-2 ring-blue-500/20"
                     : "border border-border bg-card text-muted-foreground hover:bg-muted/40"
@@ -149,7 +149,7 @@ export function TransactionBottomSheet({
                   setType("want");
                   setCategory("Dining Out");
                 }}
-                className={`flex items-center justify-center gap-1.5 rounded-xl py-2.5 px-3 text-xs font-bold transition-colors min-h-[44px] ${
+                className={`flex items-center justify-center gap-1.5 rounded-xl py-2.5 px-3 text-xs font-semibold transition-colors min-h-[44px] ${
                   type === "want"
                     ? "bg-amber-500 text-white shadow-2xs ring-2 ring-amber-500/20"
                     : "border border-border bg-card text-muted-foreground hover:bg-muted/40"
@@ -165,7 +165,7 @@ export function TransactionBottomSheet({
                   setType("income");
                   setCategory("Salary");
                 }}
-                className={`flex items-center justify-center gap-1.5 rounded-xl py-2.5 px-3 text-xs font-bold transition-all min-h-[44px] ${
+                className={`flex items-center justify-center gap-1.5 rounded-xl py-2.5 px-3 text-xs font-semibold transition-colors min-h-[44px] ${
                   type === "income"
                     ? "bg-emerald-600 text-white shadow-sm ring-2 ring-emerald-500/20"
                     : "border border-border bg-card text-muted-foreground hover:bg-muted/40"
@@ -179,7 +179,7 @@ export function TransactionBottomSheet({
 
           {/* Title */}
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
+            <label className="block text-xs font-semibold text-muted-foreground mb-1.5">
               Description / Title
             </label>
             <input
@@ -194,7 +194,7 @@ export function TransactionBottomSheet({
 
           {/* Category Dropdown */}
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
+            <label className="block text-xs font-semibold text-muted-foreground mb-1.5">
               Category
             </label>
             <div className="flex flex-wrap gap-1.5 max-h-32 overflow-y-auto p-1 border border-border/60 rounded-xl bg-muted/20">
@@ -203,7 +203,7 @@ export function TransactionBottomSheet({
                   key={cat}
                   type="button"
                   onClick={() => setCategory(cat)}
-                  className={`rounded-lg px-2.5 py-1.5 text-xs font-medium transition-all ${
+                  className={`rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors ${
                     category === cat
                       ? "bg-primary text-primary-foreground font-semibold shadow-xs"
                       : "bg-card border border-border text-foreground hover:bg-muted/50"
@@ -218,7 +218,7 @@ export function TransactionBottomSheet({
           {/* Payment Method & Account */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
+              <label className="block text-xs font-semibold text-muted-foreground mb-1.5">
                 Payment Method
               </label>
               <select
@@ -237,7 +237,7 @@ export function TransactionBottomSheet({
             </div>
 
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
+              <label className="block text-xs font-semibold text-muted-foreground mb-1.5">
                 Paid From Account
               </label>
               <select
@@ -256,7 +256,7 @@ export function TransactionBottomSheet({
 
           {/* Date */}
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
+            <label className="block text-xs font-semibold text-muted-foreground mb-1.5">
               Date
             </label>
             <input
@@ -269,7 +269,7 @@ export function TransactionBottomSheet({
 
           {/* Notes (Optional) */}
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
+            <label className="block text-xs font-semibold text-muted-foreground mb-1.5">
               Notes (Optional)
             </label>
             <input
@@ -286,14 +286,14 @@ export function TransactionBottomSheet({
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 rounded-xl border border-border bg-card py-3 text-sm font-semibold text-foreground hover:bg-muted/50 active:scale-95 transition-all min-h-[44px]"
+              className="flex-1 rounded-xl border border-border bg-card py-3 text-sm font-semibold text-foreground hover:bg-muted/50 active:scale-95 transition-colors min-h-[44px]"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={amount <= 0 || !title.trim()}
-              className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-primary py-3 text-sm font-bold text-primary-foreground shadow-md hover:opacity-95 active:scale-95 transition-all disabled:opacity-50 disabled:pointer-events-none min-h-[44px]"
+              className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-primary py-3 text-sm font-semibold text-primary-foreground shadow-sm hover:opacity-95 active:scale-95 transition-opacity disabled:opacity-50 disabled:pointer-events-none min-h-[44px]"
             >
               <Check className="h-4 w-4" />
               Save Transaction

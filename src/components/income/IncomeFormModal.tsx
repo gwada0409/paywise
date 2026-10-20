@@ -69,7 +69,7 @@ export function IncomeFormModal({
 
         <form onSubmit={handleSubmit} className="mt-4 space-y-4">
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
+            <label className="block text-xs font-semibold text-muted-foreground mb-1.5">
               Net Amount Credited
             </label>
             <CurrencyInput value={amount} onChange={setAmount} autoFocus />
@@ -77,7 +77,7 @@ export function IncomeFormModal({
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
+              <label className="block text-xs font-semibold text-muted-foreground mb-1.5">
                 Payday Cycle
               </label>
               <select
@@ -93,7 +93,7 @@ export function IncomeFormModal({
             </div>
 
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
+              <label className="block text-xs font-semibold text-muted-foreground mb-1.5">
                 Income Type
               </label>
               <select
@@ -111,7 +111,7 @@ export function IncomeFormModal({
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
+              <label className="block text-xs font-semibold text-muted-foreground mb-1.5">
                 Credited To Account
               </label>
               <select
@@ -128,7 +128,7 @@ export function IncomeFormModal({
             </div>
 
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
+              <label className="block text-xs font-semibold text-muted-foreground mb-1.5">
                 Credit Date
               </label>
               <input
@@ -141,7 +141,7 @@ export function IncomeFormModal({
           </div>
 
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
+            <label className="block text-xs font-semibold text-muted-foreground mb-1.5">
               Notes (Optional)
             </label>
             <input
@@ -157,14 +157,14 @@ export function IncomeFormModal({
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 rounded-xl border border-border bg-card py-3 text-sm font-semibold text-foreground hover:bg-muted/50 active:scale-95 transition-all min-h-[44px]"
+              className="flex-1 rounded-xl border border-border bg-card py-3 text-sm font-semibold text-foreground hover:bg-muted/50 active:scale-95 transition-colors min-h-[44px]"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={amount <= 0}
-              className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-primary py-3 text-sm font-bold text-primary-foreground shadow-md hover:opacity-95 active:scale-95 transition-all min-h-[44px]"
+              className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-primary py-3 text-sm font-semibold text-primary-foreground shadow-sm hover:opacity-95 active:scale-95 transition-opacity min-h-[44px]"
             >
               <Check className="h-4 w-4" />
               Confirm Receipt

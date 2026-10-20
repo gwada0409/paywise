@@ -125,7 +125,7 @@ export default function BudgetPage() {
           >
             <AlertTriangle className="h-5 w-5 shrink-0 mt-0.5" />
             <div className="text-xs">
-              <p className="font-bold uppercase tracking-wider">{alert.message}</p>
+              <p className="font-semibold">{alert.message}</p>
             </div>
           </div>
         ))}

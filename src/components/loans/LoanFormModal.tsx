@@ -67,7 +67,7 @@ export function LoanFormModal({ isOpen, onClose }: LoanFormModalProps) {
 
         <form onSubmit={handleSubmit} className="mt-4 space-y-4">
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
+            <label className="block text-xs font-semibold text-muted-foreground mb-1.5">
               Loan / Debt Name
             </label>
             <input
@@ -81,7 +81,7 @@ export function LoanFormModal({ isOpen, onClose }: LoanFormModalProps) {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
+            <label className="block text-xs font-semibold text-muted-foreground mb-1.5">
               Lender / Institution
             </label>
             <input
@@ -96,14 +96,14 @@ export function LoanFormModal({ isOpen, onClose }: LoanFormModalProps) {
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
+              <label className="block text-xs font-semibold text-muted-foreground mb-1.5">
                 Original Principal
               </label>
               <CurrencyInput value={principal} onChange={setPrincipal} />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
+              <label className="block text-xs font-semibold text-muted-foreground mb-1.5">
                 Current Balance
               </label>
               <CurrencyInput
@@ -115,14 +115,14 @@ export function LoanFormModal({ isOpen, onClose }: LoanFormModalProps) {
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
+              <label className="block text-xs font-semibold text-muted-foreground mb-1.5">
                 Monthly Installment
               </label>
               <CurrencyInput value={monthlyPayment} onChange={setMonthlyPayment} />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
+              <label className="block text-xs font-semibold text-muted-foreground mb-1.5">
                 Interest Rate (% p.a.)
               </label>
               <input
@@ -132,13 +132,13 @@ export function LoanFormModal({ isOpen, onClose }: LoanFormModalProps) {
                 value={interestRate}
                 onChange={(e) => setInterestRate(Number(e.target.value))}
                 placeholder="0"
-                className="w-full rounded-xl border border-input bg-card px-3 py-2.5 text-sm font-mono font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-primary min-h-[44px]"
+                className="w-full rounded-xl border border-input bg-card px-3 py-2.5 text-sm tabular-nums font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-primary min-h-[44px]"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
+            <label className="block text-xs font-semibold text-muted-foreground mb-1.5">
               Next Due Date
             </label>
             <input
@@ -153,14 +153,14 @@ export function LoanFormModal({ isOpen, onClose }: LoanFormModalProps) {
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 rounded-xl border border-border bg-card py-3 text-sm font-semibold text-foreground hover:bg-muted/50 active:scale-95 transition-all min-h-[44px]"
+              className="flex-1 rounded-xl border border-border bg-card py-3 text-sm font-semibold text-foreground hover:bg-muted/50 active:scale-95 transition-colors min-h-[44px]"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={principal <= 0 || !name.trim()}
-              className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-primary py-3 text-sm font-bold text-primary-foreground shadow-md hover:opacity-95 active:scale-95 transition-all min-h-[44px]"
+              className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-primary py-3 text-sm font-semibold text-primary-foreground shadow-sm hover:opacity-95 active:scale-95 transition-opacity min-h-[44px]"
             >
               <Check className="h-4 w-4" />
               Save Loan

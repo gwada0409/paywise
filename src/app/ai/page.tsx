@@ -206,7 +206,7 @@ export default function AIPage() {
 
             {/* "Use this bubble chat" prompt chips */}
             <div className="mt-8 w-full max-w-xs space-y-2">
-              <span className="text-[11px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">
+              <span className="text-[11px] font-semibold text-slate-400 dark:text-slate-500 block">
                 Use this bubble chat
               </span>
 
@@ -215,7 +215,7 @@ export default function AIPage() {
                   <button
                     key={bubble}
                     onClick={() => handleSendMessage(bubble)}
-                    className="rounded-2xl border border-slate-200/90 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 px-3.5 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 hover:border-[#45C97A] hover:text-[#16A34A] active:scale-95 transition-all shadow-2xs"
+                    className="rounded-2xl border border-slate-200/90 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 px-3.5 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 hover:border-[#45C97A] hover:text-[#16A34A] active:scale-95 transition-colors shadow-2xs"
                   >
                     {bubble}
                   </button>

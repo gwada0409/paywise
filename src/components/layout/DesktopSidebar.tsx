@@ -108,7 +108,7 @@ export function DesktopSidebar() {
       <div className="flex-1 overflow-y-auto px-4 py-4 space-y-6">
         {navGroups.map((group) => (
           <div key={group.title}>
-            <p className="px-3 text-[11px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+            <p className="px-3 text-[11px] font-semibold text-slate-400 dark:text-slate-500">
               {group.title}
             </p>
             <div className="mt-1.5 space-y-0.5">

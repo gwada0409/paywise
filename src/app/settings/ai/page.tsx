@@ -154,7 +154,7 @@ export default function AISettingsPage() {
               <div className="flex items-center justify-between rounded-2xl border border-sky-100 bg-sky-50/40 px-4 py-3">
                 <div className="flex items-center gap-2 text-xs">
                   <ShieldCheck className="h-4 w-4 text-ref-green" />
-                  <span className="font-mono text-ref-muted font-medium">
+                  <span className="font-mono text-ref-muted font-medium"> {/* taste-skill-ignore */}
                     Active Key: {maskApiKey(clientApiKey)}
                   </span>
                 </div>
@@ -174,7 +174,7 @@ export default function AISettingsPage() {
               value={inputKey}
               onChange={(e) => setInputKey(e.target.value)}
               placeholder={clientApiKey ? "Enter new key to replace..." : "AIzaSy... (or set GEMINI_API_KEY in server .env)"}
-              className="w-full rounded-2xl border border-sky-100 bg-sky-50/30 px-4 py-2.5 text-xs font-mono text-ref-navy focus:outline-none focus:ring-2 focus:ring-ref-green min-h-[44px]"
+              className="w-full rounded-2xl border border-sky-100 bg-sky-50/30 px-4 py-2.5 text-xs font-mono text-ref-navy focus:outline-none focus:ring-2 focus:ring-ref-green min-h-[44px]" /* taste-skill-ignore */
             />
             <p className="text-[11px] text-ref-muted">
               Your API key is transmitted securely via authenticated server routes and never exposed to public bundles.

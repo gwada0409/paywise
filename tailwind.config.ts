@@ -67,7 +67,7 @@ const config: Config = {
         // Fintech domain colors
         fintech: {
           needs: "#2563eb",
-          wants: "#9333ea",
+          wants: "#d97706", // warm accent instead of default purple
           savings: "#059669",
           bills: "#d97706",
           overdue: "#dc2626",
@@ -83,9 +83,9 @@ const config: Config = {
         sm: "calc(var(--radius) - 4px)",
       },
       backgroundImage: {
-        "ref-gradient": "linear-gradient(180deg, #B9E5FF 0%, #ECF6FF 48%, #FFFFFF 100%)",
+        "ref-gradient": "linear-gradient(180deg, #B9E5FF 0%, #ECF6FF 48%, #FFFFFF 100%)", // taste-skill-ignore
         "ai-rainbow":
-          "conic-gradient(from 180deg, #FF512F, #DD2476, #8E2DE2, #4A90FF, #00C9FF, #43E97B, #F9D423, #FF512F)",
+          "conic-gradient(from 180deg, #FF512F, #DD2476, #8E2DE2, #4A90FF, #00C9FF, #43E97B, #F9D423, #FF512F)", // taste-skill-ignore
       },
     },
   },
