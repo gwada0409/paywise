@@ -50,67 +50,42 @@ const config: Config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        // Premium reference design tokens
+        ref: {
+          bg: "#F5F9FF",
+          sky: "#BCE7FF",
+          lightCard: "#DDF3FF",
+          primaryText: "#17212F",
+          secondaryText: "#788493",
+          primaryBlue: "#4A90FF",
+          accentCyan: "#70D6F7",
+          positiveGreen: "#45C97A",
+          warningYellow: "#F5CA46",
+          negativeRed: "#EF6B6B",
+          accentPurple: "#A18CFF",
+        },
         // Fintech domain colors
         fintech: {
-          needs: {
-            DEFAULT: "#2563eb", // blue-600
-            light: "#dbeafe", // blue-100
-            dark: "#1d4ed8",
-          },
-          wants: {
-            DEFAULT: "#9333ea", // purple-600
-            light: "#f3e8ff", // purple-100
-            dark: "#7e22ce",
-          },
-          savings: {
-            DEFAULT: "#059669", // emerald-600
-            light: "#d1fae5", // emerald-100
-            dark: "#047857",
-          },
-          bills: {
-            DEFAULT: "#d97706", // amber-600
-            light: "#fef3c7", // amber-100
-            dark: "#b45309",
-          },
-          overdue: {
-            DEFAULT: "#dc2626", // red-600
-            light: "#fee2e2", // red-100
-            dark: "#b91c1c",
-          },
-          ai: {
-            DEFAULT: "#4f46e5", // indigo-600
-            light: "#e0e7ff", // indigo-100
-            dark: "#4338ca",
-          },
-          income: {
-            DEFAULT: "#16a34a", // green-600
-            light: "#dcfce7",
-          }
-        }
+          needs: "#2563eb",
+          wants: "#9333ea",
+          savings: "#059669",
+          bills: "#d97706",
+          overdue: "#dc2626",
+          ai: "#22c55e",
+          income: "#16a34a",
+        },
       },
       borderRadius: {
+        "3xl": "1.75rem",
+        "4xl": "2.25rem",
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
-      keyframes: {
-        "accordion-down": {
-          from: { height: "0" },
-          to: { height: "var(--radix-accordion-content-height)" },
-        },
-        "accordion-up": {
-          from: { height: "var(--radix-accordion-content-height)" },
-          to: { height: "0" },
-        },
-        "pulse-subtle": {
-          "0%, 100%": { opacity: "1" },
-          "50%": { opacity: "0.85" },
-        }
-      },
-      animation: {
-        "accordion-down": "accordion-down 0.2s ease-out",
-        "accordion-up": "accordion-up 0.2s ease-out",
-        "pulse-subtle": "pulse-subtle 3s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+      backgroundImage: {
+        "ref-gradient": "linear-gradient(180deg, #B9E5FF 0%, #ECF6FF 48%, #FFFFFF 100%)",
+        "ai-rainbow":
+          "conic-gradient(from 180deg, #FF512F, #DD2476, #8E2DE2, #4A90FF, #00C9FF, #43E97B, #F9D423, #FF512F)",
       },
     },
   },

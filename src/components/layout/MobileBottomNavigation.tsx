@@ -5,77 +5,89 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   Home,
-  ArrowLeftRight,
-  PieChart,
+  TrendingUp,
+  Target,
+  Settings,
   Sparkles,
-  Menu,
 } from "lucide-react";
-import { useFinance } from "@/lib/store/finance-context";
 
-interface MobileBottomNavigationProps {
-  onOpenMore: () => void;
-}
-
-export function MobileBottomNavigation({ onOpenMore }: MobileBottomNavigationProps) {
+export function MobileBottomNavigation() {
   const pathname = usePathname();
-  const { notifications } = useFinance();
-  const unreadCount = notifications.filter((n) => !n.is_read).length;
 
-  const tabs = [
-    { label: "Home", href: "/dashboard", icon: Home },
-    { label: "Activity", href: "/transactions", icon: ArrowLeftRight },
-    { label: "Budget", href: "/budget", icon: PieChart },
-    { label: "AI Chat", href: "/ai", icon: Sparkles, isAI: true },
-  ];
-
+  // If on the AI chat page, we can show a more streamlined footer or maintain navigation
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 block md:hidden border-t border-border bg-card/90 backdrop-blur-md pb-safe">
-      <div className="grid h-16 grid-cols-5 items-center justify-around px-2">
-        {tabs.map((tab) => {
-          const isActive = pathname === tab.href || pathname.startsWith(`${tab.href}/`);
-          const Icon = tab.icon;
-
-          return (
-            <Link
-              key={tab.href}
-              href={tab.href}
-              className={`flex flex-col items-center justify-center py-1 transition-all active:scale-95 min-h-[44px] ${
-                isActive
-                  ? tab.isAI
-                    ? "text-indigo-600 dark:text-indigo-400 font-semibold"
-                    : "text-primary font-semibold"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              <div className="relative">
-                <Icon
-                  className={`h-5 w-5 ${
-                    isActive && tab.isAI
-                      ? "stroke-[2.5px] text-indigo-600 dark:text-indigo-400"
-                      : isActive
-                      ? "stroke-[2.5px] text-primary"
-                      : "stroke-[1.75px]"
-                  }`}
-                />
-              </div>
-              <span className="mt-1 text-[10px] tracking-tight">{tab.label}</span>
-            </Link>
-          );
-        })}
-
-        {/* More tab opens mobile sheet with remaining destinations */}
-        <button
-          onClick={onOpenMore}
-          className="relative flex flex-col items-center justify-center py-1 text-muted-foreground hover:text-foreground transition-all active:scale-95 min-h-[44px]"
+    <nav className="fixed bottom-4 left-4 right-4 z-40 block md:hidden max-w-md mx-auto">
+      <div className="relative flex h-16 items-center justify-between px-6 rounded-4xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl shadow-xl shadow-slate-900/5 border border-slate-100/90 dark:border-slate-800">
+        {/* 1. Home */}
+        <Link
+          href="/dashboard"
+          className={`flex flex-col items-center justify-center p-2 min-h-[44px] transition-all active:scale-95 ${
+            pathname === "/dashboard"
+              ? "text-[#4A90FF] font-bold"
+              : "text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+          }`}
         >
-          <div className="relative">
-            <Menu className="h-5 w-5 stroke-[1.75px]" />
-            {unreadCount > 0 && (
-              <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5 items-center justify-center rounded-full bg-rose-500 ring-2 ring-card" />
-            )}
+          <Home className={`h-5 w-5 ${pathname === "/dashboard" ? "stroke-[2.5px]" : "stroke-[1.8px]"}`} />
+          {pathname === "/dashboard" && (
+            <span className="h-1 w-1 rounded-full bg-[#4A90FF] mt-0.5" />
+          )}
+        </Link>
+
+        {/* 2. Analytics */}
+        <Link
+          href="/reports"
+          className={`flex flex-col items-center justify-center p-2 min-h-[44px] transition-all active:scale-95 ${
+            pathname === "/reports"
+              ? "text-[#4A90FF] font-bold"
+              : "text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+          }`}
+        >
+          <TrendingUp className={`h-5 w-5 ${pathname === "/reports" ? "stroke-[2.5px]" : "stroke-[1.8px]"}`} />
+          {pathname === "/reports" && (
+            <span className="h-1 w-1 rounded-full bg-[#4A90FF] mt-0.5" />
+          )}
+        </Link>
+
+        {/* 3. Center Vibrant Rainbow AI Button */}
+        <Link
+          href="/ai"
+          className="relative -top-2 flex flex-col items-center justify-center active:scale-90 transition-transform"
+          aria-label="PayWise AI"
+        >
+          <div className="flex h-13 w-13 items-center justify-center rounded-full bg-ai-rainbow shadow-lg shadow-sky-500/25 ring-4 ring-white dark:ring-slate-900">
+            <Sparkles className="h-6 w-6 text-white stroke-[2.2px] drop-shadow-xs" />
           </div>
-          <span className="mt-1 text-[10px] tracking-tight">More</span>
-        </button>
+        </Link>
+
+        {/* 4. Goals / Savings */}
+        <Link
+          href="/savings"
+          className={`flex flex-col items-center justify-center p-2 min-h-[44px] transition-all active:scale-95 ${
+            pathname === "/savings"
+              ? "text-[#4A90FF] font-bold"
+              : "text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+          }`}
+        >
+          <Target className={`h-5 w-5 ${pathname === "/savings" ? "stroke-[2.5px]" : "stroke-[1.8px]"}`} />
+          {pathname === "/savings" && (
+            <span className="h-1 w-1 rounded-full bg-[#4A90FF] mt-0.5" />
+          )}
+        </Link>
+
+        {/* 5. Settings */}
+        <Link
+          href="/settings"
+          className={`flex flex-col items-center justify-center p-2 min-h-[44px] transition-all active:scale-95 ${
+            pathname === "/settings"
+              ? "text-[#4A90FF] font-bold"
+              : "text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+          }`}
+        >
+          <Settings className={`h-5 w-5 ${pathname === "/settings" ? "stroke-[2.5px]" : "stroke-[1.8px]"}`} />
+          {pathname === "/settings" && (
+            <span className="h-1 w-1 rounded-full bg-[#4A90FF] mt-0.5" />
+          )}
+        </Link>
       </div>
     </nav>
   );

@@ -5,12 +5,8 @@ import {
   CalendarDays,
   Plus,
   TrendingUp,
-  Receipt,
-  PiggyBank,
-  CheckCircle2,
-  Clock,
   Edit2,
-  ShieldCheck,
+  ChevronRight,
 } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
 import { useFinance } from "@/lib/store/finance-context";
@@ -28,7 +24,6 @@ export default function SalaryPage() {
     incomeRecords,
     nextPayday,
     bills,
-    savingsGoals,
   } = useFinance();
 
   const [isPlannerOpen, setIsPlannerOpen] = useState(false);
@@ -53,7 +48,6 @@ export default function SalaryPage() {
     toast.success("Payday schedule updated.");
   };
 
-  // Bills due between 1st-15th (Payday 1) and 16th-end (Payday 2)
   const p1Bills = bills.filter((b) => b.due_day <= 15);
   const p2Bills = bills.filter((b) => b.due_day > 15);
   const p1BillsTotal = p1Bills.reduce((s, b) => s + b.amount, 0);
@@ -61,59 +55,58 @@ export default function SalaryPage() {
 
   return (
     <AppShell>
-      <div className="space-y-6 animate-in fade-in duration-300">
-        {/* Page Title & Actions */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="space-y-6 max-w-xl mx-auto md:max-w-4xl animate-in fade-in duration-300">
+        {/* Header */}
+        <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground flex items-center gap-2.5">
-              <CalendarDays className="h-7 w-7 text-primary" />
+            <h1 className="text-2xl font-extrabold tracking-tight text-[#17212F] dark:text-white">
               Salary & Payday Tracker
             </h1>
-            <p className="mt-1 text-xs sm:text-sm text-muted-foreground">
-              Manage your semi-monthly paydays, expected payouts, and cash allocations.
+            <p className="text-xs text-[#788493] dark:text-slate-400 mt-0.5">
+              15th & 30th semi-monthly schedule management.
             </p>
           </div>
 
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-2">
             <button
               onClick={() => setIsPlannerOpen(true)}
-              className="inline-flex items-center gap-2 rounded-xl bg-primary/10 px-4 py-2.5 text-xs font-bold text-primary hover:bg-primary/20 active:scale-95 transition-all min-h-[44px]"
+              className="inline-flex items-center gap-1.5 rounded-full glass-pill px-3.5 py-1.5 text-xs font-bold text-[#4A90FF] hover:bg-white/90 active:scale-95"
             >
-              Plan This Payday
+              Plan Payday
             </button>
             <button
               onClick={() => setIsRecordIncomeOpen(true)}
-              className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-xs font-bold text-primary-foreground shadow-sm hover:opacity-95 active:scale-95 transition-all min-h-[44px]"
+              className="inline-flex items-center gap-1.5 rounded-full bg-[#4A90FF] px-3.5 py-1.5 text-xs font-bold text-white shadow-xs hover:opacity-95 active:scale-95"
             >
               <Plus className="h-4 w-4" />
-              Record Received Salary
+              Record Salary
             </button>
           </div>
         </div>
 
-        {/* Schedule Configuration Card */}
-        <div className="rounded-3xl border border-border bg-card p-6 shadow-xs">
-          <div className="flex items-center justify-between pb-4 border-b border-border">
+        {/* Schedule Overview Card */}
+        <div className="rounded-4xl p-6 bg-white/95 dark:bg-slate-800/95 border border-sky-100/80 dark:border-slate-700 shadow-xs">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-700">
             <div>
-              <h2 className="text-base font-bold text-foreground">Semi-Monthly Payroll Schedule</h2>
-              <p className="text-xs text-muted-foreground">
-                Configured take-home net earnings and cutoff dates.
-              </p>
+              <h2 className="text-sm font-bold text-[#17212F] dark:text-white">
+                Semi-Monthly Schedule
+              </h2>
+              <p className="text-xs text-[#788493]">Configured take-home earnings & cutoff dates</p>
             </div>
             <button
               onClick={() => setIsEditingSettings(!isEditingSettings)}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground active:scale-95"
+              className="text-xs font-bold text-[#4A90FF] hover:underline flex items-center gap-1"
             >
-              <Edit2 className="h-3.5 w-3.5" />
-              {isEditingSettings ? "Cancel" : "Edit Schedule"}
+              <Edit2 className="h-3 w-3" />
+              {isEditingSettings ? "Cancel" : "Edit"}
             </button>
           </div>
 
           {isEditingSettings ? (
-            <div className="mt-5 space-y-4">
+            <div className="mt-4 space-y-4">
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
-                  Monthly Net Take-Home Salary
+                <label className="block text-xs font-semibold text-slate-500 mb-1">
+                  Monthly Net Salary
                 </label>
                 <CurrencyInput
                   value={monthlyNet}
@@ -125,10 +118,10 @@ export default function SalaryPage() {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
-                    1st Payday (Day of Month)
+                  <label className="block text-xs font-semibold text-slate-500 mb-1">
+                    1st Payday (Day)
                   </label>
                   <input
                     type="number"
@@ -136,12 +129,12 @@ export default function SalaryPage() {
                     max={31}
                     value={p1Day}
                     onChange={(e) => setP1Day(Number(e.target.value))}
-                    className="w-full rounded-xl border border-input bg-card px-3 py-2 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-primary min-h-[44px]"
+                    className="w-full rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 px-3 py-2 text-sm font-bold"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
-                    2nd Payday (Day of Month)
+                  <label className="block text-xs font-semibold text-slate-500 mb-1">
+                    2nd Payday (Day)
                   </label>
                   <input
                     type="number"
@@ -149,167 +142,129 @@ export default function SalaryPage() {
                     max={31}
                     value={p2Day}
                     onChange={(e) => setP2Day(Number(e.target.value))}
-                    className="w-full rounded-xl border border-input bg-card px-3 py-2 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-primary min-h-[44px]"
+                    className="w-full rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 px-3 py-2 text-sm font-bold"
                   />
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
-                    1st Payday Payout
-                  </label>
-                  <CurrencyInput value={p1Expected} onChange={setP1Expected} />
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
-                    2nd Payday Payout
-                  </label>
-                  <CurrencyInput value={p2Expected} onChange={setP2Expected} />
+              <button
+                type="button"
+                onClick={handleSaveSettings}
+                className="rounded-full bg-[#4A90FF] px-5 py-2 text-xs font-bold text-white shadow-xs"
+              >
+                Save Schedule
+              </button>
+            </div>
+          ) : (
+            <div className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-4">
+              <div>
+                <span className="text-[11px] text-[#788493]">Monthly Take-Home</span>
+                <div className="mt-0.5">
+                  <CurrencyDisplay amount={salarySettings.monthly_net} size="base" weight="bold" />
                 </div>
               </div>
 
-              <div className="pt-2">
-                <button
-                  type="button"
-                  onClick={handleSaveSettings}
-                  className="rounded-xl bg-primary px-5 py-2.5 text-xs font-bold text-primary-foreground shadow-sm hover:opacity-95"
-                >
-                  Save Changes
-                </button>
-              </div>
-            </div>
-          ) : (
-            <div className="mt-5 grid grid-cols-2 sm:grid-cols-4 gap-4">
               <div>
-                <p className="text-xs text-muted-foreground">Monthly Net Salary</p>
-                <CurrencyDisplay amount={salarySettings.monthly_net} size="lg" weight="bold" />
-              </div>
-              <div>
-                <p className="text-xs text-muted-foreground">1st Payday Schedule</p>
-                <p className="font-semibold text-foreground">
+                <span className="text-[11px] text-[#788493]">1st Cutoff</span>
+                <p className="font-bold text-sm text-[#17212F] dark:text-white mt-0.5">
                   Day {salarySettings.payday_1_day} (₱{salarySettings.payday_1_expected.toLocaleString()})
                 </p>
               </div>
+
               <div>
-                <p className="text-xs text-muted-foreground">2nd Payday Schedule</p>
-                <p className="font-semibold text-foreground">
+                <span className="text-[11px] text-[#788493]">2nd Cutoff</span>
+                <p className="font-bold text-sm text-[#17212F] dark:text-white mt-0.5">
                   Day {salarySettings.payday_2_day} (₱{salarySettings.payday_2_expected.toLocaleString()})
                 </p>
               </div>
+
               <div>
-                <p className="text-xs text-muted-foreground">Next Scheduled Payday</p>
-                <p className="font-semibold text-primary">{nextPayday.label} ({nextPayday.daysRemaining} days)</p>
+                <span className="text-[11px] text-[#788493]">Next Payday</span>
+                <p className="font-bold text-sm text-[#4A90FF] mt-0.5">
+                  {nextPayday.daysRemaining} Days ({nextPayday.label})
+                </p>
               </div>
             </div>
           )}
         </div>
 
         {/* PAYDAY 1 VS PAYDAY 2 CARDS */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Payday 1 Card */}
-          <div className="rounded-3xl border border-blue-500/20 bg-card p-6 shadow-xs">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">
-                1st Payday Cutoff (Day {salarySettings.payday_1_day})
-              </span>
-              <span className="rounded-full bg-blue-500/10 px-2.5 py-0.5 text-[10px] font-bold text-blue-600">
-                1st Half of Month
-              </span>
-            </div>
-
-            <div className="mt-3">
-              <p className="text-xs text-muted-foreground">Expected Salary</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="rounded-4xl p-5 bg-[#DDF3FF] dark:bg-slate-800/95 border border-sky-200/60 shadow-xs">
+            <span className="text-xs font-bold text-[#4A90FF] uppercase tracking-wider">
+              1st Payday (Day {salarySettings.payday_1_day})
+            </span>
+            <div className="mt-2">
               <CurrencyDisplay amount={salarySettings.payday_1_expected} size="2xl" weight="bold" />
             </div>
-
-            <div className="mt-4 pt-4 border-t border-border space-y-2 text-xs">
+            <div className="mt-3 pt-3 border-t border-sky-200/60 text-xs space-y-1 text-slate-600 dark:text-slate-300">
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Target Needs (50%):</span>
-                <span className="font-mono font-semibold">₱{(salarySettings.payday_1_expected * 0.5).toLocaleString()}</span>
+                <span>Needs (50%):</span>
+                <span className="font-mono font-bold">₱{(salarySettings.payday_1_expected * 0.5).toLocaleString()}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Target Wants (30%):</span>
-                <span className="font-mono font-semibold">₱{(salarySettings.payday_1_expected * 0.3).toLocaleString()}</span>
+                <span>Wants (30%):</span>
+                <span className="font-mono font-bold">₱{(salarySettings.payday_1_expected * 0.3).toLocaleString()}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Target Savings (20%):</span>
-                <span className="font-mono font-semibold">₱{(salarySettings.payday_1_expected * 0.2).toLocaleString()}</span>
+                <span>Savings (20%):</span>
+                <span className="font-mono font-bold">₱{(salarySettings.payday_1_expected * 0.2).toLocaleString()}</span>
               </div>
-              <div className="flex justify-between pt-2 border-t border-border/60">
-                <span className="text-muted-foreground">Bills Due in 1st Half:</span>
-                <span className="font-mono font-bold text-amber-600">₱{p1BillsTotal.toLocaleString()}</span>
+              <div className="flex justify-between text-amber-700 dark:text-amber-400 font-bold pt-1">
+                <span>Bills in 1st Half:</span>
+                <span className="font-mono">₱{p1BillsTotal.toLocaleString()}</span>
               </div>
             </div>
           </div>
 
-          {/* Payday 2 Card */}
-          <div className="rounded-3xl border border-purple-500/20 bg-card p-6 shadow-xs">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold uppercase tracking-wider text-purple-600 dark:text-purple-400">
-                2nd Payday Cutoff (Day {salarySettings.payday_2_day})
-              </span>
-              <span className="rounded-full bg-purple-500/10 px-2.5 py-0.5 text-[10px] font-bold text-purple-600">
-                2nd Half of Month
-              </span>
-            </div>
-
-            <div className="mt-3">
-              <p className="text-xs text-muted-foreground">Expected Salary</p>
+          <div className="rounded-4xl p-5 bg-[#DDF3FF] dark:bg-slate-800/95 border border-sky-200/60 shadow-xs">
+            <span className="text-xs font-bold text-[#4A90FF] uppercase tracking-wider">
+              2nd Payday (Day {salarySettings.payday_2_day})
+            </span>
+            <div className="mt-2">
               <CurrencyDisplay amount={salarySettings.payday_2_expected} size="2xl" weight="bold" />
             </div>
-
-            <div className="mt-4 pt-4 border-t border-border space-y-2 text-xs">
+            <div className="mt-3 pt-3 border-t border-sky-200/60 text-xs space-y-1 text-slate-600 dark:text-slate-300">
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Target Needs (50%):</span>
-                <span className="font-mono font-semibold">₱{(salarySettings.payday_2_expected * 0.5).toLocaleString()}</span>
+                <span>Needs (50%):</span>
+                <span className="font-mono font-bold">₱{(salarySettings.payday_2_expected * 0.5).toLocaleString()}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Target Wants (30%):</span>
-                <span className="font-mono font-semibold">₱{(salarySettings.payday_2_expected * 0.3).toLocaleString()}</span>
+                <span>Wants (30%):</span>
+                <span className="font-mono font-bold">₱{(salarySettings.payday_2_expected * 0.3).toLocaleString()}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Target Savings (20%):</span>
-                <span className="font-mono font-semibold">₱{(salarySettings.payday_2_expected * 0.2).toLocaleString()}</span>
+                <span>Savings (20%):</span>
+                <span className="font-mono font-bold">₱{(salarySettings.payday_2_expected * 0.2).toLocaleString()}</span>
               </div>
-              <div className="flex justify-between pt-2 border-t border-border/60">
-                <span className="text-muted-foreground">Bills Due in 2nd Half:</span>
-                <span className="font-mono font-bold text-amber-600">₱{p2BillsTotal.toLocaleString()}</span>
+              <div className="flex justify-between text-amber-700 dark:text-amber-400 font-bold pt-1">
+                <span>Bills in 2nd Half:</span>
+                <span className="font-mono">₱{p2BillsTotal.toLocaleString()}</span>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Salary History Table */}
-        <div className="rounded-3xl border border-border bg-card p-6 shadow-xs">
-          <h2 className="text-base font-bold text-foreground mb-4">Received Salary History</h2>
+        {/* Received Salary History */}
+        <div className="rounded-4xl p-5 bg-white/95 dark:bg-slate-800/95 border border-sky-100/80 dark:border-slate-700 shadow-xs">
+          <h2 className="text-xs font-bold uppercase tracking-wider text-[#788493] mb-3">
+            Received Salary History
+          </h2>
 
-          <div className="divide-y divide-border/60">
+          <div className="divide-y divide-slate-100 dark:divide-slate-700/60">
             {incomeRecords.map((inc) => (
               <div key={inc.id} className="py-3 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600">
-                    <TrendingUp className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-foreground">
-                      {inc.type === "salary" ? "Regular Salary" : inc.type} ({inc.payday_period})
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {formatDate(inc.date)} {inc.notes && `• ${inc.notes}`}
-                    </p>
-                  </div>
+                <div>
+                  <p className="text-sm font-bold text-[#17212F] dark:text-white">
+                    {inc.type === "salary" ? "Regular Salary" : inc.type} ({inc.payday_period})
+                  </p>
+                  <p className="text-xs text-[#788493]">
+                    {formatDate(inc.date)} {inc.notes && `• ${inc.notes}`}
+                  </p>
                 </div>
-
-                <CurrencyDisplay amount={inc.amount} size="base" weight="bold" type="income" />
+                <CurrencyDisplay amount={inc.amount} size="sm" weight="bold" type="income" />
               </div>
             ))}
-
-            {incomeRecords.length === 0 && (
-              <p className="py-6 text-center text-xs text-muted-foreground">
-                No received salary logged yet. Click &quot;Record Received Salary&quot; when your paycheck credits.
-              </p>
-            )}
           </div>
         </div>
       </div>

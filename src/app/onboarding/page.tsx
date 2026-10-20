@@ -88,25 +88,25 @@ export default function OnboardingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col justify-center items-center p-4 sm:p-6">
-      <div className="w-full max-w-xl rounded-3xl border border-border bg-card p-6 sm:p-8 shadow-xl">
+    <div className="min-h-screen ref-gradient-canvas flex flex-col justify-center items-center p-4 sm:p-6">
+      <div className="w-full max-w-xl rounded-[32px] border border-border/60 bg-white/95 backdrop-blur-md p-6 sm:p-8 shadow-sm">
         {/* Step Progress Bar */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-xs">
+            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-ref-blue text-white shadow-2xs">
               <Wallet className="h-4 w-4" />
             </div>
-            <span className="text-sm font-bold tracking-tight">PayWise Setup</span>
+            <span className="text-sm font-bold tracking-tight text-ref-navy">PayWise Setup</span>
           </div>
 
-          <div className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground">
+          <div className="flex items-center gap-1.5 text-xs font-bold text-ref-muted">
             <span>Step {step} of 6</span>
           </div>
         </div>
 
-        <div className="w-full bg-muted/60 h-1.5 rounded-full mb-8 overflow-hidden">
+        <div className="w-full bg-slate-100 h-1.5 rounded-full mb-8 overflow-hidden">
           <div
-            className="bg-primary h-full transition-all duration-300"
+            className="bg-ref-blue h-full rounded-full transition-all duration-300"
             style={{ width: `${(step / 6) * 100}%` }}
           />
         </div>
@@ -114,13 +114,13 @@ export default function OnboardingPage() {
         {/* STEP 1: Welcome */}
         {step === 1 && (
           <div className="text-center py-4">
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-500/10 text-primary mb-4">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-sky-50 text-ref-blue mb-4 shadow-2xs">
               <Sparkles className="h-8 w-8" />
             </div>
-            <h2 className="text-2xl font-extrabold text-foreground tracking-tight">
+            <h2 className="text-2xl font-extrabold text-ref-navy tracking-tight">
               Welcome to PayWise
             </h2>
-            <p className="mt-2 text-sm text-muted-foreground max-w-md mx-auto leading-relaxed">
+            <p className="mt-2 text-xs sm:text-sm text-ref-muted max-w-md mx-auto leading-relaxed">
               Let&apos;s personalize your finances. In just 2 minutes, we&apos;ll configure your semi-monthly paydays, 50/30/20 budget, and intelligent Gemini assistant.
             </p>
 
@@ -128,7 +128,7 @@ export default function OnboardingPage() {
               <button
                 type="button"
                 onClick={() => setStep(2)}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-8 py-3.5 text-sm font-bold text-primary-foreground shadow-md hover:opacity-95 active:scale-95 transition-all min-h-[44px]"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-full bg-ref-blue px-8 py-3.5 text-xs font-bold text-white shadow-xs hover:bg-ref-blue/90 active:scale-95 transition-all min-h-[44px]"
               >
                 Let&apos;s Get Started
                 <ArrowRight className="h-4 w-4" />

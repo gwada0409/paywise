@@ -53,13 +53,13 @@ export function DesktopSidebar() {
     {
       title: "Planning & Obligations",
       items: [
-        { label: "Savings Goals", href: "/savings", icon: PiggyBank },
+        { label: "Savings & Goals", href: "/savings", icon: PiggyBank },
         { label: "Upcoming Bills", href: "/bills", icon: Receipt },
         { label: "Loans & Debts", href: "/loans", icon: CreditCard },
       ],
     },
     {
-      title: "AI & Intelligence",
+      title: "Intelligence & Insights",
       items: [
         { label: "PayWise AI", href: "/ai", icon: Sparkles, isAI: true },
         { label: "Reports & Analytics", href: "/reports", icon: BarChart3 },
@@ -81,15 +81,17 @@ export function DesktopSidebar() {
   ];
 
   return (
-    <aside className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0 z-30 border-r border-border bg-card">
+    <aside className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0 z-30 border-r border-sky-100 dark:border-slate-800 bg-[#F5F9FF]/95 dark:bg-slate-900/95 backdrop-blur-md">
       {/* Brand Header */}
-      <div className="flex h-16 items-center justify-between px-6 border-b border-border">
-        <Link href="/dashboard" className="flex items-center gap-2.5">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm">
-            <Wallet className="h-5 w-5" />
+      <div className="flex h-16 items-center justify-between px-6 border-b border-sky-100 dark:border-slate-800">
+        <Link href="/dashboard" className="flex items-center gap-2.5 active:scale-95 transition-transform">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-sm">
+            <svg viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5">
+              <path d="M4 6h16M7 12h13M10 18h10" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+            </svg>
           </div>
           <div>
-            <span className="text-lg font-bold tracking-tight text-foreground flex items-center gap-1.5">
+            <span className="text-lg font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-1.5">
               PayWise
               {isDemoMode && (
                 <span className="rounded-md bg-amber-500/15 text-amber-600 dark:text-amber-400 px-1.5 py-0.5 text-[10px] font-semibold">
@@ -106,7 +108,7 @@ export function DesktopSidebar() {
       <div className="flex-1 overflow-y-auto px-4 py-4 space-y-6">
         {navGroups.map((group) => (
           <div key={group.title}>
-            <p className="px-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/70">
+            <p className="px-3 text-[11px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
               {group.title}
             </p>
             <div className="mt-1.5 space-y-0.5">
@@ -118,24 +120,28 @@ export function DesktopSidebar() {
                   <Link
                     key={item.href}
                     href={item.href}
-                    className={`flex items-center justify-between rounded-xl px-3 py-2 text-sm font-medium transition-all ${
+                    className={`flex items-center justify-between rounded-2xl px-3 py-2 text-sm font-medium transition-all ${
                       isActive
                         ? item.isAI
-                          ? "bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 font-semibold"
-                          : "bg-primary/10 text-primary font-semibold"
-                        : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+                          ? "bg-gradient-to-r from-emerald-50 to-green-50 dark:from-green-950/40 dark:to-emerald-950/40 text-emerald-600 dark:text-emerald-400 font-bold border border-emerald-200/60 shadow-xs"
+                          : "bg-white dark:bg-slate-800 text-[#4A90FF] font-bold shadow-xs border border-sky-100/80 dark:border-slate-700"
+                        : "text-slate-600 dark:text-slate-300 hover:bg-sky-50 dark:hover:bg-slate-800/50 hover:text-slate-900"
                     }`}
                   >
                     <div className="flex items-center gap-3">
-                      <Icon
-                        className={`h-4 w-4 ${
-                          isActive
-                            ? item.isAI
-                              ? "text-indigo-600 dark:text-indigo-400 stroke-[2.2px]"
-                              : "text-primary stroke-[2.2px]"
-                            : "stroke-[1.75px]"
-                        }`}
-                      />
+                      {item.isAI ? (
+                        <div className="flex h-5 w-5 items-center justify-center rounded-full bg-ai-rainbow shadow-2xs">
+                          <Sparkles className="h-3 w-3 text-white" />
+                        </div>
+                      ) : (
+                        <Icon
+                          className={`h-4 w-4 ${
+                            isActive
+                              ? "text-[#4A90FF] stroke-[2.2px]"
+                              : "text-slate-400 stroke-[1.8px]"
+                          }`}
+                        />
+                      )}
                       <span>{item.label}</span>
                     </div>
 
@@ -153,16 +159,14 @@ export function DesktopSidebar() {
       </div>
 
       {/* User profile footer */}
-      <div className="border-t border-border p-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-muted text-muted-foreground">
-              <User className="h-4 w-4" />
-            </div>
-            <div className="truncate">
-              <p className="text-sm font-medium leading-none text-foreground">Juan Dela Cruz</p>
-              <p className="text-xs text-muted-foreground mt-1 truncate">PH Payday Tracker</p>
-            </div>
+      <div className="border-t border-sky-100 dark:border-slate-800 p-4 bg-white/50 dark:bg-slate-900/50">
+        <div className="flex items-center gap-3">
+          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-sky-100 text-[#4A90FF] dark:bg-slate-800 dark:text-sky-300">
+            <User className="h-4 w-4" />
+          </div>
+          <div className="truncate">
+            <p className="text-sm font-bold text-slate-900 dark:text-white">Juan Dela Cruz</p>
+            <p className="text-xs text-slate-400 truncate">Philippine Payday Tracker</p>
           </div>
         </div>
       </div>

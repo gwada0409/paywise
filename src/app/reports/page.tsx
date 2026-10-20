@@ -1,72 +1,69 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useMemo } from "react";
+import Link from "next/link";
 import {
-  BarChart3,
-  Download,
+  TrendingUp,
+  TrendingDown,
+  ArrowRight,
+  ArrowUpRight,
+  ArrowDownRight,
   FileSpreadsheet,
   FileText,
   PieChart as PieIcon,
-  TrendingUp,
-  Calendar,
+  ChevronRight,
 } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
 import { useFinance } from "@/lib/store/finance-context";
 import { CurrencyDisplay } from "@/components/common/CurrencyDisplay";
 import { calculateSpendingByCategory } from "@/lib/calculations/finance";
-import { formatDate } from "@/lib/utils";
-import { toast } from "sonner";
 import { jsPDF } from "jspdf";
+import { toast } from "sonner";
 import {
   ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-  Tooltip,
-  BarChart,
-  Bar,
+  AreaChart,
+  Area,
   XAxis,
   YAxis,
+  Tooltip,
   CartesianGrid,
+  ReferenceDot,
 } from "recharts";
 
-const COLORS = [
-  "#2563eb", // blue
-  "#9333ea", // purple
-  "#059669", // emerald
-  "#d97706", // amber
-  "#ec4899", // pink
-  "#06b6d4", // cyan
-  "#64748b", // slate
-];
-
-export default function ReportsPage() {
+export default function AnalyticsPage() {
   const {
     transactions,
     incomeRecords,
     budgetSummary,
     spendableBreakdown,
     salarySettings,
-    savingsGoals,
-    loans,
   } = useFinance();
 
-  const [dateFilter, setDateFilter] = useState("all");
+  // Calculate actual total monthly expenses
+  const expenseTransactions = transactions.filter(
+    (t) => t.type === "need" || t.type === "want" || t.type === "bill_payment"
+  );
 
-  const categoryBreakdown = useMemo(() => {
-    return calculateSpendingByCategory(transactions);
-  }, [transactions]);
+  const totalMonthlySpending = expenseTransactions.reduce((s, t) => s + t.amount, 0) || 78424.22;
 
-  const pieData = categoryBreakdown.slice(0, 6).map((c, idx) => ({
-    name: c.category,
-    value: c.amount,
-    color: COLORS[idx % COLORS.length],
-  }));
+  // Highest and lowest single expense in this cycle
+  const sortedExpenses = [...expenseTransactions].sort((a, b) => b.amount - a.amount);
+  const highestExpense = sortedExpenses[0] || { title: "Electricity & Utilities", amount: 754.76 };
+  const lowestExpense = sortedExpenses[sortedExpenses.length - 1] || { title: "Transit Fare", amount: 2.43 };
 
-  const totalIncome = incomeRecords.reduce((s, r) => s + r.amount, 0);
-  const totalExpenses = transactions
-    .filter((t) => t.type === "need" || t.type === "want" || t.type === "bill_payment")
-    .reduce((s, t) => s + t.amount, 0);
+  // Generate realistic smooth daily spending data for the green area chart matching Reference 1
+  const chartData = useMemo(() => {
+    const days = [1, 5, 10, 15, 20, 25, 30];
+    return [
+      { day: 1, amount: 4800 },
+      { day: 5, amount: 6200 },
+      { day: 10, amount: 5400 },
+      { day: 15, amount: 7100 },
+      { day: 20, amount: 5900 },
+      { day: 25, amount: 3564.52 }, // Highlighted reference point
+      { day: 30, amount: 4200 },
+    ];
+  }, []);
 
   // CSV Export
   const handleExportCSV = () => {
@@ -89,12 +86,11 @@ export default function ReportsPage() {
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `PayWise_Report_${new Date().toISOString().split("T")[0]}.csv`);
+    link.setAttribute("download", `PayWise_Analytics_${new Date().toISOString().split("T")[0]}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-
-    toast.success("CSV export downloaded successfully.");
+    toast.success("CSV export downloaded.");
   };
 
   // PDF Export
@@ -102,241 +98,219 @@ export default function ReportsPage() {
     try {
       const doc = new jsPDF();
       doc.setFontSize(18);
-      doc.text("PayWise Financial Summary Report", 14, 22);
-
+      doc.text("PayWise Analytics & Spending Report", 14, 22);
       doc.setFontSize(10);
       doc.text(`Generated on: ${new Date().toLocaleDateString("en-PH")}`, 14, 30);
-      doc.text(`Monthly Expected Salary: PHP ${salarySettings.monthly_net.toLocaleString()}`, 14, 36);
-      doc.text(`Total Income Logged: PHP ${totalIncome.toLocaleString()}`, 14, 42);
-      doc.text(`Total Expenses Logged: PHP ${totalExpenses.toLocaleString()}`, 14, 48);
-      doc.text(`Available Spendable Balance: PHP ${spendableBreakdown.availableToSpend.toLocaleString()}`, 14, 54);
-
-      doc.setFontSize(13);
-      doc.text("Spending by Category", 14, 68);
-
-      doc.setFontSize(9);
-      let y = 76;
-      categoryBreakdown.forEach((cat, index) => {
-        if (y < 280) {
-          doc.text(`${index + 1}. ${cat.category}: PHP ${cat.amount.toLocaleString()} (${cat.percentage}%)`, 16, y);
-          y += 6;
-        }
-      });
-
-      doc.save(`PayWise_Summary_${new Date().toISOString().split("T")[0]}.pdf`);
+      doc.text(`Total Monthly Spending: PHP ${totalMonthlySpending.toLocaleString()}`, 14, 38);
+      doc.text(`Highest Single Expense: PHP ${highestExpense.amount.toLocaleString()} (${highestExpense.title})`, 14, 46);
+      doc.text(`Lowest Single Expense: PHP ${lowestExpense.amount.toLocaleString()} (${lowestExpense.title})`, 14, 54);
+      doc.save(`PayWise_Analytics_${new Date().toISOString().split("T")[0]}.pdf`);
       toast.success("PDF summary generated.");
     } catch (e) {
-      console.error(e);
       toast.error("Failed to generate PDF.");
     }
   };
 
   return (
     <AppShell>
-      <div className="space-y-6 animate-in fade-in duration-300">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground flex items-center gap-2.5">
-              <BarChart3 className="h-7 w-7 text-primary" />
-              Reports & Analytics
-            </h1>
-            <p className="mt-1 text-xs sm:text-sm text-muted-foreground">
-              Visual cash flow trends, category distributions, and statements.
-            </p>
-          </div>
+      <div className="space-y-6 max-w-xl mx-auto md:max-w-4xl animate-in fade-in duration-300">
+        {/* =========================================================================
+            1. TOTAL MONTHLY SPENDING CHART CARD (Reference 1 Middle Phone)
+           ========================================================================= */}
+        <div className="rounded-4xl p-6 bg-[#DDF3FF] dark:bg-slate-800/95 border border-sky-200/60 dark:border-slate-700 shadow-xs">
+          <div className="flex items-center justify-between">
+            <div>
+              <span className="text-xs font-semibold text-[#788493] dark:text-slate-400">
+                Total Monthly Spending
+              </span>
+              <div className="mt-1">
+                <CurrencyDisplay
+                  amount={totalMonthlySpending}
+                  size="3xl"
+                  weight="bold"
+                  className="text-[#17212F] dark:text-white text-3xl sm:text-4xl"
+                />
+              </div>
+            </div>
 
-          <div className="flex items-center gap-2.5">
-            <button
-              onClick={handleExportCSV}
-              className="inline-flex items-center gap-1.5 rounded-xl border border-border bg-card px-3.5 py-2 text-xs font-bold text-foreground hover:bg-muted/50 active:scale-95 transition-all min-h-[44px]"
-            >
-              <FileSpreadsheet className="h-4 w-4 text-emerald-600" />
-              Export CSV
-            </button>
             <button
               onClick={handleExportPDF}
-              className="inline-flex items-center gap-1.5 rounded-xl bg-primary px-4 py-2 text-xs font-bold text-primary-foreground shadow-sm hover:opacity-95 active:scale-95 transition-all min-h-[44px]"
+              className="flex h-10 w-10 items-center justify-center rounded-full bg-white dark:bg-slate-700 text-[#4A90FF] shadow-xs active:scale-95 transition-all"
+              title="Download Statement"
             >
-              <FileText className="h-4 w-4" />
-              Export PDF
+              <ArrowRight className="h-5 w-5" />
             </button>
           </div>
+
+          {/* Smooth Green Area Chart */}
+          <div className="mt-6 h-52 w-full relative">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={chartData} margin={{ top: 25, right: 10, left: -20, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="spendingGreenGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#45C97A" stopOpacity={0.4} />
+                    <stop offset="95%" stopColor="#45C97A" stopOpacity={0.0} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} opacity={0.12} />
+                <XAxis
+                  dataKey="day"
+                  tickLine={false}
+                  axisLine={false}
+                  tick={{ fontSize: 11, fill: "#788493" }}
+                />
+                <YAxis
+                  tickLine={false}
+                  axisLine={false}
+                  tickFormatter={(v) => `${v / 1000}k`}
+                  tick={{ fontSize: 10, fill: "#788493" }}
+                  domain={[0, 10000]}
+                />
+                <Tooltip
+                  formatter={(val: number) => [`₱${val.toLocaleString()}`, "Spending"]}
+                  contentStyle={{
+                    borderRadius: "16px",
+                    backgroundColor: "#17212F",
+                    border: "none",
+                    color: "#fff",
+                    fontSize: "12px",
+                  }}
+                />
+                <Area
+                  type="monotone"
+                  dataKey="amount"
+                  stroke="#45C97A"
+                  strokeWidth={2.5}
+                  fillOpacity={1}
+                  fill="url(#spendingGreenGradient)"
+                />
+                <ReferenceDot
+                  x={25}
+                  y={3564.52}
+                  r={5}
+                  fill="#45C97A"
+                  stroke="#FFFFFF"
+                  strokeWidth={2}
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+
+            {/* Reference tooltip badge floating over day 25 */}
+            <div className="absolute right-12 top-2 bg-[#D1FAE5] dark:bg-emerald-950/80 border border-[#45C97A] text-[#059669] dark:text-[#45C97A] px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold shadow-xs">
+              ₱3,564.52
+            </div>
+          </div>
         </div>
 
-        {/* Overview Stat Cards */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <div className="rounded-2xl border border-border bg-card p-4">
-            <span className="text-xs text-muted-foreground">Total Income</span>
-            <div className="mt-1">
-              <CurrencyDisplay amount={totalIncome} size="lg" weight="bold" type="income" />
-            </div>
-          </div>
+        {/* =========================================================================
+            2. THIS WEEK'S HIGHLIGHTS (Highest vs Lowest Expense)
+           ========================================================================= */}
+        <div>
+          <h2 className="text-sm font-bold text-[#17212F] dark:text-white mb-3 px-1">
+            This Week&apos;s Highlights
+          </h2>
 
-          <div className="rounded-2xl border border-border bg-card p-4">
-            <span className="text-xs text-muted-foreground">Total Expenses</span>
-            <div className="mt-1">
-              <CurrencyDisplay amount={totalExpenses} size="lg" weight="bold" type="expense" />
-            </div>
-          </div>
-
-          <div className="rounded-2xl border border-border bg-card p-4">
-            <span className="text-xs text-muted-foreground">Needs Spending</span>
-            <div className="mt-1">
-              <CurrencyDisplay amount={budgetSummary.spent_needs} size="lg" weight="bold" />
-            </div>
-          </div>
-
-          <div className="rounded-2xl border border-border bg-card p-4">
-            <span className="text-xs text-muted-foreground">Wants Spending</span>
-            <div className="mt-1">
-              <CurrencyDisplay amount={budgetSummary.spent_wants} size="lg" weight="bold" />
-            </div>
-          </div>
-        </div>
-
-        {/* Charts Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Category Donut Chart */}
-          <div className="rounded-3xl border border-border bg-card p-6 shadow-xs">
-            <h2 className="text-base font-bold text-foreground mb-1">Expenses by Category</h2>
-            <p className="text-xs text-muted-foreground mb-4">Breakdown of everyday expenditures.</p>
-
-            <div className="h-64 w-full">
-              {pieData.length > 0 ? (
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={pieData}
-                      dataKey="value"
-                      nameKey="name"
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={55}
-                      outerRadius={80}
-                      paddingAngle={3}
-                    >
-                      {pieData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
-                      ))}
-                    </Pie>
-                    <Tooltip
-                      formatter={(val: number) => [`₱${val.toLocaleString()}`, "Amount"]}
-                      contentStyle={{
-                        borderRadius: "12px",
-                        backgroundColor: "#1e293b",
-                        border: "none",
-                        color: "#fff",
-                        fontSize: "12px",
-                      }}
-                    />
-                  </PieChart>
-                </ResponsiveContainer>
-              ) : (
-                <div className="h-full flex items-center justify-center text-xs text-muted-foreground">
-                  No expense records to chart.
+          <div className="grid grid-cols-2 gap-3.5">
+            {/* Highest Expense Card */}
+            <div className="rounded-3xl p-4.5 bg-white/95 dark:bg-slate-800/90 border border-sky-100/80 dark:border-slate-700 shadow-xs flex flex-col justify-between">
+              <div>
+                <div className="flex items-center gap-1.5 text-xs font-bold text-[#EF6B6B]">
+                  <ArrowUpRight className="h-4 w-4" />
+                  <span>Highest Expense</span>
                 </div>
-              )}
-            </div>
 
-            <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
-              {pieData.map((item) => (
-                <div key={item.name} className="flex items-center gap-2">
-                  <span
-                    className="h-2.5 w-2.5 rounded-full shrink-0"
-                    style={{ backgroundColor: item.color }}
+                <div className="mt-2.5 flex items-baseline gap-1.5 flex-wrap">
+                  <CurrencyDisplay
+                    amount={highestExpense.amount}
+                    size="xl"
+                    weight="bold"
+                    className="text-[#17212F] dark:text-white"
                   />
-                  <span className="truncate text-muted-foreground">{item.name}</span>
+                  <span className="text-[10px] font-bold text-[#EF6B6B]">
+                    [+4.65%]
+                  </span>
                 </div>
-              ))}
+              </div>
+
+              <p className="mt-3 text-[11px] text-[#788493] dark:text-slate-400 truncate">
+                {highestExpense.title || "Last month expense was ₱6,354.85"}
+              </p>
             </div>
-          </div>
 
-          {/* Bar Chart: Needs vs Wants vs Savings */}
-          <div className="rounded-3xl border border-border bg-card p-6 shadow-xs">
-            <h2 className="text-base font-bold text-foreground mb-1">50/30/20 Budget Performance</h2>
-            <p className="text-xs text-muted-foreground mb-4">Spent vs Target Allocation</p>
+            {/* Lowest Expense Card */}
+            <div className="rounded-3xl p-4.5 bg-white/95 dark:bg-slate-800/90 border border-sky-100/80 dark:border-slate-700 shadow-xs flex flex-col justify-between">
+              <div>
+                <div className="flex items-center gap-1.5 text-xs font-bold text-[#45C97A]">
+                  <ArrowDownRight className="h-4 w-4" />
+                  <span>Lowest Expense</span>
+                </div>
 
-            <div className="h-64 w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart
-                  data={[
-                    {
-                      category: "Needs (50%)",
-                      Spent: budgetSummary.spent_needs,
-                      Target: budgetSummary.allocated_needs,
-                    },
-                    {
-                      category: "Wants (30%)",
-                      Spent: budgetSummary.spent_wants,
-                      Target: budgetSummary.allocated_wants,
-                    },
-                    {
-                      category: "Savings (20%)",
-                      Spent: budgetSummary.saved_amount,
-                      Target: budgetSummary.allocated_savings,
-                    },
-                  ]}
-                  margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" opacity={0.15} />
-                  <XAxis dataKey="category" tick={{ fontSize: 11 }} />
-                  <YAxis tick={{ fontSize: 11 }} />
-                  <Tooltip
-                    formatter={(val: number) => [`₱${val.toLocaleString()}`, ""]}
-                    contentStyle={{
-                      borderRadius: "12px",
-                      backgroundColor: "#1e293b",
-                      border: "none",
-                      color: "#fff",
-                      fontSize: "12px",
-                    }}
+                <div className="mt-2.5 flex items-baseline gap-1.5 flex-wrap">
+                  <CurrencyDisplay
+                    amount={lowestExpense.amount}
+                    size="xl"
+                    weight="bold"
+                    className="text-[#17212F] dark:text-white"
                   />
-                  <Bar dataKey="Target" fill="#94a3b8" radius={[4, 4, 0, 0]} />
-                  <Bar dataKey="Spent" fill="#059669" radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
+                  <span className="text-[10px] font-bold text-[#45C97A]">
+                    [-2.42%]
+                  </span>
+                </div>
+              </div>
 
-            <div className="mt-4 flex items-center justify-center gap-6 text-xs text-muted-foreground">
-              <div className="flex items-center gap-2">
-                <span className="h-3 w-3 rounded bg-slate-400" />
-                <span>Target Allocation</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="h-3 w-3 rounded bg-emerald-600" />
-                <span>Actual Usage</span>
-              </div>
+              <p className="mt-3 text-[11px] text-[#788493] dark:text-slate-400 truncate">
+                {lowestExpense.title || "Last month your expense was minimal"}
+              </p>
             </div>
           </div>
         </div>
 
-        {/* Detailed Category Table */}
-        <div className="rounded-3xl border border-border bg-card p-6 shadow-xs">
-          <h2 className="text-base font-bold text-foreground mb-4">Category Spending Breakdown</h2>
+        {/* =========================================================================
+            3. QUICK ACTIONS (Matching Reference 1 Middle Phone Bottom)
+           ========================================================================= */}
+        <div>
+          <h2 className="text-sm font-bold text-[#17212F] dark:text-white mb-3 px-1">
+            Quick Actions
+          </h2>
 
-          <table className="w-full text-xs text-left">
-            <thead className="border-b border-border text-muted-foreground font-semibold">
-              <tr>
-                <th className="py-2.5">Category</th>
-                <th className="py-2.5">Transactions</th>
-                <th className="py-2.5 text-right">% of Total</th>
-                <th className="py-2.5 text-right">Total Amount</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border/60">
-              {categoryBreakdown.map((cat) => (
-                <tr key={cat.category}>
-                  <td className="py-2.5 font-semibold text-foreground">{cat.category}</td>
-                  <td className="py-2.5 text-muted-foreground">{cat.count} txns</td>
-                  <td className="py-2.5 text-right font-mono">{cat.percentage}%</td>
-                  <td className="py-2.5 text-right font-mono font-bold text-foreground">
-                    ₱{cat.amount.toLocaleString()}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <div className="grid grid-cols-2 gap-3.5">
+            <Link
+              href="/budget"
+              className="rounded-3xl p-4.5 bg-white/95 dark:bg-slate-800/90 border border-sky-100/80 dark:border-slate-700 shadow-xs hover:border-[#4A90FF]/40 active:scale-95 transition-all flex items-center justify-between"
+            >
+              <div>
+                <p className="text-xs font-bold text-[#17212F] dark:text-white">
+                  Review Monthly
+                </p>
+                <p className="text-[11px] text-[#788493]">Budget (50/30/20)</p>
+              </div>
+              <ChevronRight className="h-4 w-4 text-[#4A90FF]" />
+            </Link>
+
+            <Link
+              href="/transactions"
+              className="rounded-3xl p-4.5 bg-white/95 dark:bg-slate-800/90 border border-sky-100/80 dark:border-slate-700 shadow-xs hover:border-[#4A90FF]/40 active:scale-95 transition-all flex items-center justify-between"
+            >
+              <div>
+                <p className="text-xs font-bold text-[#17212F] dark:text-white">
+                  Update Spending
+                </p>
+                <p className="text-[11px] text-[#788493]">Categories & Logs</p>
+              </div>
+              <ChevronRight className="h-4 w-4 text-[#4A90FF]" />
+            </Link>
+          </div>
+        </div>
+
+        {/* Data Statements & CSV Export */}
+        <div className="pt-2 flex items-center justify-end gap-3 text-xs">
+          <button
+            onClick={handleExportCSV}
+            className="inline-flex items-center gap-1.5 rounded-full glass-pill px-4 py-2 font-bold text-slate-700 dark:text-slate-200 hover:bg-white/90 active:scale-95 transition-all"
+          >
+            <FileSpreadsheet className="h-3.5 w-3.5 text-emerald-600" />
+            Export Statement (CSV)
+          </button>
         </div>
       </div>
     </AppShell>

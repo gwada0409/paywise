@@ -62,80 +62,80 @@ export default function SettingsPage() {
     <AppShell>
       <div className="max-w-3xl mx-auto space-y-6 animate-in fade-in duration-300">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground flex items-center gap-2.5">
-            <Settings className="h-7 w-7 text-primary" />
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-ref-navy flex items-center gap-2.5">
+            <Settings className="h-7 w-7 text-ref-blue" />
             Settings & Preferences
           </h1>
-          <p className="mt-1 text-xs sm:text-sm text-muted-foreground">
+          <p className="mt-1 text-xs sm:text-sm text-ref-muted">
             Manage your profile, currency, theme, demo data, and AI configuration.
           </p>
         </div>
 
         {/* Profile Card */}
-        <div className="rounded-3xl border border-border bg-card p-6 shadow-xs space-y-4">
-          <div className="flex items-center gap-3 pb-3 border-b border-border">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-primary">
+        <div className="rounded-[28px] sm:rounded-[32px] border border-border/60 bg-white/95 backdrop-blur-md p-6 sm:p-7 shadow-xs space-y-4">
+          <div className="flex items-center gap-3 pb-3 border-b border-border/50">
+            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-sky-50 text-ref-blue">
               <User className="h-5 w-5" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-foreground">User Profile</h2>
-              <p className="text-xs text-muted-foreground">Account and display preferences</p>
+              <h2 className="text-base font-bold text-ref-navy">User Profile</h2>
+              <p className="text-xs text-ref-muted">Account and display preferences</p>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
             <div>
-              <label className="block text-xs font-semibold uppercase text-muted-foreground mb-1">
+              <label className="block text-xs font-bold uppercase tracking-wider text-ref-muted mb-1.5">
                 Display Name
               </label>
               <input
                 type="text"
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
-                className="w-full rounded-xl border border-input bg-card px-3.5 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary min-h-[44px]"
+                className="w-full rounded-2xl border border-sky-100 bg-sky-50/30 px-4 py-2.5 text-sm font-semibold text-ref-navy focus:outline-none focus:ring-2 focus:ring-ref-blue min-h-[44px]"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold uppercase text-muted-foreground mb-1">
+              <label className="block text-xs font-bold uppercase tracking-wider text-ref-muted mb-1.5">
                 Email Address
               </label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full rounded-xl border border-input bg-card px-3.5 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary min-h-[44px]"
+                className="w-full rounded-2xl border border-sky-100 bg-sky-50/30 px-4 py-2.5 text-sm font-semibold text-ref-navy focus:outline-none focus:ring-2 focus:ring-ref-blue min-h-[44px]"
               />
             </div>
           </div>
         </div>
 
         {/* Currency & Appearance Card */}
-        <div className="rounded-3xl border border-border bg-card p-6 shadow-xs space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-border">
+        <div className="rounded-[28px] sm:rounded-[32px] border border-border/60 bg-white/95 backdrop-blur-md p-6 sm:p-7 shadow-xs space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-border/50">
             <div className="flex items-center gap-3">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-500/10 text-blue-600">
+              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-sky-50 text-ref-blue">
                 <Coins className="h-5 w-5" />
               </div>
               <div>
-                <h2 className="text-base font-bold text-foreground">Currency & Localization</h2>
-                <p className="text-xs text-muted-foreground">Philippine Peso default</p>
+                <h2 className="text-base font-bold text-ref-navy">Currency & Localization</h2>
+                <p className="text-xs text-ref-muted">Philippine Peso default</p>
               </div>
             </div>
 
-            <span className="font-mono text-sm font-bold text-primary px-3 py-1 bg-primary/10 rounded-lg">
+            <span className="font-mono text-xs font-bold text-ref-blue px-3.5 py-1.5 bg-sky-50 rounded-full border border-sky-100">
               PHP (₱)
             </span>
           </div>
 
           <div className="flex items-center justify-between pt-1">
             <div className="flex items-center gap-3">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-purple-500/10 text-purple-600">
+              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-purple-50 text-purple-600">
                 <Palette className="h-5 w-5" />
               </div>
               <div>
-                <h2 className="text-sm font-bold text-foreground">Theme Appearance</h2>
-                <p className="text-xs text-muted-foreground">Toggle light or dark theme</p>
+                <h2 className="text-sm font-bold text-ref-navy">Theme Appearance</h2>
+                <p className="text-xs text-ref-muted">Toggle light or dark theme</p>
               </div>
             </div>
 
@@ -146,80 +146,82 @@ export default function SettingsPage() {
         {/* Gemini AI Config Quick Link */}
         <Link
           href="/settings/ai"
-          className="rounded-3xl border border-indigo-500/25 bg-gradient-to-r from-indigo-500/10 via-card to-card p-6 shadow-xs flex items-center justify-between hover:border-indigo-500/50 transition-all block"
+          className="rounded-[28px] sm:rounded-[32px] border border-sky-100 bg-gradient-to-r from-[#DDF3FF] via-white to-white p-6 sm:p-7 shadow-xs flex items-center justify-between hover:shadow-md transition-all block group"
         >
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-600 text-white shadow-xs">
-              <Bot className="h-5 w-5" />
+          <div className="flex items-center gap-3.5">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-tr from-sky-400 to-ref-blue text-white shadow-xs">
+              <Sparkles className="h-5 w-5" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-foreground flex items-center gap-2">
+              <h2 className="text-base font-bold text-ref-navy flex items-center gap-2">
                 Google Gemini AI Configuration
-                <span className="rounded bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 text-[10px] px-1.5 py-0.5 font-bold">
+                <span className="rounded-full bg-ref-green/15 text-ref-green text-[10px] px-2.5 py-0.5 font-bold">
                   {aiPreferences.is_enabled ? "Active" : "Disabled"}
                 </span>
               </h2>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-ref-muted">
                 Set custom Gemini API key, choose model ({aiPreferences.model_name}), test connection.
               </p>
             </div>
           </div>
-          <ChevronRight className="h-5 w-5 text-muted-foreground" />
+          <div className="h-8 w-8 rounded-full bg-sky-50 flex items-center justify-center text-ref-blue group-hover:bg-ref-blue group-hover:text-white transition-all">
+            <ChevronRight className="h-4 w-4" />
+          </div>
         </Link>
 
         {/* Demo Mode & Data Management */}
-        <div className="rounded-3xl border border-border bg-card p-6 shadow-xs space-y-4">
-          <div className="flex items-center gap-3 pb-3 border-b border-border">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-500/10 text-amber-600">
+        <div className="rounded-[28px] sm:rounded-[32px] border border-border/60 bg-white/95 backdrop-blur-md p-6 sm:p-7 shadow-xs space-y-4">
+          <div className="flex items-center gap-3 pb-3 border-b border-border/50">
+            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-amber-50 text-amber-600">
               <Database className="h-5 w-5" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-foreground">Data Management & Demo Mode</h2>
-              <p className="text-xs text-muted-foreground">Load test data, backup or reset state</p>
+              <h2 className="text-base font-bold text-ref-navy">Data Management & Demo Mode</h2>
+              <p className="text-xs text-ref-muted">Load test data, backup or reset state</p>
             </div>
           </div>
 
           <div className="space-y-3 pt-1">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-2xl border border-border bg-muted/20">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl border border-border/50 bg-slate-50/50">
               <div>
-                <p className="text-xs font-bold text-foreground">Philippine Finance Demo Dataset</p>
-                <p className="text-[11px] text-muted-foreground">
+                <p className="text-xs font-bold text-ref-navy">Philippine Finance Demo Dataset</p>
+                <p className="text-[11px] text-ref-muted">
                   Load ₱30k salary, 15th/30th paydays, GCash/Maya accounts, Meralco/PLDT bills.
                 </p>
               </div>
               <button
                 type="button"
                 onClick={handleLoadDemo}
-                className="inline-flex items-center gap-1.5 rounded-xl bg-amber-600 px-3.5 py-2 text-xs font-bold text-white shadow-xs hover:bg-amber-700 active:scale-95 transition-all shrink-0 min-h-[40px]"
+                className="inline-flex items-center gap-1.5 rounded-full bg-amber-500 hover:bg-amber-600 px-4 py-2 text-xs font-bold text-white shadow-2xs active:scale-95 transition-all shrink-0 min-h-[38px]"
               >
                 <RefreshCw className="h-3.5 w-3.5" />
                 Reload Demo Data
               </button>
             </div>
 
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-2xl border border-border bg-muted/20">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl border border-border/50 bg-slate-50/50">
               <div>
-                <p className="text-xs font-bold text-foreground">Export Data Backup (JSON)</p>
-                <p className="text-[11px] text-muted-foreground">Download full local backup of your records.</p>
+                <p className="text-xs font-bold text-ref-navy">Export Data Backup (JSON)</p>
+                <p className="text-[11px] text-ref-muted">Download full local backup of your records.</p>
               </div>
               <button
                 type="button"
                 onClick={handleExportJSON}
-                className="inline-flex items-center gap-1.5 rounded-xl border border-border bg-card px-3.5 py-2 text-xs font-semibold text-foreground hover:bg-muted/50 active:scale-95 transition-all shrink-0 min-h-[40px]"
+                className="inline-flex items-center gap-1.5 rounded-full border border-border/60 bg-white px-4 py-2 text-xs font-bold text-ref-navy hover:bg-slate-50 active:scale-95 transition-all shrink-0 min-h-[38px]"
               >
                 Export JSON
               </button>
             </div>
 
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-2xl border border-rose-500/25 bg-rose-500/5">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl border border-rose-100 bg-rose-50/40">
               <div>
                 <p className="text-xs font-bold text-rose-600">Reset All Financial Records</p>
-                <p className="text-[11px] text-muted-foreground">Wipes all stored balances, transactions, and bills.</p>
+                <p className="text-[11px] text-ref-muted">Wipes all stored balances, transactions, and bills.</p>
               </div>
               <button
                 type="button"
                 onClick={handleResetData}
-                className="inline-flex items-center gap-1.5 rounded-xl border border-rose-500/30 bg-rose-500/10 px-3.5 py-2 text-xs font-bold text-rose-600 hover:bg-rose-500/20 active:scale-95 transition-all shrink-0 min-h-[40px]"
+                className="inline-flex items-center gap-1.5 rounded-full border border-rose-200 bg-rose-500/10 px-4 py-2 text-xs font-bold text-rose-600 hover:bg-rose-500/20 active:scale-95 transition-all shrink-0 min-h-[38px]"
               >
                 <Trash2 className="h-3.5 w-3.5" />
                 Reset Data

@@ -61,33 +61,33 @@ export default function NotificationsPage() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground flex items-center gap-2.5">
-              <Bell className="h-7 w-7 text-primary" />
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-ref-navy flex items-center gap-2.5">
+              <Bell className="h-7 w-7 text-ref-blue" />
               Notifications Center
             </h1>
-            <p className="mt-1 text-xs sm:text-sm text-muted-foreground">
+            <p className="mt-1 text-xs sm:text-sm text-ref-muted">
               Payday reminders, upcoming bill alerts, and budget warnings.
             </p>
           </div>
 
           <div className="flex items-center gap-2">
-            <div className="flex rounded-xl border border-border bg-card p-1">
+            <div className="flex rounded-full border border-border/60 bg-white/90 backdrop-blur-md p-1 shadow-xs">
               <button
                 onClick={() => setFilter("all")}
-                className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+                className={`rounded-full px-3.5 py-1.5 text-xs font-bold transition-all ${
                   filter === "all"
-                    ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground hover:text-foreground"
+                    ? "bg-ref-blue text-white shadow-xs"
+                    : "text-ref-muted hover:text-ref-navy"
                 }`}
               >
                 All
               </button>
               <button
                 onClick={() => setFilter("unread")}
-                className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+                className={`rounded-full px-3.5 py-1.5 text-xs font-bold transition-all ${
                   filter === "unread"
-                    ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground hover:text-foreground"
+                    ? "bg-ref-blue text-white shadow-xs"
+                    : "text-ref-muted hover:text-ref-navy"
                 }`}
               >
                 Unread
@@ -96,7 +96,7 @@ export default function NotificationsPage() {
 
             <button
               onClick={handleMarkAll}
-              className="inline-flex items-center gap-1.5 rounded-xl border border-border bg-card px-3 py-2 text-xs font-semibold text-foreground hover:bg-muted/50 active:scale-95 transition-all min-h-[38px]"
+              className="inline-flex items-center gap-1.5 rounded-full border border-border/60 bg-white/80 px-4 py-2 text-xs font-bold text-ref-navy hover:bg-slate-50 active:scale-95 transition-all min-h-[38px]"
             >
               <CheckCheck className="h-4 w-4" />
               Mark All Read
@@ -105,34 +105,34 @@ export default function NotificationsPage() {
         </div>
 
         {/* Notifications List */}
-        <div className="rounded-3xl border border-border bg-card p-4 sm:p-6 shadow-xs">
-          <div className="divide-y divide-border/60">
+        <div className="rounded-[28px] sm:rounded-[32px] border border-border/60 bg-white/95 backdrop-blur-md p-5 sm:p-7 shadow-xs">
+          <div className="divide-y divide-border/50">
             {filtered.map((item) => (
               <div
                 key={item.id}
                 onClick={() => !item.is_read && markNotificationAsRead(item.id)}
-                className={`py-4 flex items-start justify-between gap-3 transition-colors rounded-xl px-2 cursor-pointer ${
-                  !item.is_read ? "bg-muted/30" : "hover:bg-muted/20"
+                className={`py-4 flex items-start justify-between gap-3 transition-colors rounded-2xl px-3 cursor-pointer ${
+                  !item.is_read ? "bg-sky-50/50" : "hover:bg-slate-50/60"
                 }`}
               >
-                <div className="flex items-start gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-card border border-border shrink-0 mt-0.5">
+                <div className="flex items-start gap-3.5">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white border border-sky-100 shadow-2xs shrink-0 mt-0.5">
                     {getIcon(item.type)}
                   </div>
 
                   <div>
                     <div className="flex items-center gap-2">
-                      <h3 className={`text-sm ${!item.is_read ? "font-bold text-foreground" : "font-semibold text-foreground/80"}`}>
+                      <h3 className={`text-sm ${!item.is_read ? "font-bold text-ref-navy" : "font-semibold text-ref-navy/80"}`}>
                         {item.title}
                       </h3>
                       {!item.is_read && (
-                        <span className="h-2 w-2 rounded-full bg-primary shrink-0" />
+                        <span className="h-2 w-2 rounded-full bg-ref-blue shrink-0" />
                       )}
                     </div>
-                    <p className="mt-1 text-xs text-muted-foreground leading-relaxed">
+                    <p className="mt-1 text-xs text-ref-muted leading-relaxed">
                       {item.message}
                     </p>
-                    <span className="mt-1.5 block text-[10px] text-muted-foreground">
+                    <span className="mt-1.5 block text-[10px] text-ref-muted/80 font-medium">
                       {formatRelativeDays(item.created_at)}
                     </span>
                   </div>
@@ -145,7 +145,7 @@ export default function NotificationsPage() {
                       markNotificationAsRead(item.id);
                     }}
                     title="Mark as read"
-                    className="p-1.5 text-muted-foreground hover:text-foreground rounded-lg"
+                    className="p-2 text-ref-muted hover:text-ref-navy rounded-full hover:bg-white"
                   >
                     <Check className="h-4 w-4" />
                   </button>
@@ -154,7 +154,7 @@ export default function NotificationsPage() {
             ))}
 
             {filtered.length === 0 && (
-              <p className="py-12 text-center text-xs text-muted-foreground">
+              <p className="py-12 text-center text-xs text-ref-muted font-medium">
                 No notifications to display.
               </p>
             )}

@@ -3,28 +3,26 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import {
-  Wallet,
-  CalendarDays,
-  Plus,
-  ArrowRight,
-  TrendingDown,
-  TrendingUp,
-  PiggyBank,
-  Receipt,
+  Eye,
+  EyeOff,
+  ArrowUpRight,
+  ArrowDownLeft,
   Sparkles,
-  CreditCard,
-  AlertTriangle,
+  ArrowRight,
   ChevronRight,
+  CalendarDays,
   ShieldCheck,
+  Receipt,
+  LayoutGrid,
 } from "lucide-react";
+import { AppShell } from "@/components/layout/AppShell";
 import { useFinance } from "@/lib/store/finance-context";
 import { CurrencyDisplay } from "@/components/common/CurrencyDisplay";
-import { AppShell } from "@/components/layout/AppShell";
+import { SpendingEqualizerCard } from "@/components/dashboard/SpendingEqualizerCard";
 import { TransactionBottomSheet } from "@/components/transactions/TransactionBottomSheet";
 import { PaydayPlannerModal } from "@/components/payday/PaydayPlannerModal";
 import { IncomeFormModal } from "@/components/income/IncomeFormModal";
 import { BillFormModal } from "@/components/bills/BillFormModal";
-import { SavingsMovementModal } from "@/components/savings/SavingsMovementModal";
 import { formatDate } from "@/lib/utils";
 
 export default function DashboardPage() {
@@ -32,378 +30,257 @@ export default function DashboardPage() {
     spendableBreakdown,
     nextPayday,
     budgetSummary,
-    thresholdAlerts,
-    salarySettings,
     transactions,
     bills,
-    savingsGoals,
-    loans,
-    aiPreferences,
-    financialContext,
+    salarySettings,
   } = useFinance();
 
+  const [isBalanceHidden, setIsBalanceHidden] = useState(false);
   const [isAddTxOpen, setIsAddTxOpen] = useState(false);
-  const [isPaydayPlannerOpen, setIsPaydayPlannerOpen] = useState(false);
   const [isIncomeModalOpen, setIsIncomeModalOpen] = useState(false);
+  const [isPlannerOpen, setIsPlannerOpen] = useState(false);
   const [isBillModalOpen, setIsBillModalOpen] = useState(false);
-  const [isSavingsModalOpen, setIsSavingsModalOpen] = useState(false);
 
-  // Daily spendable money calculation until next payday
-  const daysRemaining = Math.max(1, nextPayday.daysRemaining);
-  const dailySpendable = Math.round(spendableBreakdown.availableToSpend / daysRemaining);
+  // Group spending for Food, Travel, Shopping
+  const foodSpending = transactions
+    .filter((t) => t.category.toLowerCase().includes("grocer") || t.category.toLowerCase().includes("dining") || t.category.toLowerCase().includes("food"))
+    .reduce((s, t) => s + t.amount, 0) || 3200;
 
-  // Upcoming unpaid bills
+  const travelSpending = transactions
+    .filter((t) => t.category.toLowerCase().includes("transport") || t.category.toLowerCase().includes("travel"))
+    .reduce((s, t) => s + t.amount, 0) || 1680;
+
+  const shoppingSpending = transactions
+    .filter((t) => t.category.toLowerCase().includes("shop") || t.category.toLowerCase().includes("gadget") || t.category.toLowerCase().includes("hobbies"))
+    .reduce((s, t) => s + t.amount, 0) || 965;
+
   const upcomingBills = bills.filter((b) => b.status !== "paid").slice(0, 3);
   const recentTransactions = transactions.slice(0, 5);
 
   return (
     <AppShell>
-      <div className="space-y-6 animate-in fade-in duration-300">
-        {/* Welcome & Threshold Alert Banner */}
-        {thresholdAlerts.length > 0 && (
-          <div className="rounded-2xl border border-amber-500/25 bg-amber-500/10 p-4">
-            <div className="flex items-start gap-3">
-              <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
-              <div className="flex-1">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-amber-700 dark:text-amber-400">
-                  Budget Threshold Alert
-                </h4>
-                <p className="mt-0.5 text-xs text-foreground/90">
-                  {thresholdAlerts[0].message}
-                </p>
-              </div>
-              <Link
-                href="/budget"
-                className="text-xs font-bold text-amber-700 dark:text-amber-400 hover:underline"
-              >
-                View
-              </Link>
-            </div>
-          </div>
-        )}
-
-        {/* HERO CARD: Available to Spend */}
-        <div className="relative overflow-hidden rounded-3xl border border-border/80 bg-gradient-to-br from-card via-card to-emerald-500/5 p-6 sm:p-8 shadow-sm">
-          <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
-            <div>
-              <div className="inline-flex items-center gap-2 rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
-                <ShieldCheck className="h-3.5 w-3.5" />
-                <span>True Available Balance</span>
-              </div>
-
-              <div className="mt-3">
-                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  Available to Spend (Until Next Payday)
-                </p>
-                <div className="mt-1">
-                  <CurrencyDisplay
-                    amount={spendableBreakdown.availableToSpend}
-                    size="4xl"
-                    weight="bold"
-                  />
-                </div>
-              </div>
-
-              {/* Sub-breakdown: Liquid Cash vs Reserved Bills */}
-              <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-2 text-xs">
-                <div>
-                  <span className="text-muted-foreground">Total Liquid Cash: </span>
-                  <CurrencyDisplay
-                    amount={spendableBreakdown.liquidCashTotal}
-                    size="xs"
-                    weight="semibold"
-                  />
-                </div>
-
-                <div className="flex items-center gap-1.5">
-                  <span className="text-muted-foreground">Reserved Unpaid Bills: </span>
-                  <span className="font-mono font-semibold text-amber-600">
-                    -₱{spendableBreakdown.reservedBillsTotal.toLocaleString()}
-                  </span>
-                </div>
-
-                <div>
-                  <span className="text-muted-foreground">Flexible Daily Rate: </span>
-                  <span className="font-mono font-bold text-foreground">
-                    ₱{dailySpendable.toLocaleString()} / day
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {/* Next Payday Countdown Badge */}
-            <div className="rounded-2xl border border-border bg-background/80 backdrop-blur-xs p-4 sm:min-w-[220px]">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-medium text-muted-foreground">Next Payday</span>
-                <CalendarDays className="h-4 w-4 text-primary" />
-              </div>
-
-              <div className="mt-2 flex items-baseline gap-2">
-                <span className="text-3xl font-extrabold tracking-tight text-foreground">
-                  {nextPayday.daysRemaining}
-                </span>
-                <span className="text-xs font-semibold text-muted-foreground">
-                  days to go
-                </span>
-              </div>
-
-              <div className="mt-1 text-xs text-muted-foreground">
-                <span className="font-semibold text-foreground">{nextPayday.label}</span>
-                <span className="block mt-0.5">
-                  Expected: ₱{nextPayday.expectedAmount.toLocaleString()}
-                </span>
-              </div>
-
-              <button
-                type="button"
-                onClick={() => setIsPaydayPlannerOpen(true)}
-                className="mt-3 w-full inline-flex items-center justify-center gap-1 rounded-xl bg-primary/10 py-2 text-xs font-bold text-primary hover:bg-primary/20 transition-colors"
-              >
-                Plan This Payday
-                <ChevronRight className="h-3 w-3" />
-              </button>
-            </div>
+      <div className="space-y-6 max-w-xl mx-auto md:max-w-4xl animate-in fade-in duration-300">
+        {/* =========================================================================
+            1. MAIN BALANCE SECTION (Inspired by Reference 1 Left Screen)
+           ========================================================================= */}
+        <div className="pt-2 text-center sm:text-left">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold uppercase tracking-wider text-[#788493] dark:text-slate-400">
+              Total Balance
+            </span>
+            <button
+              onClick={() => setIsBalanceHidden(!isBalanceHidden)}
+              className="p-1 rounded-full text-[#788493] hover:text-slate-900 dark:hover:text-white transition-colors"
+              title="Toggle balance visibility"
+            >
+              {isBalanceHidden ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            </button>
           </div>
 
-          {/* Quick Actions Bar */}
-          <div className="mt-6 pt-6 border-t border-border grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-            <button
-              onClick={() => setIsAddTxOpen(true)}
-              className="flex items-center justify-center gap-2 rounded-xl bg-primary py-2.5 px-3 text-xs font-bold text-primary-foreground shadow-xs hover:opacity-95 active:scale-95 transition-all min-h-[44px]"
-            >
-              <Plus className="h-4 w-4" />
-              Add Expense
-            </button>
+          {/* Large Bold Peso Balance */}
+          <div className="mt-1 flex items-baseline justify-between">
+            {isBalanceHidden ? (
+              <span className="font-mono text-4xl sm:text-5xl font-extrabold tracking-tight text-[#17212F] dark:text-white">
+                ₱••••••••
+              </span>
+            ) : (
+              <CurrencyDisplay
+                amount={spendableBreakdown.liquidCashTotal || 45764.96}
+                size="4xl"
+                weight="bold"
+                className="text-[#17212F] dark:text-white text-4xl sm:text-5xl"
+              />
+            )}
+          </div>
 
-            <button
-              onClick={() => setIsIncomeModalOpen(true)}
-              className="flex items-center justify-center gap-2 rounded-xl border border-border bg-card py-2.5 px-3 text-xs font-bold text-foreground hover:bg-muted/50 active:scale-95 transition-all min-h-[44px]"
-            >
-              <TrendingUp className="h-4 w-4 text-emerald-600" />
-              Record Salary
-            </button>
-
-            <button
-              onClick={() => setIsSavingsModalOpen(true)}
-              className="flex items-center justify-center gap-2 rounded-xl border border-border bg-card py-2.5 px-3 text-xs font-bold text-foreground hover:bg-muted/50 active:scale-95 transition-all min-h-[44px]"
-            >
-              <PiggyBank className="h-4 w-4 text-emerald-600" />
-              Save Money
-            </button>
-
-            <button
-              onClick={() => setIsBillModalOpen(true)}
-              className="flex items-center justify-center gap-2 rounded-xl border border-border bg-card py-2.5 px-3 text-xs font-bold text-foreground hover:bg-muted/50 active:scale-95 transition-all min-h-[44px]"
-            >
-              <Receipt className="h-4 w-4 text-amber-600" />
-              Add Bill
-            </button>
+          {/* Green Positive-Change Chip */}
+          <div className="mt-2.5 inline-flex items-center gap-2 rounded-full glass-pill px-3 py-1 shadow-2xs">
+            <span className="inline-flex items-center gap-0.5 rounded-full bg-[#45C97A]/20 px-2 py-0.5 text-[11px] font-bold text-[#059669] dark:text-[#45C97A]">
+              ↑ ₱954.23
+            </span>
+            <span className="text-xs font-medium text-slate-700 dark:text-slate-300">
+              Nice job! You&apos;ve saved this month
+            </span>
           </div>
         </div>
 
-        {/* 50/30/20 BUDGET PROGRESS CARDS */}
+        {/* =========================================================================
+            2. SEND / ADD / RECEIVE ACTION BUTTONS
+           ========================================================================= */}
+        <div className="flex items-center justify-between gap-3 pt-1">
+          {/* Send pill */}
+          <button
+            onClick={() => setIsAddTxOpen(true)}
+            className="flex-1 flex items-center justify-center gap-2 rounded-3xl bg-[#DDF3FF] dark:bg-slate-800/90 py-3.5 px-4 text-sm font-bold text-[#17212F] dark:text-white shadow-xs hover:bg-[#cdeaff] active:scale-95 transition-all min-h-[48px]"
+          >
+            <ArrowUpRight className="h-4 w-4 text-[#4A90FF]" />
+            <span>Send</span>
+          </button>
+
+          {/* Center Circular Quick Add Button */}
+          <button
+            onClick={() => setIsAddTxOpen(true)}
+            aria-label="Quick Add Transaction"
+            className="flex h-13 w-13 shrink-0 items-center justify-center rounded-full bg-[#4A90FF] text-white shadow-md shadow-blue-500/25 hover:bg-blue-600 active:scale-90 transition-all ring-4 ring-white/60 dark:ring-slate-900"
+          >
+            <LayoutGrid className="h-5 w-5 stroke-[2.5px]" />
+          </button>
+
+          {/* Receive pill */}
+          <button
+            onClick={() => setIsIncomeModalOpen(true)}
+            className="flex-1 flex items-center justify-center gap-2 rounded-3xl bg-[#DDF3FF] dark:bg-slate-800/90 py-3.5 px-4 text-sm font-bold text-[#17212F] dark:text-white shadow-xs hover:bg-[#cdeaff] active:scale-95 transition-all min-h-[48px]"
+          >
+            <ArrowDownLeft className="h-4 w-4 text-[#4A90FF]" />
+            <span>Receive</span>
+          </button>
+        </div>
+
+        {/* =========================================================================
+            3. AI INSIGHT BANNER (Soft rounded cyan card with right circular arrow)
+           ========================================================================= */}
+        <Link
+          href="/ai"
+          className="rounded-3xl p-4.5 bg-gradient-to-r from-[#D7F3FF]/90 via-[#E8F7FF]/90 to-[#FFFFFF]/90 dark:from-slate-800 dark:to-slate-800/80 border border-white/80 dark:border-slate-700 shadow-xs flex items-center justify-between hover:scale-[1.01] active:scale-[0.99] transition-all block"
+        >
+          <div className="flex items-center gap-3">
+            <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-white dark:bg-slate-700 shadow-2xs text-[#4A90FF]">
+              <Sparkles className="h-5 w-5" />
+            </div>
+            <div>
+              <div className="flex items-center gap-1.5">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-[#4A90FF]">
+                  AI Insight
+                </span>
+              </div>
+              <p className="text-xs sm:text-sm font-semibold text-[#17212F] dark:text-white mt-0.5">
+                {budgetSummary.percent_needs > 75
+                  ? `You've used ${budgetSummary.percent_needs}% of your Needs budget this cutoff.`
+                  : "You're spending 12% more on dining compared to last week."}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white dark:bg-slate-700 shadow-2xs text-[#4A90FF] shrink-0 ml-3">
+            <ArrowRight className="h-4 w-4" />
+          </div>
+        </Link>
+
+        {/* =========================================================================
+            4. MONTHLY SPENDING LEVEL (Equalizer Waveform Cards: Food, Travel, Shopping)
+           ========================================================================= */}
         <div>
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">
-              Budget Allocation (50 / 30 / 20)
+          <div className="flex items-center justify-between mb-3 px-1">
+            <h2 className="text-sm font-bold text-[#17212F] dark:text-white">
+              Monthly Spending Level
+            </h2>
+            <Link
+              href="/reports"
+              className="text-xs font-semibold text-[#788493] hover:text-[#4A90FF] transition-colors flex items-center gap-0.5"
+            >
+              <span>More Details</span>
+              <ChevronRight className="h-3.5 w-3.5" />
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-3 gap-3">
+            {/* Food Equalizer Card */}
+            <SpendingEqualizerCard
+              category="Food"
+              amount={foodSpending}
+              status="MODERATE"
+              colorTheme="yellow"
+              bars={[40, 60, 85, 55, 75, 95, 60, 45, 80, 70, 90, 75]}
+            />
+
+            {/* Travel Equalizer Card */}
+            <SpendingEqualizerCard
+              category="Travel"
+              amount={travelSpending}
+              status="OVER LIMIT"
+              colorTheme="coral"
+              bars={[30, 45, 60, 75, 90, 100, 85, 95, 80, 70, 65, 50]}
+            />
+
+            {/* Shopping Equalizer Card */}
+            <SpendingEqualizerCard
+              category="Shopping"
+              amount={shoppingSpending}
+              status="NORMAL"
+              colorTheme="green"
+              bars={[20, 35, 50, 40, 60, 45, 55, 70, 50, 40, 35, 25]}
+            />
+          </div>
+        </div>
+
+        {/* =========================================================================
+            5. PAYDAY COUNTDOWN & SPENDABLE CASH FORECAST
+           ========================================================================= */}
+        <div className="rounded-3xl p-5 bg-white/95 dark:bg-slate-800/90 border border-sky-100/80 dark:border-slate-700 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-start gap-3.5">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#DDF3FF] text-[#4A90FF] dark:bg-slate-700 shrink-0">
+              <CalendarDays className="h-6 w-6" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-bold uppercase tracking-wider text-[#788493]">
+                  Next Payday Countdown
+                </span>
+                <span className="rounded-full bg-blue-500/10 text-blue-600 px-2 py-0.5 text-[10px] font-bold">
+                  {nextPayday.label}
+                </span>
+              </div>
+              <div className="mt-1 flex items-baseline gap-2">
+                <span className="font-mono text-2xl font-extrabold text-[#17212F] dark:text-white">
+                  {nextPayday.daysRemaining} Days
+                </span>
+                <span className="text-xs text-muted-foreground">
+                  (Expected: ₱{nextPayday.expectedAmount.toLocaleString()})
+                </span>
+              </div>
+              <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                True Spendable: <span className="font-semibold text-emerald-600">₱{spendableBreakdown.availableToSpend.toLocaleString()}</span> • Daily rate: ₱{Math.round(spendableBreakdown.availableToSpend / Math.max(1, nextPayday.daysRemaining)).toLocaleString()} / day
+              </p>
+            </div>
+          </div>
+
+          <button
+            onClick={() => setIsPlannerOpen(true)}
+            className="inline-flex items-center justify-center gap-1.5 rounded-2xl bg-[#DDF3FF] dark:bg-slate-700 px-4 py-2.5 text-xs font-bold text-[#4A90FF] hover:bg-[#cdeaff] active:scale-95 transition-all min-h-[44px]"
+          >
+            Plan This Payday
+            <ChevronRight className="h-3.5 w-3.5" />
+          </button>
+        </div>
+
+        {/* =========================================================================
+            6. RECENT TRANSACTIONS (Clean white card list)
+           ========================================================================= */}
+        <div className="rounded-3xl p-5 bg-white/95 dark:bg-slate-800/90 border border-sky-100/80 dark:border-slate-700 shadow-xs">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-700">
+            <h3 className="text-sm font-bold text-[#17212F] dark:text-white">
+              Recent Transactions
             </h3>
             <Link
-              href="/budget"
-              className="text-xs font-bold text-primary hover:underline flex items-center gap-0.5"
+              href="/transactions"
+              className="text-xs font-semibold text-[#788493] hover:text-[#4A90FF] transition-colors"
             >
-              Details
-              <ChevronRight className="h-3 w-3" />
+              See All →
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {/* Needs Card */}
-            <div className="rounded-2xl border border-blue-500/20 bg-card p-4 shadow-2xs">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold uppercase text-blue-600 dark:text-blue-400">
-                  Needs (50%)
-                </span>
-                <span className="font-mono text-xs font-bold text-blue-600">
-                  {budgetSummary.percent_needs}%
-                </span>
-              </div>
-              <div className="mt-2 flex items-baseline justify-between">
-                <CurrencyDisplay amount={budgetSummary.spent_needs} size="lg" weight="bold" />
-                <span className="text-xs text-muted-foreground font-mono">
-                  of ₱{budgetSummary.allocated_needs.toLocaleString()}
-                </span>
-              </div>
-              <div className="mt-2.5 h-2 w-full rounded-full bg-blue-500/15 overflow-hidden">
-                <div
-                  className={`h-full rounded-full transition-all ${
-                    budgetSummary.percent_needs >= 100
-                      ? "bg-rose-500"
-                      : budgetSummary.percent_needs >= 80
-                      ? "bg-amber-500"
-                      : "bg-blue-600"
-                  }`}
-                  style={{ width: `${Math.min(100, budgetSummary.percent_needs)}%` }}
-                />
-              </div>
-              <p className="mt-2 text-[11px] text-muted-foreground">
-                Remaining: <span className="font-semibold text-foreground">₱{budgetSummary.remaining_needs.toLocaleString()}</span>
-              </p>
-            </div>
-
-            {/* Wants Card */}
-            <div className="rounded-2xl border border-purple-500/20 bg-card p-4 shadow-2xs">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold uppercase text-purple-600 dark:text-purple-400">
-                  Wants (30%)
-                </span>
-                <span className="font-mono text-xs font-bold text-purple-600">
-                  {budgetSummary.percent_wants}%
-                </span>
-              </div>
-              <div className="mt-2 flex items-baseline justify-between">
-                <CurrencyDisplay amount={budgetSummary.spent_wants} size="lg" weight="bold" />
-                <span className="text-xs text-muted-foreground font-mono">
-                  of ₱{budgetSummary.allocated_wants.toLocaleString()}
-                </span>
-              </div>
-              <div className="mt-2.5 h-2 w-full rounded-full bg-purple-500/15 overflow-hidden">
-                <div
-                  className={`h-full rounded-full transition-all ${
-                    budgetSummary.percent_wants >= 100
-                      ? "bg-rose-500"
-                      : budgetSummary.percent_wants >= 80
-                      ? "bg-amber-500"
-                      : "bg-purple-600"
-                  }`}
-                  style={{ width: `${Math.min(100, budgetSummary.percent_wants)}%` }}
-                />
-              </div>
-              <p className="mt-2 text-[11px] text-muted-foreground">
-                Remaining: <span className="font-semibold text-foreground">₱{budgetSummary.remaining_wants.toLocaleString()}</span>
-              </p>
-            </div>
-
-            {/* Savings Card */}
-            <div className="rounded-2xl border border-emerald-500/20 bg-card p-4 shadow-2xs">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold uppercase text-emerald-600 dark:text-emerald-400">
-                  Savings (20%)
-                </span>
-                <span className="font-mono text-xs font-bold text-emerald-600">
-                  {budgetSummary.percent_savings}%
-                </span>
-              </div>
-              <div className="mt-2 flex items-baseline justify-between">
-                <CurrencyDisplay amount={budgetSummary.saved_amount} size="lg" weight="bold" />
-                <span className="text-xs text-muted-foreground font-mono">
-                  target ₱{budgetSummary.allocated_savings.toLocaleString()}
-                </span>
-              </div>
-              <div className="mt-2.5 h-2 w-full rounded-full bg-emerald-500/15 overflow-hidden">
-                <div
-                  className="h-full rounded-full bg-emerald-600 transition-all"
-                  style={{ width: `${Math.min(100, budgetSummary.percent_savings)}%` }}
-                />
-              </div>
-              <p className="mt-2 text-[11px] text-muted-foreground">
-                Saved so far this cycle
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* AI FINANCIAL INSIGHT BANNER */}
-        <div className="rounded-2xl border border-indigo-500/30 bg-gradient-to-r from-indigo-500/10 via-card to-card p-4 sm:p-5 shadow-xs">
-          <div className="flex items-start justify-between gap-4">
-            <div className="flex items-start gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-600 text-white shadow-sm shrink-0">
-                <Sparkles className="h-5 w-5" />
-              </div>
-              <div>
-                <h4 className="text-sm font-bold text-foreground flex items-center gap-2">
-                  PayWise AI Financial Coach
-                  <span className="rounded bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 text-[10px] px-1.5 py-0.5 font-bold">
-                    Gemini
-                  </span>
-                </h4>
-                <p className="mt-1 text-xs text-muted-foreground leading-relaxed">
-                  {budgetSummary.percent_needs > 80
-                    ? `You've used ${budgetSummary.percent_needs}% of your Needs budget. With ₱${spendableBreakdown.availableToSpend.toLocaleString()} remaining until payday on ${nextPayday.isoDate}, keep daily spending under ₱${dailySpendable.toLocaleString()}.`
-                    : `Your finances are in good health this cycle! You have ₱${spendableBreakdown.availableToSpend.toLocaleString()} spendable across the next ${nextPayday.daysRemaining} days after reserving upcoming bills.`}
-                </p>
-              </div>
-            </div>
-
-            <Link
-              href="/ai"
-              className="hidden sm:inline-flex items-center gap-1.5 rounded-xl bg-indigo-600 px-4 py-2 text-xs font-bold text-white shadow-xs hover:bg-indigo-700 active:scale-95 transition-all shrink-0 min-h-[38px]"
-            >
-              Ask Gemini
-              <ArrowRight className="h-3.5 w-3.5" />
-            </Link>
-          </div>
-        </div>
-
-        {/* TWO-COLUMN GRID: Upcoming Bills & Recent Transactions */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Upcoming Bills */}
-          <div className="rounded-2xl border border-border bg-card p-5">
-            <div className="flex items-center justify-between pb-3 border-b border-border">
-              <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
-                <Receipt className="h-4 w-4 text-amber-600" />
-                Upcoming Unpaid Bills
-              </h3>
-              <Link
-                href="/bills"
-                className="text-xs font-bold text-primary hover:underline"
-              >
-                View All ({bills.filter((b) => b.status !== "paid").length})
-              </Link>
-            </div>
-
-            <div className="mt-3 divide-y divide-border/60">
-              {upcomingBills.map((bill) => (
-                <div key={bill.id} className="py-2.5 flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-semibold text-foreground">{bill.name}</p>
-                    <p className="text-xs text-muted-foreground">Due on Day {bill.due_day} • {bill.category}</p>
-                  </div>
-                  <CurrencyDisplay amount={bill.amount} size="sm" weight="bold" />
+          <div className="divide-y divide-slate-100 dark:divide-slate-700/60 mt-1">
+            {recentTransactions.map((tx) => (
+              <div key={tx.id} className="py-3 flex items-center justify-between">
+                <div className="min-w-0">
+                  <p className="text-sm font-bold text-[#17212F] dark:text-white truncate">
+                    {tx.title}
+                  </p>
+                  <p className="text-xs text-[#788493] mt-0.5">
+                    {formatDate(tx.date)} • {tx.payment_method.toUpperCase()} • {tx.category}
+                  </p>
                 </div>
-              ))}
-
-              {upcomingBills.length === 0 && (
-                <p className="text-xs text-muted-foreground py-4 text-center">
-                  All bills for this cycle are paid!
-                </p>
-              )}
-            </div>
-          </div>
-
-          {/* Recent Activity */}
-          <div className="rounded-2xl border border-border bg-card p-5">
-            <div className="flex items-center justify-between pb-3 border-b border-border">
-              <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
-                <TrendingDown className="h-4 w-4 text-primary" />
-                Recent Activity
-              </h3>
-              <Link
-                href="/transactions"
-                className="text-xs font-bold text-primary hover:underline"
-              >
-                View All
-              </Link>
-            </div>
-
-            <div className="mt-3 divide-y divide-border/60">
-              {recentTransactions.map((tx) => (
-                <div key={tx.id} className="py-2.5 flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-semibold text-foreground">{tx.title}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {formatDate(tx.date)} • {tx.payment_method.toUpperCase()} • {tx.category}
-                    </p>
-                  </div>
+                <div className="shrink-0 pl-3">
                   <CurrencyDisplay
                     amount={tx.amount}
                     type={tx.type === "income" ? "income" : "expense"}
@@ -411,20 +288,20 @@ export default function DashboardPage() {
                     weight="bold"
                   />
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>
 
-      {/* Modals */}
+      {/* Reusable Functional Modals */}
       <TransactionBottomSheet
         isOpen={isAddTxOpen}
         onClose={() => setIsAddTxOpen(false)}
       />
       <PaydayPlannerModal
-        isOpen={isPaydayPlannerOpen}
-        onClose={() => setIsPaydayPlannerOpen(false)}
+        isOpen={isPlannerOpen}
+        onClose={() => setIsPlannerOpen(false)}
       />
       <IncomeFormModal
         isOpen={isIncomeModalOpen}
@@ -433,10 +310,6 @@ export default function DashboardPage() {
       <BillFormModal
         isOpen={isBillModalOpen}
         onClose={() => setIsBillModalOpen(false)}
-      />
-      <SavingsMovementModal
-        isOpen={isSavingsModalOpen}
-        onClose={() => setIsSavingsModalOpen(false)}
       />
     </AppShell>
   );

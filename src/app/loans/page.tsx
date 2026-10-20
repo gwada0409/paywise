@@ -46,18 +46,18 @@ export default function LoansPage() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground flex items-center gap-2.5">
-              <CreditCard className="h-7 w-7 text-rose-600" />
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-ref-navy flex items-center gap-2.5">
+              <CreditCard className="h-7 w-7 text-rose-500" />
               Loans & Debt Management
             </h1>
-            <p className="mt-1 text-xs sm:text-sm text-muted-foreground">
+            <p className="mt-1 text-xs sm:text-sm text-ref-muted">
               Monitor debt balances, interest rates, installment dates, and amortization.
             </p>
           </div>
 
           <button
             onClick={() => setIsAddLoanOpen(true)}
-            className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-xs font-bold text-primary-foreground shadow-sm hover:opacity-95 active:scale-95 transition-all min-h-[44px]"
+            className="inline-flex items-center gap-2 rounded-full bg-ref-blue px-4 py-2.5 text-xs font-bold text-white shadow-xs hover:bg-ref-blue/90 active:scale-95 transition-all min-h-[40px]"
           >
             <Plus className="h-4 w-4" />
             Add Loan / Debt
@@ -65,42 +65,42 @@ export default function LoansPage() {
         </div>
 
         {/* Total Debt Summary Hero */}
-        <div className="rounded-3xl border border-rose-500/20 bg-card p-6 shadow-xs">
+        <div className="rounded-[28px] sm:rounded-[32px] border border-sky-100 bg-gradient-to-br from-[#DDF3FF] to-white/95 backdrop-blur-md p-6 sm:p-7 shadow-xs">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              <p className="text-xs font-bold uppercase tracking-wider text-ref-muted">
                 Total Outstanding Debt
               </p>
               <div className="mt-1">
                 <CurrencyDisplay amount={debtOverview.totalCurrentBalance} size="3xl" weight="bold" />
               </div>
-              <p className="text-xs text-muted-foreground mt-1">
+              <p className="text-xs text-ref-muted mt-1 font-medium">
                 Original Principal: ₱{debtOverview.totalPrincipal.toLocaleString()}
               </p>
             </div>
 
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              <p className="text-xs font-bold uppercase tracking-wider text-ref-muted">
                 Monthly Debt Installments
               </p>
               <div className="mt-1">
                 <CurrencyDisplay amount={debtOverview.totalMonthlyObligations} size="2xl" weight="bold" />
               </div>
-              <p className="text-xs text-muted-foreground mt-1">
+              <p className="text-xs text-ref-muted mt-1 font-medium">
                 across {debtOverview.totalLoansCount} active obligation{debtOverview.totalLoansCount === 1 ? "" : "s"}
               </p>
             </div>
 
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              <p className="text-xs font-bold uppercase tracking-wider text-ref-muted">
                 Projected Debt-Free
               </p>
-              <div className="mt-1 font-mono text-2xl font-extrabold text-foreground">
+              <div className="mt-1 font-mono text-2xl font-extrabold text-ref-navy">
                 {debtOverview.projectedDebtFreeMonths > 0
                   ? `~${debtOverview.projectedDebtFreeMonths} Months`
                   : "Debt Free!"}
               </div>
-              <p className="text-xs text-muted-foreground mt-1">
+              <p className="text-xs text-ref-muted mt-1 font-medium">
                 at current regular monthly payment rate
               </p>
             </div>
@@ -118,15 +118,15 @@ export default function LoansPage() {
             return (
               <div
                 key={loan.id}
-                className="rounded-3xl border border-border bg-card p-6 shadow-xs flex flex-col justify-between"
+                className="rounded-[28px] sm:rounded-[32px] border border-border/60 bg-white/95 backdrop-blur-md p-6 shadow-xs flex flex-col justify-between"
               >
                 <div>
                   <div className="flex items-center justify-between">
                     <div>
-                      <h3 className="text-base font-bold text-foreground">{loan.name}</h3>
-                      <p className="text-xs text-muted-foreground">{loan.lender}</p>
+                      <h3 className="text-base font-bold text-ref-navy">{loan.name}</h3>
+                      <p className="text-xs text-ref-muted">{loan.lender}</p>
                     </div>
-                    <span className={`rounded-md px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${
+                    <span className={`rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wider ${
                       isZero ? "bg-emerald-500/15 text-emerald-600" : "bg-rose-500/15 text-rose-600"
                     }`}>
                       {isZero ? "Fully Paid" : "Active"}
@@ -135,51 +135,51 @@ export default function LoansPage() {
 
                   <div className="mt-4 flex items-baseline justify-between">
                     <div>
-                      <span className="text-xs text-muted-foreground block">Remaining Balance</span>
+                      <span className="text-xs text-ref-muted block font-medium">Remaining Balance</span>
                       <CurrencyDisplay amount={loan.current_balance} size="xl" weight="bold" />
                     </div>
                     <div className="text-right">
-                      <span className="text-xs text-muted-foreground block">Installment</span>
+                      <span className="text-xs text-ref-muted block font-medium">Installment</span>
                       <CurrencyDisplay amount={loan.monthly_payment} size="base" weight="semibold" />
                     </div>
                   </div>
 
                   {/* Progress bar (paid off percentage) */}
                   <div className="mt-3">
-                    <div className="flex justify-between text-[11px] text-muted-foreground mb-1">
+                    <div className="flex justify-between text-[11px] text-ref-muted mb-1 font-medium">
                       <span>Repayment Progress</span>
-                      <span className="font-mono font-bold text-emerald-600">{progress}%</span>
+                      <span className="font-mono font-bold text-ref-green">{progress}%</span>
                     </div>
-                    <div className="h-2 w-full rounded-full bg-muted/60 overflow-hidden">
+                    <div className="h-2 w-full rounded-full bg-slate-100 overflow-hidden">
                       <div
-                        className="h-full bg-emerald-600 rounded-full transition-all"
+                        className="h-full bg-ref-green rounded-full transition-all"
                         style={{ width: `${Math.min(100, Math.max(0, progress))}%` }}
                       />
                     </div>
                   </div>
 
-                  <div className="mt-4 pt-4 border-t border-border space-y-1 text-xs text-muted-foreground">
+                  <div className="mt-4 pt-4 border-t border-border/50 space-y-1 text-xs text-ref-muted">
                     <div className="flex justify-between">
                       <span>Interest Rate:</span>
-                      <span className="font-semibold text-foreground">{loan.interest_rate}% p.a. ({loan.interest_type})</span>
+                      <span className="font-semibold text-ref-navy">{loan.interest_rate}% p.a. ({loan.interest_type})</span>
                     </div>
                     {loan.next_due_date && (
                       <div className="flex justify-between">
                         <span>Next Due Date:</span>
-                        <span className="font-semibold text-foreground">{formatDate(loan.next_due_date)}</span>
+                        <span className="font-semibold text-ref-navy">{formatDate(loan.next_due_date)}</span>
                       </div>
                     )}
                   </div>
                 </div>
 
-                <div className="mt-6 pt-4 border-t border-border flex items-center gap-2">
+                <div className="mt-6 pt-4 border-t border-border/50 flex items-center gap-2.5">
                   <button
                     onClick={() => {
                       setSelectedLoanForPayment(loan);
                       setPaymentAmount(loan.monthly_payment || 1000);
                     }}
                     disabled={isZero}
-                    className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-xl bg-primary py-2.5 text-xs font-bold text-primary-foreground shadow-xs hover:opacity-95 active:scale-95 disabled:opacity-50 min-h-[44px]"
+                    className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-full bg-ref-blue py-2.5 text-xs font-bold text-white shadow-xs hover:bg-ref-blue/90 active:scale-95 disabled:opacity-50 min-h-[40px] transition-all"
                   >
                     <Check className="h-3.5 w-3.5" />
                     Record Payment
@@ -187,7 +187,7 @@ export default function LoansPage() {
 
                   <button
                     onClick={() => setViewScheduleLoan(loan)}
-                    className="inline-flex items-center justify-center rounded-xl border border-border px-3 py-2.5 text-xs font-semibold text-foreground hover:bg-muted/50 active:scale-95 min-h-[44px]"
+                    className="inline-flex items-center justify-center rounded-full border border-border/60 bg-white/80 px-4 py-2.5 text-xs font-bold text-ref-navy hover:bg-slate-50 active:scale-95 min-h-[40px] transition-all"
                   >
                     Amortization
                   </button>

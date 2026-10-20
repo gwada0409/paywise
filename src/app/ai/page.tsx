@@ -2,75 +2,42 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
-  Sparkles,
+  ChevronLeft,
+  History,
+  Mic,
+  Plus,
   Send,
-  RotateCcw,
-  Copy,
-  Bot,
+  Sparkles,
   User,
+  Copy,
   Check,
-  AlertCircle,
-  HelpCircle,
-  Calculator,
-  ShieldCheck,
-  ExternalLink,
+  RotateCcw,
 } from "lucide-react";
-import { AppShell } from "@/components/layout/AppShell";
 import { useFinance } from "@/lib/store/finance-context";
-import { CurrencyDisplay } from "@/components/common/CurrencyDisplay";
-import { CurrencyInput } from "@/components/common/CurrencyInput";
-import { analyzePurchaseAffordability } from "@/lib/ai/financial-context";
-import { toast } from "sonner";
+import { AIFinancialDonutCard } from "@/components/ai/AIFinancialDonutCard";
+import { AIChatHistoryDrawer } from "@/components/ai/AIChatHistoryDrawer";
 import { AIMessage } from "@/types";
+import { toast } from "sonner";
 
-const INITIAL_SUGGESTIONS = [
-  "Can I afford a ₱3,500 purchase right now?",
-  "How should I allocate my upcoming salary?",
-  "What bills are due before my next payday?",
-  "Am I spending too much on Wants?",
-  "How can I reach my Emergency Fund goal faster?",
-  "Magkano ang pwede kong gastusin bawat araw?",
+const QUICK_BUBBLES = [
+  "Spending suggestion",
+  "Want some tips to save?",
+  "Create a financial goal",
+  "Income sources",
+  "Wealth Growth Data",
+  "Can I afford this?",
 ];
 
-export default function AIAssistantPage() {
-  const {
-    financialContext,
-    aiPreferences,
-    clientApiKey,
-    salarySettings,
-    budgetRules,
-    accounts,
-    transactions,
-    incomeRecords,
-    savingsGoals,
-    savingsMovements,
-    bills,
-    loans,
-  } = useFinance();
+export default function AIPage() {
+  const router = useRouter();
+  const { financialContext, aiPreferences, clientApiKey, spendableBreakdown } = useFinance();
 
-  const [messages, setMessages] = useState<AIMessage[]>([
-    {
-      id: "welcome-1",
-      conversation_id: "default",
-      role: "assistant",
-      content:
-        "Hello! I'm **PayWise AI**, your personal Philippine finance companion. I have access to your verified financial summary (₱" +
-        financialContext.available_spendable_balance.toLocaleString() +
-        " available to spend, " +
-        financialContext.days_until_next_payday +
-        " days until payday on " +
-        financialContext.next_payday_date +
-        ").\n\nHow can I help you make smart money decisions today?",
-      created_at: new Date().toISOString(),
-    },
-  ]);
-
+  const [messages, setMessages] = useState<AIMessage[]>([]);
   const [inputPrompt, setInputPrompt] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [isAffordabilityModalOpen, setIsAffordabilityModalOpen] = useState(false);
-  const [affordItemName, setAffordItemName] = useState("");
-  const [affordItemPrice, setAffordItemPrice] = useState<number>(0);
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -126,8 +93,8 @@ export default function AIAssistantPage() {
       });
 
       if (!response.ok) {
-        const errorJson = await response.json();
-        throw new Error(errorJson.error || "Failed to receive response from Gemini AI");
+        const errJson = await response.json();
+        throw new Error(errJson.error || "Failed to receive response from Gemini AI");
       }
 
       const reader = response.body?.getReader();
@@ -147,7 +114,6 @@ export default function AIAssistantPage() {
         }
       }
     } catch (err: any) {
-      console.error(err);
       setMessages((prev) =>
         prev.map((m) =>
           m.id === assistantPlaceholderId
@@ -166,33 +132,6 @@ export default function AIAssistantPage() {
     }
   };
 
-  const handleRunAffordabilityCheck = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!affordItemName.trim() || affordItemPrice <= 0) return;
-
-    const analysis = analyzePurchaseAffordability(
-      affordItemName.trim(),
-      affordItemPrice,
-      {
-        salarySettings,
-        budgetRules,
-        accounts,
-        transactions,
-        incomeRecords,
-        savingsGoals,
-        savingsMovements,
-        bills,
-        loans,
-      }
-    );
-
-    setIsAffordabilityModalOpen(false);
-
-    // Format query for chat
-    const promptText = `Can I afford to buy "${affordItemName}" for ₱${affordItemPrice.toLocaleString()} right now?`;
-    handleSendMessage(promptText);
-  };
-
   const copyToClipboard = (id: string, text: string) => {
     navigator.clipboard.writeText(text);
     setCopiedId(id);
@@ -201,216 +140,229 @@ export default function AIAssistantPage() {
   };
 
   return (
-    <AppShell>
-      <div className="flex flex-col h-[calc(100vh-140px)] sm:h-[calc(100vh-120px)] max-w-4xl mx-auto animate-in fade-in duration-300">
-        {/* Chat Header */}
-        <div className="flex items-center justify-between pb-3 border-b border-border">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-indigo-600 text-white shadow-md">
-              <Sparkles className="h-5 w-5" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-base font-bold text-foreground">PayWise AI</h1>
-                <span className="flex items-center gap-1 rounded-full bg-emerald-500/15 text-emerald-600 px-2 py-0.5 text-[10px] font-bold">
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                  {aiPreferences.model_name}
-                </span>
-              </div>
-              <p className="text-xs text-muted-foreground">
-                Financial Companion • Context Sharing:{" "}
-                <span className="font-semibold text-foreground">
-                  {aiPreferences.share_financial_context ? "Active" : "Disabled"}
-                </span>
-              </p>
-            </div>
-          </div>
+    <div className="min-h-screen bg-white dark:bg-slate-950 text-slate-900 dark:text-white flex flex-col justify-between max-w-md mx-auto relative px-4 pb-safe pt-safe">
+      {/* =========================================================================
+          1. AI CHAT HEADER (Reference 2: Back Arrow, Green Waveform Logo, History Clock)
+         ========================================================================= */}
+      <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-slate-100 dark:border-slate-800/80 bg-white/95 dark:bg-slate-950/95 backdrop-blur-md">
+        <button
+          onClick={() => router.push("/dashboard")}
+          className="flex h-9 w-9 items-center justify-center rounded-full text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 active:scale-95 transition-all"
+          title="Back to Dashboard"
+        >
+          <ChevronLeft className="h-6 w-6" />
+        </button>
 
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setIsAffordabilityModalOpen(true)}
-              className="inline-flex items-center gap-1.5 rounded-xl border border-indigo-500/30 bg-indigo-50 dark:bg-indigo-950/40 px-3 py-2 text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 transition-all min-h-[40px]"
-            >
-              <Calculator className="h-4 w-4" />
-              Affordability Check
-            </button>
-            <Link
-              href="/settings/ai"
-              className="p-2 rounded-xl text-muted-foreground hover:bg-muted/60 transition-all"
-              title="AI Settings"
-            >
-              <Bot className="h-5 w-5" />
-            </Link>
+        {/* Center Green Waveform Emblem & Title */}
+        <div className="flex items-center gap-2">
+          {/* Green Waveform Symbol */}
+          <div className="flex items-center gap-0.5 text-[#45C97A]">
+            <span className="w-1 h-3 rounded-full bg-[#45C97A]" />
+            <span className="w-1 h-5 rounded-full bg-[#45C97A]" />
+            <span className="w-1 h-3.5 rounded-full bg-[#45C97A]" />
+            <span className="w-1 h-2 rounded-full bg-[#45C97A]" />
           </div>
+          <span className="text-base font-extrabold tracking-tight text-slate-900 dark:text-white">
+            PayWise AI
+          </span>
         </div>
 
-        {/* Message Bubbles Container */}
-        <div className="flex-1 overflow-y-auto py-4 space-y-4 px-1">
-          {messages.map((msg) => {
-            const isUser = msg.role === "user";
+        {/* History Clock Button */}
+        <button
+          onClick={() => setIsHistoryOpen(true)}
+          className="flex h-9 w-9 items-center justify-center rounded-full text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 active:scale-95 transition-all"
+          title="View Chat History"
+        >
+          <History className="h-5 w-5" />
+        </button>
+      </header>
 
-            return (
-              <div
-                key={msg.id}
-                className={`flex gap-3 ${isUser ? "justify-end" : "justify-start"}`}
-              >
-                {!isUser && (
-                  <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-indigo-600 text-white shrink-0 mt-0.5">
-                    <Sparkles className="h-4 w-4" />
-                  </div>
-                )}
-
-                <div
-                  className={`relative max-w-[85%] sm:max-w-[75%] rounded-2xl px-4 py-3 text-sm leading-relaxed shadow-2xs group ${
-                    isUser
-                      ? "bg-primary text-primary-foreground font-medium rounded-tr-xs"
-                      : "bg-card border border-border text-foreground rounded-tl-xs"
-                  }`}
-                >
-                  <div className="whitespace-pre-wrap">{msg.content}</div>
-
-                  {!isUser && msg.content && (
-                    <div className="mt-2 pt-2 border-t border-border/40 flex items-center justify-between text-[11px] text-muted-foreground">
-                      <span>Google Gemini</span>
-                      <button
-                        onClick={() => copyToClipboard(msg.id, msg.content)}
-                        className="flex items-center gap-1 hover:text-foreground opacity-60 hover:opacity-100 transition-opacity"
-                      >
-                        {copiedId === msg.id ? (
-                          <Check className="h-3 w-3 text-emerald-600" />
-                        ) : (
-                          <Copy className="h-3 w-3" />
-                        )}
-                        Copy
-                      </button>
-                    </div>
-                  )}
-                </div>
-
-                {isUser && (
-                  <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-muted text-muted-foreground shrink-0 mt-0.5">
-                    <User className="h-4 w-4" />
-                  </div>
-                )}
-              </div>
-            );
-          })}
-
-          {isLoading && (
-            <div className="flex gap-3 justify-start items-center">
-              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-indigo-600 text-white shrink-0">
-                <Sparkles className="h-4 w-4 animate-spin" />
-              </div>
-              <div className="rounded-2xl bg-card border border-border px-4 py-3 text-xs text-muted-foreground flex items-center gap-2">
-                <span className="inline-block h-2 w-2 rounded-full bg-indigo-600 animate-pulse" />
-                PayWise AI is thinking...
+      {/* =========================================================================
+          2. MAIN CONTENT: WELCOME SCREEN (Reference 2 Middle Phone) OR CHAT MESSAGES
+         ========================================================================= */}
+      <main className="flex-1 overflow-y-auto py-4">
+        {messages.length === 0 ? (
+          <div className="flex flex-col items-center justify-center text-center h-full px-2 py-8">
+            {/* Glowing Green Radar Emblem */}
+            <div className="relative flex items-center justify-center mb-6">
+              <div className="absolute h-18 w-18 rounded-full bg-[#45C97A]/15 animate-ping" />
+              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#45C97A]/20 border border-[#45C97A]/40 text-[#45C97A] shadow-md shadow-[#45C97A]/20">
+                <Sparkles className="h-7 w-7" />
               </div>
             </div>
-          )}
 
-          <div ref={messagesEndRef} />
-        </div>
+            {/* Title & Subtitle */}
+            <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
+              <div className="flex items-center gap-0.5 text-[#45C97A]">
+                <span className="w-1 h-3.5 rounded-full bg-[#45C97A]" />
+                <span className="w-1 h-5 rounded-full bg-[#45C97A]" />
+                <span className="w-1 h-3.5 rounded-full bg-[#45C97A]" />
+              </div>
+              Hi, I&apos;m PayWise AI
+            </h2>
 
-        {/* Suggestion Chips */}
-        {messages.length <= 3 && (
-          <div className="py-2 overflow-x-auto flex gap-2 no-scrollbar">
-            {INITIAL_SUGGESTIONS.map((suggestion) => (
-              <button
-                key={suggestion}
-                onClick={() => handleSendMessage(suggestion)}
-                className="rounded-full border border-border bg-card/80 px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground hover:bg-muted/50 whitespace-nowrap active:scale-95 transition-all shrink-0"
-              >
-                {suggestion}
-              </button>
-            ))}
-          </div>
-        )}
-
-        {/* Composer Input Bar */}
-        <div className="pt-2">
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              handleSendMessage();
-            }}
-            className="flex items-center gap-2 rounded-2xl border border-input bg-card p-1.5 shadow-sm focus-within:ring-2 focus-within:ring-indigo-500"
-          >
-            <input
-              type="text"
-              value={inputPrompt}
-              onChange={(e) => setInputPrompt(e.target.value)}
-              placeholder="Ask PayWise AI in English or Taglish..."
-              className="flex-1 bg-transparent px-3 py-2 text-sm text-foreground focus:outline-none min-h-[44px]"
-            />
-
-            <button
-              type="submit"
-              disabled={!inputPrompt.trim() || isLoading}
-              className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-600 text-white shadow-xs hover:bg-indigo-700 active:scale-95 transition-all disabled:opacity-40 disabled:pointer-events-none"
-            >
-              <Send className="h-4 w-4" />
-            </button>
-          </form>
-          <p className="mt-1.5 text-[10px] text-center text-muted-foreground">
-            PayWise AI verifies calculations against your database records. Read-only advisor.
-          </p>
-        </div>
-      </div>
-
-      {/* Affordability Modal */}
-      {isAffordabilityModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-          <div className="w-full max-w-md rounded-2xl border border-border bg-card p-6 shadow-2xl">
-            <div className="flex items-center gap-2 mb-2">
-              <Calculator className="h-5 w-5 text-indigo-600" />
-              <h3 className="text-base font-bold text-foreground">Purchase Affordability Analyzer</h3>
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Calculate if this purchase fits your current cash, reserved bills, and Wants budget.
+            <p className="mt-2 text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-xs leading-relaxed">
+              Your Financial AI assistant, how can I help you today?
             </p>
 
-            <form onSubmit={handleRunAffordabilityCheck} className="mt-4 space-y-4">
-              <div>
-                <label className="block text-xs font-semibold uppercase text-muted-foreground mb-1">
-                  Item or Expense Name
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={affordItemName}
-                  onChange={(e) => setAffordItemName(e.target.value)}
-                  placeholder="e.g. Wireless Earbuds, Shoes, Weekend Trip"
-                  className="w-full rounded-xl border border-input bg-card px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 min-h-[44px]"
-                />
-              </div>
+            {/* "Use this bubble chat" prompt chips */}
+            <div className="mt-8 w-full max-w-xs space-y-2">
+              <span className="text-[11px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">
+                Use this bubble chat
+              </span>
 
-              <div>
-                <label className="block text-xs font-semibold uppercase text-muted-foreground mb-1">
-                  Price / Cost
-                </label>
-                <CurrencyInput value={affordItemPrice} onChange={setAffordItemPrice} />
+              <div className="flex flex-wrap justify-center gap-2 pt-1">
+                {QUICK_BUBBLES.map((bubble) => (
+                  <button
+                    key={bubble}
+                    onClick={() => handleSendMessage(bubble)}
+                    className="rounded-2xl border border-slate-200/90 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 px-3.5 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 hover:border-[#45C97A] hover:text-[#16A34A] active:scale-95 transition-all shadow-2xs"
+                  >
+                    {bubble}
+                  </button>
+                ))}
               </div>
-
-              <div className="flex items-center gap-3 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setIsAffordabilityModalOpen(false)}
-                  className="flex-1 rounded-xl border border-border py-2.5 text-xs font-semibold text-foreground hover:bg-muted/50 min-h-[44px]"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={affordItemPrice <= 0 || !affordItemName.trim()}
-                  className="flex-1 rounded-xl bg-indigo-600 py-2.5 text-xs font-bold text-white shadow-sm hover:bg-indigo-700 disabled:opacity-50 min-h-[44px]"
-                >
-                  Analyze with AI
-                </button>
-              </div>
-            </form>
+            </div>
           </div>
-        </div>
-      )}
-    </AppShell>
+        ) : (
+          /* Conversation Messages (Reference 2 Left Phone) */
+          <div className="space-y-4 px-1">
+            {messages.map((msg, index) => {
+              const isUser = msg.role === "user";
+              // Check if we should render an inline donut chart for financial breakdowns
+              const shouldRenderDonut =
+                !isUser &&
+                index === 1 &&
+                (msg.content.toLowerCase().includes("fund") ||
+                  msg.content.toLowerCase().includes("spending") ||
+                  msg.content.toLowerCase().includes("budget") ||
+                  msg.content.toLowerCase().includes("analysis"));
+
+              return (
+                <div
+                  key={msg.id}
+                  className={`flex gap-2.5 ${isUser ? "justify-end" : "justify-start"}`}
+                >
+                  {!isUser && (
+                    <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[#45C97A]/20 text-[#16A34A] shrink-0 mt-1">
+                      <Sparkles className="h-3.5 w-3.5" />
+                    </div>
+                  )}
+
+                  <div className="max-w-[85%]">
+                    <div
+                      className={`rounded-3xl p-4 text-xs sm:text-sm leading-relaxed ${
+                        isUser
+                          ? "bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white font-medium rounded-tr-xs"
+                          : "bg-[#F3F4F6] dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-tl-xs shadow-2xs"
+                      }`}
+                    >
+                      <p className="whitespace-pre-wrap">{msg.content}</p>
+
+                      {/* Render Inline Donut Chart matching Reference 2 Left Phone! */}
+                      {shouldRenderDonut && (
+                        <AIFinancialDonutCard
+                          totalAmount={spendableBreakdown.liquidCashTotal || 8278}
+                          caption="And this is an explanation of the graphic above regarding the distribution of your funds."
+                        />
+                      )}
+                    </div>
+
+                    {!isUser && msg.content && (
+                      <div className="mt-1 flex items-center gap-2 text-[10px] text-slate-400 pl-2">
+                        <button
+                          onClick={() => copyToClipboard(msg.id, msg.content)}
+                          className="hover:text-slate-600 flex items-center gap-1"
+                        >
+                          {copiedId === msg.id ? (
+                            <Check className="h-3 w-3 text-emerald-600" />
+                          ) : (
+                            <Copy className="h-3 w-3" />
+                          )}
+                          Copy
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+
+            {isLoading && (
+              <div className="flex gap-2.5 items-center">
+                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[#45C97A]/20 text-[#16A34A] shrink-0">
+                  <Sparkles className="h-3.5 w-3.5 animate-spin" />
+                </div>
+                <div className="rounded-2xl bg-slate-100 dark:bg-slate-800 px-3.5 py-2 text-xs text-slate-500">
+                  PayWise AI is thinking...
+                </div>
+              </div>
+            )}
+
+            <div ref={messagesEndRef} />
+          </div>
+        )}
+      </main>
+
+      {/* =========================================================================
+          3. COMPOSER BAR (Reference 2: Slim Rounded Pill with Mic, +, and Green Send)
+         ========================================================================= */}
+      <footer className="sticky bottom-2 z-30 pt-2 pb-1 bg-white dark:bg-slate-950">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleSendMessage();
+          }}
+          className="flex items-center gap-2 rounded-full border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 pl-4 pr-1.5 py-1.5 shadow-sm focus-within:ring-2 focus-within:ring-[#45C97A]"
+        >
+          <input
+            type="text"
+            value={inputPrompt}
+            onChange={(e) => setInputPrompt(e.target.value)}
+            placeholder="Message PayWise AI"
+            className="flex-1 bg-transparent text-xs sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none min-h-[40px]"
+          />
+
+          {/* Mic icon button */}
+          <button
+            type="button"
+            onClick={() => toast.info("Voice input ready on supported browsers")}
+            className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+            title="Voice message"
+          >
+            <Mic className="h-4 w-4" />
+          </button>
+
+          {/* Plus action */}
+          <button
+            type="button"
+            onClick={() => handleSendMessage("Can I afford a ₱2,500 purchase right now?")}
+            className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+            title="Affordability check"
+          >
+            <Plus className="h-4 w-4" />
+          </button>
+
+          {/* Circular Green Send Button */}
+          <button
+            type="submit"
+            disabled={!inputPrompt.trim() || isLoading}
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#45C97A] text-white shadow-xs hover:bg-[#3db86e] active:scale-95 disabled:opacity-40 disabled:pointer-events-none transition-all"
+          >
+            <Send className="h-4 w-4" />
+          </button>
+        </form>
+      </footer>
+
+      {/* =========================================================================
+          4. SLIDE-OUT CHAT HISTORY DRAWER (Reference 2 Right Phone)
+         ========================================================================= */}
+      <AIChatHistoryDrawer
+        isOpen={isHistoryOpen}
+        onClose={() => setIsHistoryOpen(false)}
+        onSelectChat={(title) => handleSendMessage(title)}
+        onNewChat={() => setMessages([])}
+      />
+    </div>
   );
 }
