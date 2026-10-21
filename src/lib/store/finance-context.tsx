@@ -50,6 +50,7 @@ interface FinanceContextType {
   isDemoMode: boolean;
   clientApiKey: string;
   isInitialized: boolean;
+  isOnline: boolean;
 
   // Derived calculations
   spendableBreakdown: SpendableBalanceBreakdown;
@@ -77,6 +78,8 @@ interface FinanceContextType {
   resetAllData: () => void;
   markNotificationAsRead: (id: string) => void;
   markAllNotificationsAsRead: () => void;
+  exportLocalData: () => void;
+  importLocalData: (jsonData: string) => boolean;
 }
 
 const FinanceContext = createContext<FinanceContextType | null>(null);
@@ -104,6 +107,22 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
     daily_request_limit: 50,
   });
   const [isInitialized, setIsInitialized] = useState<boolean>(false);
+  const [isOnline, setIsOnline] = useState<boolean>(true);
+
+  // Monitor online status
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setIsOnline(navigator.onLine);
+      const setOnline = () => setIsOnline(true);
+      const setOffline = () => setIsOnline(false);
+      window.addEventListener("online", setOnline);
+      window.addEventListener("offline", setOffline);
+      return () => {
+        window.removeEventListener("online", setOnline);
+        window.removeEventListener("offline", setOffline);
+      };
+    }
+  }, []);
 
   // Load persisted state from localStorage on client mount
   useEffect(() => {
@@ -512,6 +531,60 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
     setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })));
   };
 
+  const exportLocalData = () => {
+    try {
+      const payload = {
+        version: "1.0",
+        exportDate: new Date().toISOString(),
+        salarySettings,
+        budgetRules,
+        accounts,
+        transactions,
+        incomeRecords,
+        savingsGoals,
+        savingsMovements,
+        bills,
+        loans,
+        notifications,
+        aiPreferences,
+      };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], {
+        type: "application/json",
+      });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `paywise-backup-${new Date().toISOString().split("T")[0]}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (e) {
+      console.error("Failed to export PayWise local data", e);
+    }
+  };
+
+  const importLocalData = (jsonData: string): boolean => {
+    try {
+      const parsed = JSON.parse(jsonData);
+      if (parsed.salarySettings) setSalarySettings(parsed.salarySettings);
+      if (parsed.budgetRules) setBudgetRules(parsed.budgetRules);
+      if (parsed.accounts) setAccounts(parsed.accounts);
+      if (parsed.transactions) setTransactions(parsed.transactions);
+      if (parsed.incomeRecords) setIncomeRecords(parsed.incomeRecords);
+      if (parsed.savingsGoals) setSavingsGoals(parsed.savingsGoals);
+      if (parsed.savingsMovements) setSavingsMovements(parsed.savingsMovements);
+      if (parsed.bills) setBills(parsed.bills);
+      if (parsed.loans) setLoans(parsed.loans);
+      if (parsed.notifications) setNotifications(parsed.notifications);
+      if (parsed.aiPreferences) setAiPreferencesState(parsed.aiPreferences);
+      return true;
+    } catch (e) {
+      console.error("Failed to import PayWise data", e);
+      return false;
+    }
+  };
+
   return (
     <FinanceContext.Provider
       value={{
@@ -529,6 +602,7 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
         isDemoMode,
         clientApiKey,
         isInitialized,
+        isOnline,
         spendableBreakdown,
         nextPayday,
         budgetSummary,
@@ -552,6 +626,8 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
         resetAllData,
         markNotificationAsRead,
         markAllNotificationsAsRead,
+        exportLocalData,
+        importLocalData,
       }}
     >
       {children}

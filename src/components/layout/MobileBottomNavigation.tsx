@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   Home,
   TrendingUp,
@@ -13,81 +13,139 @@ import {
 
 export function MobileBottomNavigation() {
   const pathname = usePathname();
+  const router = useRouter();
 
-  // If on the AI chat page, we can show a more streamlined footer or maintain navigation
+  // Instant single-tap navigation handler
+  const handleNav = (e: React.MouseEvent, href: string) => {
+    e.preventDefault();
+    router.push(href);
+  };
+
   return (
-    <nav className="fixed bottom-4 left-4 right-4 z-40 block md:hidden max-w-md mx-auto">
-      <div className="relative flex h-16 items-center justify-between px-6 rounded-4xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl shadow-xl shadow-slate-900/5 border border-slate-100/90 dark:border-slate-800">
-        {/* 1. Home */}
-        <Link
-          href="/dashboard"
-          className={`flex flex-col items-center justify-center p-2 min-h-[44px] transition-all active:scale-95 ${
-            pathname === "/dashboard"
-              ? "text-[#4A90FF] font-bold"
-              : "text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
-          }`}
+    <nav className="fixed bottom-3 left-4 right-4 z-40 block md:hidden max-w-md mx-auto select-none touch-manipulation">
+      {/* Container with relative positioning for the reverse drop notch SVG & buttons */}
+      <div className="relative h-16 w-full">
+        {/* Sculpted Reverse Drop Notch SVG Dock Background */}
+        <svg
+          className="absolute inset-0 w-full h-full pointer-events-none drop-shadow-md dark:drop-shadow-[0_12px_24px_rgba(0,0,0,0.6)]"
+          viewBox="0 0 360 64"
+          preserveAspectRatio="none"
         >
-          <Home className={`h-5 w-5 ${pathname === "/dashboard" ? "stroke-[2.5px]" : "stroke-[1.8px]"}`} />
-          {pathname === "/dashboard" && (
-            <span className="h-1 w-1 rounded-full bg-[#4A90FF] mt-0.5" />
-          )}
-        </Link>
+          {/* Reverse drop notch path: smooth concave cradle centered at X=180 */}
+          <path
+            d="M 24 0 L 146 0 C 155 0 159 10 164 21 C 171 33 189 33 196 21 C 201 10 205 0 214 0 L 336 0 A 24 24 0 0 1 360 24 L 360 40 A 24 24 0 0 1 336 64 L 24 64 A 24 24 0 0 1 0 40 L 0 24 A 24 24 0 0 1 24 0 Z"
+            className="fill-white/95 dark:fill-slate-900/95 stroke-slate-200/90 dark:stroke-slate-800 stroke-[1.2]"
+          />
+        </svg>
 
-        {/* 2. Analytics */}
-        <Link
-          href="/reports"
-          className={`flex flex-col items-center justify-center p-2 min-h-[44px] transition-all active:scale-95 ${
-            pathname === "/reports"
-              ? "text-[#4A90FF] font-bold"
-              : "text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
-          }`}
-        >
-          <TrendingUp className={`h-5 w-5 ${pathname === "/reports" ? "stroke-[2.5px]" : "stroke-[1.8px]"}`} />
-          {pathname === "/reports" && (
-            <span className="h-1 w-1 rounded-full bg-[#4A90FF] mt-0.5" />
-          )}
-        </Link>
+        {/* 5-Item Navigation Grid */}
+        <div className="relative h-full flex items-center justify-between px-3">
+          {/* 1. Home */}
+          <Link
+            href="/dashboard"
+            prefetch={true}
+            onClick={(e) => handleNav(e, "/dashboard")}
+            aria-label="Dashboard"
+            className={`flex-1 flex flex-col items-center justify-center min-h-[52px] touch-manipulation cursor-pointer select-none active:opacity-60 transition-opacity ${
+              pathname === "/dashboard"
+                ? "text-[#4A90FF] font-bold"
+                : "text-slate-400 dark:text-slate-500"
+            }`}
+          >
+            <div className="flex flex-col items-center gap-0.5">
+              <Home className={`h-5 w-5 ${pathname === "/dashboard" ? "stroke-[2.4px]" : "stroke-[1.8px]"}`} />
+              {pathname === "/dashboard" ? (
+                <span className="h-1 w-1 rounded-full bg-[#4A90FF]" />
+              ) : (
+                <span className="h-1 w-1" />
+              )}
+            </div>
+          </Link>
 
-        {/* 3. Center Vibrant Rainbow AI Button */}
-        <Link
-          href="/ai"
-          className="relative -top-2 flex flex-col items-center justify-center active:scale-90 transition-transform"
-          aria-label="PayWise AI"
-        >
-          <div className="flex h-13 w-13 items-center justify-center rounded-full bg-ai-rainbow shadow-lg shadow-sky-500/25 ring-4 ring-white dark:ring-slate-900">
-            <Sparkles className="h-6 w-6 text-white stroke-[2.2px] drop-shadow-xs" />
+          {/* 2. Analytics / Reports */}
+          <Link
+            href="/reports"
+            prefetch={true}
+            onClick={(e) => handleNav(e, "/reports")}
+            aria-label="Reports"
+            className={`flex-1 flex flex-col items-center justify-center min-h-[52px] touch-manipulation cursor-pointer select-none active:opacity-60 transition-opacity ${
+              pathname === "/reports"
+                ? "text-[#4A90FF] font-bold"
+                : "text-slate-400 dark:text-slate-500"
+            }`}
+          >
+            <div className="flex flex-col items-center gap-0.5">
+              <TrendingUp className={`h-5 w-5 ${pathname === "/reports" ? "stroke-[2.4px]" : "stroke-[1.8px]"}`} />
+              {pathname === "/reports" ? (
+                <span className="h-1 w-1 rounded-full bg-[#4A90FF]" />
+              ) : (
+                <span className="h-1 w-1" />
+              )}
+            </div>
+          </Link>
+
+          {/* 3. Center AI Button: Nestled into the Reverse Drop Notch Cradle */}
+          <div className="flex-1 flex items-center justify-center relative">
+            <Link
+              href="/ai"
+              prefetch={true}
+              onClick={(e) => handleNav(e, "/ai")}
+              aria-label="PayWise AI Assistant"
+              className="absolute -top-3.5 flex items-center justify-center touch-manipulation cursor-pointer select-none active:opacity-75 transition-opacity"
+            >
+              <div className="relative flex h-13 w-13 items-center justify-center rounded-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-md ring-2 ring-white/90 dark:ring-slate-900">
+                <Sparkles className="h-6 w-6 stroke-[2.2px]" />
+                {pathname === "/ai" && (
+                  <span className="absolute -bottom-1 h-1.5 w-1.5 rounded-full bg-[#4A90FF] ring-2 ring-white dark:ring-slate-900" />
+                )}
+              </div>
+            </Link>
           </div>
-        </Link>
 
-        {/* 4. Goals / Savings */}
-        <Link
-          href="/savings"
-          className={`flex flex-col items-center justify-center p-2 min-h-[44px] transition-all active:scale-95 ${
-            pathname === "/savings"
-              ? "text-[#4A90FF] font-bold"
-              : "text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
-          }`}
-        >
-          <Target className={`h-5 w-5 ${pathname === "/savings" ? "stroke-[2.5px]" : "stroke-[1.8px]"}`} />
-          {pathname === "/savings" && (
-            <span className="h-1 w-1 rounded-full bg-[#4A90FF] mt-0.5" />
-          )}
-        </Link>
+          {/* 4. Goals / Savings */}
+          <Link
+            href="/savings"
+            prefetch={true}
+            onClick={(e) => handleNav(e, "/savings")}
+            aria-label="Savings Goals"
+            className={`flex-1 flex flex-col items-center justify-center min-h-[52px] touch-manipulation cursor-pointer select-none active:opacity-60 transition-opacity ${
+              pathname === "/savings"
+                ? "text-[#4A90FF] font-bold"
+                : "text-slate-400 dark:text-slate-500"
+            }`}
+          >
+            <div className="flex flex-col items-center gap-0.5">
+              <Target className={`h-5 w-5 ${pathname === "/savings" ? "stroke-[2.4px]" : "stroke-[1.8px]"}`} />
+              {pathname === "/savings" ? (
+                <span className="h-1 w-1 rounded-full bg-[#4A90FF]" />
+              ) : (
+                <span className="h-1 w-1" />
+              )}
+            </div>
+          </Link>
 
-        {/* 5. Settings */}
-        <Link
-          href="/settings"
-          className={`flex flex-col items-center justify-center p-2 min-h-[44px] transition-all active:scale-95 ${
-            pathname === "/settings"
-              ? "text-[#4A90FF] font-bold"
-              : "text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
-          }`}
-        >
-          <Settings className={`h-5 w-5 ${pathname === "/settings" ? "stroke-[2.5px]" : "stroke-[1.8px]"}`} />
-          {pathname === "/settings" && (
-            <span className="h-1 w-1 rounded-full bg-[#4A90FF] mt-0.5" />
-          )}
-        </Link>
+          {/* 5. Settings */}
+          <Link
+            href="/settings"
+            prefetch={true}
+            onClick={(e) => handleNav(e, "/settings")}
+            aria-label="Settings"
+            className={`flex-1 flex flex-col items-center justify-center min-h-[52px] touch-manipulation cursor-pointer select-none active:opacity-60 transition-opacity ${
+              pathname === "/settings"
+                ? "text-[#4A90FF] font-bold"
+                : "text-slate-400 dark:text-slate-500"
+            }`}
+          >
+            <div className="flex flex-col items-center gap-0.5">
+              <Settings className={`h-5 w-5 ${pathname === "/settings" ? "stroke-[2.4px]" : "stroke-[1.8px]"}`} />
+              {pathname === "/settings" ? (
+                <span className="h-1 w-1 rounded-full bg-[#4A90FF]" />
+              ) : (
+                <span className="h-1 w-1" />
+              )}
+            </div>
+          </Link>
+        </div>
       </div>
     </nav>
   );

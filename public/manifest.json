@@ -1,17 +1,69 @@
 {
+  "id": "/",
   "name": "PayWise — AI Personal Finance & Payday Tracker",
   "short_name": "PayWise",
-  "description": "Make Every Payday Count. AI-powered Philippine semi-monthly personal finance management.",
+  "description": "Make Every Payday Count. Semi-monthly payday budgeting, spending tracker, and AI financial assistant for the Philippines.",
   "start_url": "/dashboard",
+  "scope": "/",
   "display": "standalone",
-  "orientation": "portrait",
-  "background_color": "#0f172a",
-  "theme_color": "#059669",
+  "orientation": "portrait-primary",
+  "background_color": "#0F172A",
+  "theme_color": "#0F172A",
+  "categories": ["finance", "productivity", "utilities"],
   "icons": [
+    {
+      "src": "/icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    },
     {
       "src": "/icon.svg",
       "sizes": "any",
-      "type": "image/svg+xml"
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Dashboard",
+      "short_name": "Dashboard",
+      "description": "Open your semi-monthly financial dashboard",
+      "url": "/dashboard",
+      "icons": [{ "src": "/icon-192.svg", "sizes": "192x192" }]
+    },
+    {
+      "name": "AI Assistant",
+      "short_name": "Gemini AI",
+      "description": "Chat with your AI financial copilot",
+      "url": "/ai",
+      "icons": [{ "src": "/icon-192.svg", "sizes": "192x192" }]
+    },
+    {
+      "name": "Add Transaction",
+      "short_name": "New Tx",
+      "description": "Record an expense or need/want",
+      "url": "/transactions",
+      "icons": [{ "src": "/icon-192.svg", "sizes": "192x192" }]
+    },
+    {
+      "name": "Reports & Analytics",
+      "short_name": "Reports",
+      "description": "View monthly spending and cashflow charts",
+      "url": "/reports",
+      "icons": [{ "src": "/icon-192.svg", "sizes": "192x192" }]
     }
   ]
 }

@@ -14,6 +14,7 @@ import {
   Copy,
   Check,
   RotateCcw,
+  WifiOff,
 } from "lucide-react";
 import { useFinance } from "@/lib/store/finance-context";
 import { AIFinancialDonutCard } from "@/components/ai/AIFinancialDonutCard";
@@ -32,7 +33,7 @@ const QUICK_BUBBLES = [
 
 export default function AIPage() {
   const router = useRouter();
-  const { financialContext, aiPreferences, clientApiKey, spendableBreakdown } = useFinance();
+  const { financialContext, aiPreferences, clientApiKey, spendableBreakdown, isOnline } = useFinance();
 
   const [messages, setMessages] = useState<AIMessage[]>([]);
   const [inputPrompt, setInputPrompt] = useState("");
@@ -76,6 +77,25 @@ export default function AIPage() {
     };
 
     setMessages((prev) => [...prev, assistantMessage]);
+
+    // Check offline status before network request
+    if (typeof window !== "undefined" && !navigator.onLine) {
+      setTimeout(() => {
+        setMessages((prev) =>
+          prev.map((m) =>
+            m.id === assistantPlaceholderId
+              ? {
+                  ...m,
+                  content:
+                    "You are currently in offline mode. Gemini AI requires an internet connection to generate insights, but all your local semi-monthly budgets, spendable cash calculations, and transactions remain safely saved on your device.",
+                }
+              : m
+          )
+        );
+        setIsLoading(false);
+      }, 400);
+      return;
+    }
 
     try {
       const response = await fetch("/api/ai/chat", {
@@ -175,6 +195,14 @@ export default function AIPage() {
           <History className="h-5 w-5" />
         </button>
       </header>
+
+      {/* Offline Status Warning Banner if offline */}
+      {!isOnline && (
+        <div className="mx-2 mt-2 rounded-2xl bg-amber-500/10 border border-amber-500/20 px-3.5 py-2 text-center text-xs font-semibold text-amber-700 dark:text-amber-300 flex items-center justify-center gap-1.5 select-none">
+          <WifiOff className="h-3.5 w-3.5 shrink-0" />
+          <span>Offline: Local data is saved, but AI responses require internet.</span>
+        </div>
+      )}
 
       {/* =========================================================================
           2. MAIN CONTENT: WELCOME SCREEN (Reference 2 Middle Phone) OR CHAT MESSAGES

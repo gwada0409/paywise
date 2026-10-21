@@ -107,11 +107,12 @@ export default function DashboardPage() {
         {/* =========================================================================
             2. SEND / ADD / RECEIVE ACTION BUTTONS
            ========================================================================= */}
-        <div className="flex items-center justify-between gap-3 pt-1">
+        <div className="flex items-center justify-between gap-3 pt-1 select-none">
           {/* Send pill */}
           <button
+            type="button"
             onClick={() => setIsAddTxOpen(true)}
-            className="flex-1 flex items-center justify-center gap-2 rounded-full bg-[#DDF3FF] dark:bg-slate-800 dark:border dark:border-slate-700 py-3.5 px-4 text-xs font-bold text-slate-900 dark:text-white shadow-xs hover:bg-[#cdeaff] dark:hover:bg-slate-700 active:scale-95 transition-transform transition-colors min-h-[46px]"
+            className="flex-1 flex items-center justify-center gap-2 rounded-full bg-[#DDF3FF] dark:bg-slate-800 dark:border dark:border-slate-700 py-3.5 px-4 text-xs font-bold text-slate-900 dark:text-white shadow-xs active:opacity-75 transition-opacity min-h-[46px] touch-manipulation cursor-pointer"
           >
             <ArrowUpRight className="h-4 w-4 text-[#4A90FF] dark:text-[#70D6F7]" />
             <span>Send</span>
@@ -119,17 +120,19 @@ export default function DashboardPage() {
 
           {/* Center Circular Quick Add Button */}
           <button
+            type="button"
             onClick={() => setIsAddTxOpen(true)}
             aria-label="Quick Add Transaction"
-            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-ref-blue text-white shadow-2xs hover:bg-ref-blue/90 active:scale-90 transition-transform ring-4 ring-white/80 dark:ring-slate-800"
+            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-ref-blue text-white shadow-2xs active:opacity-75 transition-opacity ring-4 ring-white/80 dark:ring-slate-800 touch-manipulation cursor-pointer"
           >
             <LayoutGrid className="h-5 w-5 stroke-[2.5px]" />
           </button>
 
           {/* Receive pill */}
           <button
+            type="button"
             onClick={() => setIsIncomeModalOpen(true)}
-            className="flex-1 flex items-center justify-center gap-2 rounded-full bg-[#DDF3FF] dark:bg-slate-800 dark:border dark:border-slate-700 py-3.5 px-4 text-xs font-bold text-slate-900 dark:text-white shadow-xs hover:bg-[#cdeaff] dark:hover:bg-slate-700 active:scale-95 transition-transform transition-colors min-h-[46px]"
+            className="flex-1 flex items-center justify-center gap-2 rounded-full bg-[#DDF3FF] dark:bg-slate-800 dark:border dark:border-slate-700 py-3.5 px-4 text-xs font-bold text-slate-900 dark:text-white shadow-xs active:opacity-75 transition-opacity min-h-[46px] touch-manipulation cursor-pointer"
           >
             <ArrowDownLeft className="h-4 w-4 text-[#4A90FF] dark:text-[#70D6F7]" />
             <span>Receive</span>
@@ -141,7 +144,8 @@ export default function DashboardPage() {
            ========================================================================= */}
         <Link
           href="/ai"
-          className="rounded-[28px] p-4.5 bg-[#E8F7FF] dark:bg-slate-800/90 border border-sky-200/60 dark:border-slate-700 shadow-xs flex items-center justify-between hover:bg-[#deeff8] dark:hover:bg-slate-800 active:scale-[0.99] transition-transform transition-colors block"
+          prefetch={true}
+          className="rounded-[28px] p-4.5 bg-[#E8F7FF] dark:bg-slate-800/90 border border-sky-200/60 dark:border-slate-700 shadow-xs flex items-center justify-between active:opacity-85 transition-opacity block touch-manipulation select-none cursor-pointer"
         >
           <div className="flex items-center gap-3">
             <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-white dark:bg-slate-700 shadow-2xs text-sky-600 dark:text-sky-300">
@@ -176,7 +180,8 @@ export default function DashboardPage() {
             </h2>
             <Link
               href="/reports"
-              className="text-xs font-semibold text-[#788493] hover:text-[#4A90FF] transition-colors flex items-center gap-0.5"
+              prefetch={true}
+              className="text-xs font-semibold text-[#788493] hover:text-[#4A90FF] transition-colors flex items-center gap-0.5 touch-manipulation cursor-pointer"
             >
               <span>More Details</span>
               <ChevronRight className="h-3.5 w-3.5" />
@@ -245,8 +250,9 @@ export default function DashboardPage() {
           </div>
 
           <button
+            type="button"
             onClick={() => setIsPlannerOpen(true)}
-            className="inline-flex items-center justify-center gap-1.5 rounded-full bg-[#DDF3FF] dark:bg-slate-700 px-4 py-2 text-xs font-bold text-slate-900 dark:text-white hover:bg-[#cdeaff] dark:hover:bg-slate-600 active:scale-95 transition-transform transition-colors min-h-[40px]"
+            className="inline-flex items-center justify-center gap-1.5 rounded-full bg-[#DDF3FF] dark:bg-slate-700 px-4 py-2 text-xs font-bold text-slate-900 dark:text-white active:opacity-75 transition-opacity min-h-[40px] touch-manipulation cursor-pointer select-none"
           >
             Plan This Payday
             <ChevronRight className="h-3.5 w-3.5 text-[#4A90FF] dark:text-sky-300" />
@@ -263,7 +269,8 @@ export default function DashboardPage() {
             </h3>
             <Link
               href="/transactions"
-              className="text-xs font-semibold text-[#788493] hover:text-[#4A90FF] transition-colors"
+              prefetch={true}
+              className="text-xs font-semibold text-[#788493] hover:text-[#4A90FF] transition-colors touch-manipulation cursor-pointer"
             >
               See All →
             </Link>

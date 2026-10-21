@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { FinanceProvider } from "@/lib/store/finance-context";
+import { PWARegister } from "@/components/pwa/PWARegister";
 import { Toaster } from "sonner";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -13,8 +14,8 @@ export const viewport: Viewport = {
   userScalable: false,
   viewportFit: "cover",
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
-    { media: "(prefers-color-scheme: dark)", color: "#0f172a" },
+    { media: "(prefers-color-scheme: light)", color: "#F5F9FF" },
+    { media: "(prefers-color-scheme: dark)", color: "#0F172A" },
   ],
 };
 
@@ -28,8 +29,9 @@ export const metadata: Metadata = {
     title: "PayWise",
   },
   icons: {
-    icon: "/icon.svg",
-    apple: "/icon.svg",
+    icon: "/icon-192.svg",
+    shortcut: "/icon-192.svg",
+    apple: "/icon-192.svg",
   },
 };
 
@@ -41,6 +43,10 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <link rel="apple-touch-icon" href="/icon-192.svg" />
         <script
           dangerouslySetInnerHTML={{
             __html: `
@@ -56,10 +62,12 @@ export default function RootLayout({
         />
       </head>
       <body className={`${inter.className} min-h-screen bg-background text-foreground antialiased selection:bg-primary/20`}>
-        <FinanceProvider>
-          {children}
-          <Toaster richColors position="top-right" closeButton />
-        </FinanceProvider>
+        <PWARegister>
+          <FinanceProvider>
+            {children}
+            <Toaster richColors position="top-right" closeButton />
+          </FinanceProvider>
+        </PWARegister>
       </body>
     </html>
   );
