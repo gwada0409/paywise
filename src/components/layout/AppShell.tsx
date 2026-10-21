@@ -22,7 +22,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <DesktopSidebar />
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col md:pl-64 min-w-0 pb-28 md:pb-10">
+      <div className="flex-1 flex flex-col md:pl-64 min-w-0 pb-36 md:pb-10">
         {/* Mobile Header (unless AI page has its own top header) */}
         {!isAIPage && <MobileHeader />}
 
