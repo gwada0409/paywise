@@ -100,7 +100,7 @@ export function PaydayPlannerModal({ isOpen, onClose }: PaydayPlannerModalProps)
           <div className="rounded-2xl border border-amber-500/25 bg-amber-500/5 p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Receipt className="h-4 w-4 text-amber-600" />
+                <Receipt className="h-4 w-4 text-amber-600 dark:text-amber-400" />
                 <span className="text-xs font-bold text-foreground">
                   Upcoming Unpaid Bills Before Next Payday
                 </span>
@@ -130,9 +130,9 @@ export function PaydayPlannerModal({ isOpen, onClose }: PaydayPlannerModalProps)
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 {isDeficit ? (
-                  <AlertTriangle className="h-4 w-4 text-rose-600" />
+                  <AlertTriangle className="h-4 w-4 text-rose-600 dark:text-rose-400" />
                 ) : (
-                  <ShieldCheck className="h-4 w-4 text-emerald-600" />
+                  <ShieldCheck className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
                 )}
                 <span className="text-xs font-bold text-foreground">
                   Flexible Spendable Money After Bills & Savings
@@ -146,7 +146,7 @@ export function PaydayPlannerModal({ isOpen, onClose }: PaydayPlannerModalProps)
               />
             </div>
             {isDeficit && (
-              <p className="mt-2 text-xs font-medium text-rose-600">
+              <p className="mt-2 text-xs font-medium text-rose-600 dark:text-rose-400">
                 Warning: Your upcoming bills and savings target exceed this payday&apos;s payout by ₱{Math.abs(flexibleAfterBills).toLocaleString()}. Adjust savings or postpone non-urgent bills.
               </p>
             )}
@@ -163,7 +163,7 @@ export function PaydayPlannerModal({ isOpen, onClose }: PaydayPlannerModalProps)
 
             <div className="grid grid-cols-3 gap-2">
               <div className="rounded-xl border border-blue-500/20 bg-card p-3 text-center">
-                <span className="text-[11px] font-bold text-blue-600">Needs (50%)</span>
+                <span className="text-[11px] font-bold text-blue-600 dark:text-blue-400">Needs (50%)</span>
                 <input
                   type="number"
                   value={needsAlloc}
@@ -173,7 +173,7 @@ export function PaydayPlannerModal({ isOpen, onClose }: PaydayPlannerModalProps)
               </div>
 
               <div className="rounded-xl border border-amber-500/20 bg-card p-3 text-center">
-                <span className="text-[11px] font-bold text-amber-700">Wants (30%)</span>
+                <span className="text-[11px] font-bold text-amber-700 dark:text-amber-400">Wants (30%)</span>
                 <input
                   type="number"
                   value={wantsAlloc}
@@ -183,7 +183,7 @@ export function PaydayPlannerModal({ isOpen, onClose }: PaydayPlannerModalProps)
               </div>
 
               <div className="rounded-xl border border-emerald-500/20 bg-card p-3 text-center">
-                <span className="text-[11px] font-bold text-emerald-600">Savings (20%)</span>
+                <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400">Savings (20%)</span>
                 <input
                   type="number"
                   value={savingsAlloc}

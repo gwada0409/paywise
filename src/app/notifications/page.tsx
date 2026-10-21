@@ -71,13 +71,13 @@ export default function NotificationsPage() {
           </div>
 
           <div className="flex items-center gap-2">
-            <div className="flex rounded-full border border-border/60 bg-white/90 backdrop-blur-md p-1 shadow-xs">
+            <div className="flex rounded-full border border-border/60 dark:border-slate-700 bg-white/90 dark:bg-slate-800/90 backdrop-blur-md p-1 shadow-xs">
               <button
                 onClick={() => setFilter("all")}
                 className={`rounded-full px-3.5 py-1.5 text-xs font-bold transition-all ${
                   filter === "all"
                     ? "bg-ref-blue text-white shadow-xs"
-                    : "text-ref-muted hover:text-ref-navy"
+                    : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                 }`}
               >
                 All
@@ -87,7 +87,7 @@ export default function NotificationsPage() {
                 className={`rounded-full px-3.5 py-1.5 text-xs font-bold transition-all ${
                   filter === "unread"
                     ? "bg-ref-blue text-white shadow-xs"
-                    : "text-ref-muted hover:text-ref-navy"
+                    : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                 }`}
               >
                 Unread
@@ -145,7 +145,7 @@ export default function NotificationsPage() {
                       markNotificationAsRead(item.id);
                     }}
                     title="Mark as read"
-                    className="p-2 text-ref-muted hover:text-ref-navy rounded-full hover:bg-white"
+                    className="p-2 text-ref-muted hover:text-ref-navy rounded-full hover:bg-white dark:hover:bg-slate-700"
                   >
                     <Check className="h-4 w-4" />
                   </button>

@@ -8,12 +8,13 @@ import {
   CalendarDays,
   Smartphone,
 } from "lucide-react";
+import { ThemeToggle } from "@/components/layout/ThemeToggle";
 
 export default function LandingPage() {
   return (
     <div className="min-h-screen ref-gradient-canvas text-ref-navy flex flex-col selection:bg-ref-blue/20">
       {/* Top Navbar */}
-      <header className="sticky top-0 z-40 border-b border-border/40 bg-white/70 backdrop-blur-md">
+      <header className="sticky top-0 z-40 border-b border-border/40 dark:border-slate-800 bg-white/70 dark:bg-slate-950/80 backdrop-blur-md">
         <div className="max-w-6xl mx-auto flex h-16 items-center justify-between px-4 sm:px-6">
           <div className="flex items-center gap-2.5">
             <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-ref-blue text-white shadow-xs">
@@ -23,9 +24,10 @@ export default function LandingPage() {
           </div>
 
           <div className="flex items-center gap-3">
+            <ThemeToggle />
             <Link
               href="/login"
-              className="text-xs font-bold text-ref-muted hover:text-ref-navy transition-colors px-3 py-2"
+              className="text-xs font-bold text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors px-3 py-2"
             >
               Sign In
             </Link>
@@ -42,7 +44,7 @@ export default function LandingPage() {
 
       {/* Hero Section */}
       <main className="flex-1 flex flex-col items-center justify-center text-center px-4 py-12 sm:py-20 max-w-4xl mx-auto">
-        <div className="inline-flex items-center gap-2 rounded-full border border-sky-200/80 bg-white/80 px-4 py-1.5 text-xs font-bold text-sky-800 mb-6 shadow-2xs backdrop-blur-md">
+        <div className="inline-flex items-center gap-2 rounded-full border border-sky-200/80 dark:border-sky-800/60 bg-white/80 dark:bg-slate-800/80 px-4 py-1.5 text-xs font-bold text-sky-800 dark:text-sky-300 mb-6 shadow-2xs backdrop-blur-md">
           <Sparkles className="h-3.5 w-3.5 text-ref-blue" />
           <span>Tailored for Philippine Semi-Monthly Paydays & Gemini AI</span>
         </div>
@@ -51,7 +53,7 @@ export default function LandingPage() {
           Make Every Payday Count.
         </h1>
 
-        <p className="mt-4 sm:mt-6 text-base sm:text-lg text-ref-muted max-w-2xl leading-relaxed">
+        <p className="mt-4 sm:mt-6 text-base sm:text-lg text-slate-600 dark:text-slate-300 max-w-2xl leading-relaxed">
           Master your 15th and 30th salary schedules. Know your true spendable balance, divide income into Needs, Wants, and Savings, reserve upcoming bills, and get intelligent answers from Google Gemini AI.
         </p>
 
@@ -80,7 +82,7 @@ export default function LandingPage() {
               <CalendarDays className="h-5 w-5" />
             </div>
             <h3 className="text-base font-bold text-ref-navy">Semi-Monthly Paydays</h3>
-            <p className="mt-2 text-xs sm:text-sm text-ref-muted leading-relaxed">
+            <p className="mt-2 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
               Track 15th and 30th salary days with intelligent February leap-year clamping and unequal payout distributions.
             </p>
           </div>
@@ -90,7 +92,7 @@ export default function LandingPage() {
               <PieChart className="h-5 w-5" />
             </div>
             <h3 className="text-base font-bold text-ref-navy">50/30/20 Smart Budget</h3>
-            <p className="mt-2 text-xs sm:text-sm text-ref-muted leading-relaxed">
+            <p className="mt-2 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
               Keep Needs, Wants, and Savings strictly isolated. Get automated threshold alerts before you overspend.
             </p>
           </div>
@@ -100,7 +102,7 @@ export default function LandingPage() {
               <Sparkles className="h-5 w-5" />
             </div>
             <h3 className="text-base font-bold text-ref-navy">PayWise AI Assistant</h3>
-            <p className="mt-2 text-xs sm:text-sm text-ref-muted leading-relaxed">
+            <p className="mt-2 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
               Ask &quot;Can I afford this?&quot; in English, Tagalog, or Taglish. Powered by Gemini with server-side context privacy.
             </p>
           </div>
@@ -108,7 +110,7 @@ export default function LandingPage() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-border/40 py-6 text-center text-xs text-ref-muted">
+      <footer className="border-t border-border/40 dark:border-slate-800 py-6 text-center text-xs text-slate-500 dark:text-slate-400">
         <p>© 2026 PayWise. Built for Philippine employees and smart earners.</p>
       </footer>
     </div>

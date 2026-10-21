@@ -199,7 +199,7 @@ export default function SettingsPage() {
               </button>
             </div>
 
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl border border-border/50 bg-slate-50/50">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl border border-border/50 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/50">
               <div>
                 <p className="text-xs font-bold text-ref-navy">Export Data Backup (JSON)</p>
                 <p className="text-[11px] text-ref-muted">Download full local backup of your records.</p>
@@ -207,21 +207,21 @@ export default function SettingsPage() {
               <button
                 type="button"
                 onClick={handleExportJSON}
-                className="inline-flex items-center gap-1.5 rounded-full border border-border/60 bg-white px-4 py-2 text-xs font-bold text-ref-navy hover:bg-slate-50 active:scale-95 transition-all shrink-0 min-h-[38px]"
+                className="inline-flex items-center gap-1.5 rounded-full border border-border/60 dark:border-slate-600 bg-white dark:bg-slate-700 px-4 py-2 text-xs font-bold text-slate-900 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-600 active:scale-95 transition-all shrink-0 min-h-[38px]"
               >
                 Export JSON
               </button>
             </div>
 
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl border border-rose-100 bg-rose-50/40">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl border border-rose-100 dark:border-rose-950/60 bg-rose-50/40 dark:bg-rose-950/20">
               <div>
-                <p className="text-xs font-bold text-rose-600">Reset All Financial Records</p>
+                <p className="text-xs font-bold text-rose-600 dark:text-rose-400">Reset All Financial Records</p>
                 <p className="text-[11px] text-ref-muted">Wipes all stored balances, transactions, and bills.</p>
               </div>
               <button
                 type="button"
                 onClick={handleResetData}
-                className="inline-flex items-center gap-1.5 rounded-full border border-rose-200 bg-rose-500/10 px-4 py-2 text-xs font-bold text-rose-600 hover:bg-rose-500/20 active:scale-95 transition-all shrink-0 min-h-[38px]"
+                className="inline-flex items-center gap-1.5 rounded-full border border-rose-200 dark:border-rose-800 bg-rose-500/10 dark:bg-rose-500/20 px-4 py-2 text-xs font-bold text-rose-600 dark:text-rose-400 hover:bg-rose-500/20 dark:hover:bg-rose-500/30 active:scale-95 transition-all shrink-0 min-h-[38px]"
               >
                 <Trash2 className="h-3.5 w-3.5" />
                 Reset Data

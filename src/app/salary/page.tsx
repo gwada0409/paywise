@@ -129,11 +129,11 @@ export default function SalaryPage() {
                     max={31}
                     value={p1Day}
                     onChange={(e) => setP1Day(Number(e.target.value))}
-                    className="w-full rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 px-3 py-2 text-sm font-bold"
+                    className="w-full rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-3 py-2 text-sm font-bold text-slate-900 dark:text-white"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-slate-500 mb-1">
+                  <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">
                     2nd Payday (Day)
                   </label>
                   <input
@@ -142,7 +142,7 @@ export default function SalaryPage() {
                     max={31}
                     value={p2Day}
                     onChange={(e) => setP2Day(Number(e.target.value))}
-                    className="w-full rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 px-3 py-2 text-sm font-bold"
+                    className="w-full rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-3 py-2 text-sm font-bold text-slate-900 dark:text-white"
                   />
                 </div>
               </div>

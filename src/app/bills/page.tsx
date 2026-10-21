@@ -51,13 +51,13 @@ export default function BillsPage() {
 
           <div className="flex items-center gap-2.5">
             {/* View Switcher */}
-            <div className="flex rounded-full border border-border/60 bg-white/90 p-1 shadow-xs">
+            <div className="flex rounded-full border border-border/60 dark:border-slate-700 bg-white/90 dark:bg-slate-800/90 p-1 shadow-xs">
               <button
                 onClick={() => setViewTab("upcoming")}
                 className={`flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-bold transition-colors ${
                   viewTab === "upcoming"
                     ? "bg-ref-blue text-white shadow-xs"
-                    : "text-ref-muted hover:text-ref-navy"
+                    : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                 }`}
               >
                 <List className="h-3.5 w-3.5" />
@@ -68,7 +68,7 @@ export default function BillsPage() {
                 className={`flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-bold transition-colors ${
                   viewTab === "calendar"
                     ? "bg-ref-blue text-white shadow-xs"
-                    : "text-ref-muted hover:text-ref-navy"
+                    : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                 }`}
               >
                 <CalendarIcon className="h-3.5 w-3.5" />
@@ -79,7 +79,7 @@ export default function BillsPage() {
                 className={`flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-bold transition-colors ${
                   viewTab === "paid"
                     ? "bg-ref-blue text-white shadow-xs"
-                    : "text-ref-muted hover:text-ref-navy"
+                    : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                 }`}
               >
                 <CheckCircle2 className="h-3.5 w-3.5" />
@@ -150,10 +150,10 @@ export default function BillsPage() {
                             <h3 className="text-sm font-bold text-ref-navy">{bill.name}</h3>
                             <span className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold ${
                               isOverdue
-                                ? "bg-rose-50 text-rose-600"
+                                ? "bg-rose-50 text-rose-600 dark:bg-rose-950/60 dark:text-rose-400"
                                 : isDueToday
-                                ? "bg-amber-50 text-amber-700"
-                                : "bg-sky-50 text-sky-800"
+                                ? "bg-amber-50 text-amber-700 dark:bg-amber-950/60 dark:text-amber-400"
+                                : "bg-sky-50 text-sky-800 dark:bg-sky-950/60 dark:text-sky-300"
                             }`}>
                               {isOverdue ? "Overdue" : isDueToday ? "Due Today" : `Due Day ${bill.due_day}`}
                             </span>

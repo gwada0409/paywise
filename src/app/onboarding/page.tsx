@@ -114,7 +114,7 @@ export default function OnboardingPage() {
         {/* STEP 1: Welcome */}
         {step === 1 && (
           <div className="text-center py-4">
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-sky-50 text-ref-blue mb-4 shadow-2xs">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-sky-50 dark:bg-slate-700 text-ref-blue mb-4 shadow-2xs">
               <Sparkles className="h-8 w-8" />
             </div>
             <h2 className="text-2xl font-extrabold text-ref-navy tracking-tight">
@@ -246,8 +246,8 @@ export default function OnboardingPage() {
 
               <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-3.5">
                 <div className="flex items-center justify-between mb-1.5">
-                  <span className="text-xs font-bold text-amber-700">Wants (Dining, Shopping, Fun)</span>
-                  <span className="text-sm font-bold tabular-nums text-amber-700">{wantsPercent}%</span>
+                  <span className="text-xs font-bold text-amber-700 dark:text-amber-400">Wants (Dining, Shopping, Fun)</span>
+                  <span className="text-sm font-bold tabular-nums text-amber-700 dark:text-amber-400">{wantsPercent}%</span>
                 </div>
                 <input
                   type="range"
@@ -265,7 +265,7 @@ export default function OnboardingPage() {
               <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-3.5">
                 <div className="flex items-center justify-between mb-1.5">
                   <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">Savings & Investments</span>
-                  <span className="text-sm font-bold tabular-nums text-emerald-600">{savingsPercent}%</span>
+                  <span className="text-sm font-bold tabular-nums text-emerald-600 dark:text-emerald-400">{savingsPercent}%</span>
                 </div>
                 <input
                   type="range"
@@ -283,8 +283,8 @@ export default function OnboardingPage() {
 
             <div className={`p-3 rounded-xl text-center text-xs font-bold ${
               totalPercent === 100
-                ? "bg-emerald-500/10 text-emerald-600"
-                : "bg-rose-500/10 text-rose-600"
+                ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+                : "bg-rose-500/10 text-rose-600 dark:text-rose-400"
             }`}>
               Total: {totalPercent}% {totalPercent !== 100 && "(Must equal 100%)"}
             </div>
@@ -340,7 +340,7 @@ export default function OnboardingPage() {
               </p>
             </div>
 
-            <div className="rounded-xl border border-sky-200/60 bg-sky-50/40 p-4 space-y-3">
+            <div className="rounded-xl border border-sky-200/60 dark:border-slate-700 bg-sky-50/40 dark:bg-slate-900/50 p-4 space-y-3">
               <label className="flex items-center justify-between cursor-pointer">
                 <span className="text-xs font-semibold text-foreground">Enable Gemini Financial Assistant</span>
                 <input
@@ -386,7 +386,7 @@ export default function OnboardingPage() {
         {/* STEP 6: Complete Overview */}
         {step === 6 && (
           <div className="text-center py-4 space-y-4">
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-500/10 text-emerald-600 mb-2">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 mb-2">
               <CheckCircle2 className="h-8 w-8" />
             </div>
             <h2 className="text-2xl font-extrabold text-foreground tracking-tight">

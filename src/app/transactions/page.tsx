@@ -122,12 +122,12 @@ export default function TransactionsPage() {
                     <span
                       className={`rounded-full px-2 py-0.5 text-[10px] font-bold capitalize ${
                         tx.type === "need"
-                          ? "bg-sky-50 text-sky-800"
+                          ? "bg-sky-50 text-sky-800 dark:bg-sky-950/60 dark:text-sky-300"
                           : tx.type === "want"
-                          ? "bg-amber-50 text-amber-800"
+                          ? "bg-amber-50 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300"
                           : tx.type === "income"
-                          ? "bg-emerald-50 text-emerald-800"
-                          : "bg-slate-100 text-slate-800"
+                          ? "bg-emerald-50 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300"
+                          : "bg-slate-100 text-slate-800 dark:bg-slate-700 dark:text-slate-200"
                       }`}
                     >
                       {tx.type.replace("_", " ")}

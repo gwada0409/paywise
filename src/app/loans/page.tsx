@@ -128,7 +128,9 @@ export default function LoansPage() {
                       <p className="text-xs text-ref-muted">{loan.lender}</p>
                     </div>
                     <span className={`rounded-full px-3 py-1 text-[10px] font-bold ${
-                      isZero ? "bg-emerald-50 text-emerald-700" : "bg-rose-50 text-rose-600"
+                      isZero
+                        ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300"
+                        : "bg-rose-50 text-rose-600 dark:bg-rose-950/60 dark:text-rose-300"
                     }`}>
                       {isZero ? "Fully Paid" : "Active"}
                     </span>

@@ -119,8 +119,8 @@ export default function BudgetPage() {
             key={i}
             className={`rounded-3xl p-4 flex items-start gap-3 ${
               alert.severity === "danger"
-                ? "bg-rose-50 text-rose-700 border border-rose-200"
-                : "bg-amber-50 text-amber-700 border border-amber-200"
+                ? "bg-rose-50 text-rose-700 border border-rose-200 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-850"
+                : "bg-amber-50 text-amber-700 border border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-850"
             }`}
           >
             <AlertTriangle className="h-5 w-5 shrink-0 mt-0.5" />
