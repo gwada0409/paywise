@@ -119,7 +119,7 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
   const [clientApiKey, setClientApiKey] = useState<string>("");
   const [aiPreferences, setAiPreferencesState] = useState<AIPreferences>({
     is_enabled: true,
-    model_name: "gemini-1.5-flash",
+    model_name: "gemini-3.5-flash-lite",
     share_financial_context: true,
     temperature: 0.7,
     daily_request_limit: 50,

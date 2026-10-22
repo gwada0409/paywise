@@ -29,9 +29,9 @@ export default function AISettingsPage() {
 
   const [inputKey, setInputKey] = useState("");
   const safeModel =
-    aiPreferences.model_name === "gemini-2.0-flash"
-      ? "gemini-1.5-flash"
-      : (aiPreferences.model_name || "gemini-1.5-flash");
+    aiPreferences.model_name === "gemini-2.0-flash" || !aiPreferences.model_name
+      ? "gemini-3.5-flash-lite"
+      : aiPreferences.model_name;
   const [selectedModel, setSelectedModel] = useState(safeModel);
   const [isEnabled, setIsEnabled] = useState(aiPreferences.is_enabled);
   const [shareContext, setShareContext] = useState(aiPreferences.share_financial_context);
@@ -40,8 +40,8 @@ export default function AISettingsPage() {
 
   React.useEffect(() => {
     if (aiPreferences.model_name === "gemini-2.0-flash") {
-      setAIPreferences({ model_name: "gemini-1.5-flash" });
-      setSelectedModel("gemini-1.5-flash");
+      setAIPreferences({ model_name: "gemini-3.5-flash-lite" });
+      setSelectedModel("gemini-3.5-flash-lite");
     } else if (aiPreferences.model_name) {
       setSelectedModel(aiPreferences.model_name);
     }

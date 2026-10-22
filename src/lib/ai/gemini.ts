@@ -3,12 +3,15 @@ import { formatSystemPromptWithContext } from "./system-prompt";
 import { FinancialContextSummary } from "@/types";
 
 export const SUPPORTED_GEMINI_MODELS = [
-  { id: "gemini-1.5-flash", name: "Gemini 1.5 Flash (Recommended - Fast & Cost-Efficient)" },
-  { id: "gemini-1.5-pro", name: "Gemini 1.5 Pro (Deep Financial Reasoning)" },
-  { id: "gemini-2.0-flash-exp", name: "Gemini 2.0 Flash (Experimental Preview)" },
+  { id: "gemini-3.5-flash-lite", name: "Gemini 3.5 Flash Lite (Recommended - 500 Daily Quota)" },
+  { id: "gemini-3.8-flash", name: "Gemini 3.8 Flash (Latest Flagship Fast)" },
+  { id: "gemini-3.1-flash-lite", name: "Gemini 3.1 Flash Lite (500 Daily Quota)" },
+  { id: "gemini-2.5-flash", name: "Gemini 2.5 Flash" },
+  { id: "gemini-2.5-flash-lite", name: "Gemini 2.5 Flash Lite" },
+  { id: "gemini-1.5-flash", name: "Gemini 1.5 Flash (Legacy Stable)" },
 ];
 
-export const DEFAULT_GEMINI_MODEL = "gemini-1.5-flash";
+export const DEFAULT_GEMINI_MODEL = "gemini-3.5-flash-lite";
 
 export interface ChatMessageParam {
   role: "user" | "assistant" | "system";
@@ -24,51 +27,44 @@ export interface StreamChatOptions {
 }
 
 /**
- * Validates Gemini API Key by sending a minimal test prompt
+ * Validates Gemini API Key with automatic multi-model fallback across active tiers
  */
 export async function testGeminiConnection(apiKey: string, modelName: string = DEFAULT_GEMINI_MODEL) {
-  // Auto-resolve sunset model IDs to stable standard
-  const resolvedModel = modelName === "gemini-2.0-flash" ? DEFAULT_GEMINI_MODEL : modelName;
+  const modelsToTry = [
+    modelName,
+    "gemini-3.5-flash-lite",
+    "gemini-3.8-flash",
+    "gemini-3.1-flash-lite",
+    "gemini-2.5-flash",
+    "gemini-2.5-flash-lite",
+    "gemini-1.5-flash",
+  ].filter((v, i, a) => v && a.indexOf(v) === i && v !== "gemini-2.0-flash");
 
-  try {
-    const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: resolvedModel });
-    const result = await model.generateContent("Reply with 'Connection successful' in 2 words.");
-    const responseText = result.response.text();
-    return {
-      success: true,
-      message: responseText.trim(),
-    };
-  } catch (error: any) {
-    // If the chosen model failed (e.g. 404 or sunset), attempt fallback to DEFAULT_GEMINI_MODEL
-    if (resolvedModel !== DEFAULT_GEMINI_MODEL) {
-      try {
-        const genAI = new GoogleGenerativeAI(apiKey);
-        const fallbackModel = genAI.getGenerativeModel({ model: DEFAULT_GEMINI_MODEL });
-        const result = await fallbackModel.generateContent("Reply with 'Connection successful' in 2 words.");
-        return {
-          success: true,
-          message: `${result.response.text().trim()} (Connected using ${DEFAULT_GEMINI_MODEL})`,
-        };
-      } catch {
-        // Fall through to display error
-      }
+  const genAI = new GoogleGenerativeAI(apiKey);
+  let lastErrorMessage = "";
+
+  for (const candidate of modelsToTry) {
+    try {
+      const model = genAI.getGenerativeModel({ model: candidate });
+      const result = await model.generateContent("Reply with 'Connection successful' in 2 words.");
+      const responseText = result.response.text();
+      return {
+        success: true,
+        message: `${responseText.trim()} (Connected via ${candidate})`,
+      };
+    } catch (err: any) {
+      lastErrorMessage = err?.message || "Failed to connect to Google Gemini API";
     }
-
-    let friendlyMessage = error?.message || "Failed to connect to Google Gemini API";
-    if (friendlyMessage.includes("is no longer available") || friendlyMessage.includes("404")) {
-      friendlyMessage = "This model is no longer available on Google's API. Please use 'Gemini 1.5 Flash'.";
-    }
-
-    return {
-      success: false,
-      message: friendlyMessage,
-    };
   }
+
+  return {
+    success: false,
+    message: lastErrorMessage,
+  };
 }
 
 /**
- * Generates streaming response from Gemini AI using server-side credentials
+ * Generates streaming response from Gemini AI using server-side credentials with multi-model fallback
  */
 export async function streamGeminiChat({
   apiKey,
@@ -85,36 +81,25 @@ export async function streamGeminiChat({
     );
   }
 
-  const resolvedModel = modelName === "gemini-2.0-flash" ? DEFAULT_GEMINI_MODEL : modelName;
   const systemInstruction = formatSystemPromptWithContext(context);
   const genAI = new GoogleGenerativeAI(activeKey);
 
-  try {
-    const model = genAI.getGenerativeModel({
-      model: resolvedModel,
-      systemInstruction,
-      generationConfig: {
-        temperature,
-        maxOutputTokens: 2048,
-      },
-    });
+  const candidateModels = [
+    modelName,
+    "gemini-3.5-flash-lite",
+    "gemini-3.8-flash",
+    "gemini-3.1-flash-lite",
+    "gemini-2.5-flash",
+    "gemini-2.5-flash-lite",
+    "gemini-1.5-flash",
+  ].filter((v, i, a) => v && a.indexOf(v) === i && v !== "gemini-2.0-flash");
 
-    // Prepare chat history (convert to Gemini history format: user and model)
-    const history = messages.slice(0, -1).map((m) => ({
-      role: m.role === "assistant" ? "model" : "user",
-      parts: [{ text: m.content }],
-    }));
+  let lastError: any = null;
 
-    const lastMessage = messages[messages.length - 1];
-    const chat = model.startChat({ history });
-
-    const streamResult = await chat.sendMessageStream(lastMessage.content);
-    return streamResult.stream;
-  } catch (error: any) {
-    // If custom model failed, try falling back to DEFAULT_GEMINI_MODEL
-    if (resolvedModel !== DEFAULT_GEMINI_MODEL) {
-      const fallbackModel = genAI.getGenerativeModel({
-        model: DEFAULT_GEMINI_MODEL,
+  for (const candidate of candidateModels) {
+    try {
+      const model = genAI.getGenerativeModel({
+        model: candidate,
         systemInstruction,
         generationConfig: {
           temperature,
@@ -128,12 +113,14 @@ export async function streamGeminiChat({
       }));
 
       const lastMessage = messages[messages.length - 1];
-      const chat = fallbackModel.startChat({ history });
+      const chat = model.startChat({ history });
 
       const streamResult = await chat.sendMessageStream(lastMessage.content);
       return streamResult.stream;
+    } catch (err: any) {
+      lastError = err;
     }
-
-    throw error;
   }
+
+  throw lastError || new Error("Failed to stream chat response from Gemini API.");
 }
