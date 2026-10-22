@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 import { CurrencyDisplay } from "../common/CurrencyDisplay";
 
 interface SpendingEqualizerCardProps {
@@ -9,6 +10,8 @@ interface SpendingEqualizerCardProps {
   status: "NORMAL" | "MODERATE" | "OVER LIMIT";
   colorTheme: "yellow" | "coral" | "green";
   bars?: number[];
+  href?: string;
+  onClick?: () => void;
 }
 
 export function SpendingEqualizerCard({
@@ -17,6 +20,8 @@ export function SpendingEqualizerCard({
   status,
   colorTheme,
   bars = [40, 65, 85, 50, 70, 95, 60, 45, 80, 55, 90, 75],
+  href,
+  onClick,
 }: SpendingEqualizerCardProps) {
   const themeColors = {
     yellow: {
@@ -36,8 +41,8 @@ export function SpendingEqualizerCard({
     },
   }[colorTheme];
 
-  return (
-    <div className={`rounded-3xl p-4.5 border border-sky-100/70 dark:border-slate-700/60 shadow-xs flex flex-col justify-between ${themeColors.bg}`}>
+  const content = (
+    <div className={`rounded-3xl p-4.5 border border-sky-100/70 dark:border-slate-700/60 shadow-xs flex flex-col justify-between h-full ${themeColors.bg} transition-[border-color,box-shadow,transform]`}>
       {/* Category Name */}
       <div className="text-center">
         <span className="text-xs font-bold text-slate-700 dark:text-slate-300">
@@ -67,4 +72,29 @@ export function SpendingEqualizerCard({
       </div>
     </div>
   );
+
+  if (href) {
+    return (
+      <Link
+        href={href}
+        className="block active:scale-[0.96] transition-transform touch-manipulation cursor-pointer group"
+      >
+        {content}
+      </Link>
+    );
+  }
+
+  if (onClick) {
+    return (
+      <button
+        type="button"
+        onClick={onClick}
+        className="text-left w-full active:scale-[0.96] transition-transform touch-manipulation cursor-pointer group"
+      >
+        {content}
+      </button>
+    );
+  }
+
+  return content;
 }

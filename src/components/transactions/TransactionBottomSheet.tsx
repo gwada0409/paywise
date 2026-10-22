@@ -54,6 +54,21 @@ export function TransactionBottomSheet({
   const [date, setDate] = useState<string>(new Date().toISOString().split("T")[0]);
   const [notes, setNotes] = useState<string>("");
 
+  React.useEffect(() => {
+    if (isOpen) {
+      setType(defaultType);
+      if (defaultType === "income") {
+        setCategory("Salary");
+      } else if (defaultType === "want") {
+        setCategory("Dining Out");
+      } else if (defaultType === "loan_payment") {
+        setCategory("Debt & Loans");
+      } else {
+        setCategory("Groceries");
+      }
+    }
+  }, [isOpen, defaultType]);
+
   if (!isOpen) return null;
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -92,6 +107,8 @@ export function TransactionBottomSheet({
       ? NEED_CATEGORIES
       : type === "want"
       ? WANT_CATEGORIES
+      : type === "loan_payment"
+      ? ["Credit Card", "Personal Loan", "SSS / Pag-IBIG", "Family Support", "Other Debt"]
       : ["Salary", "Bonus", "Overtime", "Side Hustle", "General"];
 
   return (
@@ -133,26 +150,26 @@ export function TransactionBottomSheet({
             />
           </div>
 
-          {/* Type Toggle: Need vs Want vs Income */}
+          {/* Type Toggle: Need vs Want vs Debt vs Income */}
           <div>
             <label className="block text-xs font-semibold text-muted-foreground mb-1.5">
               Category Classification
             </label>
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               <button
                 type="button"
                 onClick={() => {
                   setType("need");
                   setCategory("Groceries");
                 }}
-                className={`flex items-center justify-center gap-1.5 rounded-xl py-2.5 px-3 text-xs font-semibold transition-colors min-h-[44px] ${
+                className={`flex items-center justify-center gap-1.5 rounded-xl py-2 px-2.5 text-xs font-semibold transition-colors min-h-[44px] ${
                   type === "need"
-                    ? "bg-blue-600 text-white shadow-sm ring-2 ring-blue-500/20"
+                    ? "bg-blue-600 text-white shadow-xs ring-2 ring-blue-500/20"
                     : "border border-border bg-card text-muted-foreground hover:bg-muted/40"
                 }`}
               >
                 <ArrowDownRight className="h-3.5 w-3.5" />
-                Need (50%)
+                Need
               </button>
 
               <button
@@ -161,14 +178,30 @@ export function TransactionBottomSheet({
                   setType("want");
                   setCategory("Dining Out");
                 }}
-                className={`flex items-center justify-center gap-1.5 rounded-xl py-2.5 px-3 text-xs font-semibold transition-colors min-h-[44px] ${
+                className={`flex items-center justify-center gap-1.5 rounded-xl py-2 px-2.5 text-xs font-semibold transition-colors min-h-[44px] ${
                   type === "want"
-                    ? "bg-amber-500 text-white shadow-2xs ring-2 ring-amber-500/20"
+                    ? "bg-amber-500 text-white shadow-xs ring-2 ring-amber-500/20"
                     : "border border-border bg-card text-muted-foreground hover:bg-muted/40"
                 }`}
               >
                 <ArrowDownRight className="h-3.5 w-3.5" />
-                Want (30%)
+                Want
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setType("loan_payment");
+                  setCategory("Credit Card");
+                }}
+                className={`flex items-center justify-center gap-1.5 rounded-xl py-2 px-2.5 text-xs font-semibold transition-colors min-h-[44px] ${
+                  type === "loan_payment"
+                    ? "bg-teal-600 text-white shadow-xs ring-2 ring-teal-500/20"
+                    : "border border-border bg-card text-muted-foreground hover:bg-muted/40"
+                }`}
+              >
+                <ArrowDownRight className="h-3.5 w-3.5" />
+                Debt & Loans
               </button>
 
               <button
@@ -177,9 +210,9 @@ export function TransactionBottomSheet({
                   setType("income");
                   setCategory("Salary");
                 }}
-                className={`flex items-center justify-center gap-1.5 rounded-xl py-2.5 px-3 text-xs font-semibold transition-colors min-h-[44px] ${
+                className={`flex items-center justify-center gap-1.5 rounded-xl py-2 px-2.5 text-xs font-semibold transition-colors min-h-[44px] ${
                   type === "income"
-                    ? "bg-emerald-600 text-white shadow-sm ring-2 ring-emerald-500/20"
+                    ? "bg-emerald-600 text-white shadow-xs ring-2 ring-emerald-500/20"
                     : "border border-border bg-card text-muted-foreground hover:bg-muted/40"
                 }`}
               >

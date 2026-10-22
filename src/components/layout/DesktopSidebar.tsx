@@ -47,7 +47,7 @@ export function DesktopSidebar() {
         { label: "Dashboard", href: "/dashboard", icon: Wallet },
         { label: "Salary & Payday", href: "/salary", icon: CalendarDays },
         { label: "Transactions", href: "/transactions", icon: ArrowLeftRight },
-        { label: "Budget (50/30/20)", href: "/budget", icon: PieChart },
+        { label: "Budget Allocation", href: "/budget", icon: PieChart },
       ],
     },
     {
@@ -160,7 +160,7 @@ export function DesktopSidebar() {
 
       {/* User profile footer */}
       <div className="border-t border-sky-100 dark:border-slate-800 p-4 bg-white/50 dark:bg-slate-900/50">
-        <div className="flex items-center gap-3">
+        <Link href="/settings" className="flex items-center gap-3 hover:opacity-80 active:scale-[0.98] transition-all cursor-pointer">
           <div className="flex h-9 w-9 items-center justify-center rounded-full bg-sky-100 text-[#4A90FF] dark:bg-slate-800 dark:text-sky-300">
             <User className="h-4 w-4" />
           </div>
@@ -168,7 +168,7 @@ export function DesktopSidebar() {
             <p className="text-sm font-bold text-slate-900 dark:text-white">Juan Dela Cruz</p>
             <p className="text-xs text-slate-400 truncate">Philippine Payday Tracker</p>
           </div>
-        </div>
+        </Link>
       </div>
     </aside>
   );

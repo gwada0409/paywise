@@ -422,7 +422,7 @@ export default function BudgetPage() {
                 min={5}
                 max={50}
                 value={wantsP}
-                onChange={(e) => setNeedsP ? setWantsP(Number(e.target.value)) : null}
+                onChange={(e) => setWantsP(Number(e.target.value))}
                 className="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-amber-500"
               />
             </div>

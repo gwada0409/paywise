@@ -13,13 +13,6 @@ import {
 
 export function MobileBottomNavigation() {
   const pathname = usePathname();
-  const router = useRouter();
-
-  // Instant single-tap navigation handler
-  const handleNav = (e: React.MouseEvent, href: string) => {
-    e.preventDefault();
-    router.push(href);
-  };
 
   return (
     <nav className="fixed bottom-3 left-4 right-4 z-40 block md:hidden max-w-md mx-auto select-none touch-manipulation">
@@ -45,9 +38,8 @@ export function MobileBottomNavigation() {
           <Link
             href="/dashboard"
             prefetch={true}
-            onClick={(e) => handleNav(e, "/dashboard")}
             aria-label="Dashboard"
-            className={`flex-1 flex flex-col items-center justify-center min-h-[48px] touch-manipulation cursor-pointer select-none active:opacity-60 transition-opacity ${
+            className={`flex-1 flex flex-col items-center justify-center min-h-[48px] touch-manipulation cursor-pointer select-none active:scale-[0.96] transition-transform ${
               pathname === "/dashboard"
                 ? "text-[#4A90FF] font-bold"
                 : "text-slate-400 dark:text-slate-400"
@@ -67,9 +59,8 @@ export function MobileBottomNavigation() {
           <Link
             href="/reports"
             prefetch={true}
-            onClick={(e) => handleNav(e, "/reports")}
             aria-label="Reports"
-            className={`flex-1 flex flex-col items-center justify-center min-h-[48px] touch-manipulation cursor-pointer select-none active:opacity-60 transition-opacity ${
+            className={`flex-1 flex flex-col items-center justify-center min-h-[48px] touch-manipulation cursor-pointer select-none active:scale-[0.96] transition-transform ${
               pathname === "/reports"
                 ? "text-[#4A90FF] font-bold"
                 : "text-slate-400 dark:text-slate-400"
@@ -90,9 +81,8 @@ export function MobileBottomNavigation() {
             <Link
               href="/ai"
               prefetch={true}
-              onClick={(e) => handleNav(e, "/ai")}
               aria-label="PayWise AI Assistant"
-              className="flex items-center justify-center touch-manipulation cursor-pointer select-none active:opacity-75 transition-opacity"
+              className="flex items-center justify-center touch-manipulation cursor-pointer select-none active:scale-[0.96] transition-transform"
             >
               <div className="relative flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center rounded-full bg-ai-rainbow shadow-md shadow-sky-500/25 ring-2 ring-white/70 dark:ring-slate-800">
                 <Sparkles className="h-5.5 w-5.5 text-white stroke-[2.2px] drop-shadow-xs" />
@@ -107,9 +97,8 @@ export function MobileBottomNavigation() {
           <Link
             href="/savings"
             prefetch={true}
-            onClick={(e) => handleNav(e, "/savings")}
             aria-label="Savings Goals"
-            className={`flex-1 flex flex-col items-center justify-center min-h-[48px] touch-manipulation cursor-pointer select-none active:opacity-60 transition-opacity ${
+            className={`flex-1 flex flex-col items-center justify-center min-h-[48px] touch-manipulation cursor-pointer select-none active:scale-[0.96] transition-transform ${
               pathname === "/savings"
                 ? "text-[#4A90FF] font-bold"
                 : "text-slate-400 dark:text-slate-400"
@@ -129,9 +118,8 @@ export function MobileBottomNavigation() {
           <Link
             href="/settings"
             prefetch={true}
-            onClick={(e) => handleNav(e, "/settings")}
             aria-label="Settings"
-            className={`flex-1 flex flex-col items-center justify-center min-h-[48px] touch-manipulation cursor-pointer select-none active:opacity-60 transition-opacity ${
+            className={`flex-1 flex flex-col items-center justify-center min-h-[48px] touch-manipulation cursor-pointer select-none active:scale-[0.96] transition-transform ${
               pathname === "/settings"
                 ? "text-[#4A90FF] font-bold"
                 : "text-slate-400 dark:text-slate-400"
