@@ -27,18 +27,22 @@ CREATE TABLE IF NOT EXISTS public.salary_settings (
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- 3. Budget Rules (Needs, Wants, Savings percentage split)
+-- 3. Budget Rules (Needs, Wants, Savings, Debt & Investments 4-pillar split)
 CREATE TABLE IF NOT EXISTS public.budget_rules (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE UNIQUE,
+    preset_name TEXT DEFAULT '50/20/20/10',
     needs_percent NUMERIC(5,2) NOT NULL DEFAULT 50.00 CHECK (needs_percent >= 0),
-    wants_percent NUMERIC(5,2) NOT NULL DEFAULT 30.00 CHECK (wants_percent >= 0),
+    wants_percent NUMERIC(5,2) NOT NULL DEFAULT 20.00 CHECK (wants_percent >= 0),
     savings_percent NUMERIC(5,2) NOT NULL DEFAULT 20.00 CHECK (savings_percent >= 0),
+    debt_percent NUMERIC(5,2) NOT NULL DEFAULT 10.00 CHECK (debt_percent >= 0),
+    fourth_pillar_name TEXT NOT NULL DEFAULT 'Debt & Loans',
+    category_allocations JSONB DEFAULT '{}'::jsonb,
     alert_threshold_80 BOOLEAN NOT NULL DEFAULT true,
     alert_threshold_90 BOOLEAN NOT NULL DEFAULT true,
     alert_threshold_100 BOOLEAN NOT NULL DEFAULT true,
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    CONSTRAINT sum_percentages_100 CHECK ((needs_percent + wants_percent + savings_percent) = 100.00)
+    CONSTRAINT sum_percentages_100 CHECK ((needs_percent + wants_percent + savings_percent + debt_percent) = 100.00)
 );
 
 -- 4. Financial Accounts (Cash, GCash, Maya, Bank accounts, Cards)

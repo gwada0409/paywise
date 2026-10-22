@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Wallet, ArrowRight, Lock, Mail, User } from "lucide-react";
 import { toast } from "sonner";
+import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -13,10 +14,45 @@ export default function RegisterPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleRegister = (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
+    if (isSupabaseConfigured()) {
+      try {
+        const supabase = createClient();
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            data: {
+              full_name: name,
+            },
+          },
+        });
+
+        if (error) {
+          toast.error(error.message || "Failed to create account.");
+          setLoading(false);
+          return;
+        }
+
+        // If email confirmation is enabled on Supabase
+        if (data?.session) {
+          toast.success("Account created successfully!");
+          router.push("/onboarding");
+        } else {
+          toast.success("Account created! Please check your email to confirm your account.");
+          router.push("/login");
+        }
+        return;
+      } catch (err: unknown) {
+        console.error("Supabase register error:", err);
+        toast.error("Registration error. Continuing in local mode.");
+      }
+    }
+
+    // Local / Offline fallback
     setTimeout(() => {
       setLoading(false);
       toast.success("Account created successfully!");

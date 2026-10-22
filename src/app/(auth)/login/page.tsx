@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Wallet, ArrowRight, Sparkles, Lock, Mail } from "lucide-react";
 import { toast } from "sonner";
 import { useFinance } from "@/lib/store/finance-context";
+import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -14,10 +15,34 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
+    if (isSupabaseConfigured()) {
+      try {
+        const supabase = createClient();
+        const { error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+
+        if (error) {
+          toast.error(error.message || "Failed to sign in. Please check your credentials.");
+          setLoading(false);
+          return;
+        }
+
+        toast.success("Welcome back to PayWise!");
+        router.push("/dashboard");
+        return;
+      } catch (err: unknown) {
+        console.error("Supabase login error:", err);
+        toast.error("Authentication error. Falling back to local session.");
+      }
+    }
+
+    // Local / Offline fallback
     setTimeout(() => {
       setLoading(false);
       toast.success("Welcome back to PayWise!");
