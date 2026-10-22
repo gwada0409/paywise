@@ -55,7 +55,16 @@ export function TransactionBottomSheet({
   const [notes, setNotes] = useState<string>("");
 
   React.useEffect(() => {
+    if (accounts.length > 0 && (!accountId || !accounts.some((a) => a.id === accountId))) {
+      setAccountId(accounts[0].id);
+    }
+  }, [accounts, accountId]);
+
+  React.useEffect(() => {
     if (isOpen) {
+      if (accounts.length > 0) {
+        setAccountId(accounts[0].id);
+      }
       setType(defaultType);
       if (defaultType === "income") {
         setCategory("Salary");

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, useMemo } from "react";
+import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from "react";
 import {
   SalarySettings,
   BudgetRules,
@@ -18,6 +18,24 @@ import {
   UserProfile,
 } from "@/types";
 import { createClient, isSupabaseConfigured } from "../supabase/client";
+import {
+  generateUUID,
+  isValidUUID,
+  fetchUserData,
+  syncInsertTransaction,
+  syncDeleteTransaction,
+  syncInsertIncome,
+  syncSalarySettings,
+  syncBudgetRules,
+  syncUpsertAccount,
+  syncInsertBill,
+  syncUpdateBillStatus,
+  syncInsertSavingsGoal,
+  syncSavingsMovement,
+  syncInsertLoan,
+  syncLoanPayment,
+  resetUserCloudData,
+} from "../supabase/db";
 import {
   DEMO_SALARY_SETTINGS,
   DEMO_BUDGET_RULES,
@@ -65,6 +83,7 @@ interface FinanceContextType {
   // Actions
   updateUserProfile: (profile: Partial<UserProfile>) => Promise<void> | void;
   signOut: () => Promise<void>;
+  addAccount: (account: Omit<FinancialAccount, "id" | "created_at">) => void;
   addTransaction: (tx: Omit<FinancialTransaction, "id" | "created_at">) => void;
   deleteTransaction: (id: string) => void;
   recordSalaryIncome: (income: Omit<IncomeRecord, "id" | "created_at">) => void;
@@ -91,8 +110,28 @@ interface FinanceContextType {
 
 const FinanceContext = createContext<FinanceContextType | null>(null);
 
-const STORAGE_KEY = "paywise_finance_state_v1";
 const USER_STORAGE_KEY = "paywise_user_profile_v1";
+const getStorageKey = (userId?: string) =>
+  "paywise_finance_state_" + (userId && userId !== "guest" ? userId : "guest");
+
+const EMPTY_SALARY_SETTINGS: SalarySettings = {
+  monthly_net: 0,
+  payday_1_day: 15,
+  payday_2_day: 30,
+  payday_1_expected: 0,
+  payday_2_expected: 0,
+  is_semi_monthly: true,
+};
+
+const EMPTY_BUDGET_RULES: BudgetRules = {
+  preset_name: "50/20/20/10",
+  needs_percent: 50,
+  wants_percent: 20,
+  savings_percent: 20,
+  debt_percent: 10,
+  fourth_pillar_name: "Debt & Loans",
+  category_allocations: {},
+};
 
 const DEFAULT_USER_PROFILE: UserProfile = {
   id: "guest",
@@ -105,17 +144,17 @@ const DEFAULT_USER_PROFILE: UserProfile = {
 
 export function FinanceProvider({ children }: { children: React.ReactNode }) {
   const [userProfile, setUserProfile] = useState<UserProfile>(DEFAULT_USER_PROFILE);
-  const [salarySettings, setSalarySettings] = useState<SalarySettings>(DEMO_SALARY_SETTINGS);
-  const [budgetRules, setBudgetRules] = useState<BudgetRules>(DEMO_BUDGET_RULES);
-  const [accounts, setAccounts] = useState<FinancialAccount[]>(DEMO_ACCOUNTS);
-  const [transactions, setTransactions] = useState<FinancialTransaction[]>(DEMO_TRANSACTIONS);
-  const [incomeRecords, setIncomeRecords] = useState<IncomeRecord[]>(DEMO_INCOME_RECORDS);
-  const [savingsGoals, setSavingsGoals] = useState<SavingsGoal[]>(DEMO_SAVINGS_GOALS);
-  const [savingsMovements, setSavingsMovements] = useState<SavingsMovement[]>(DEMO_SAVINGS_MOVEMENTS);
-  const [bills, setBills] = useState<Bill[]>(DEMO_BILLS);
-  const [loans, setLoans] = useState<Loan[]>(DEMO_LOANS);
-  const [notifications, setNotifications] = useState<NotificationItem[]>(DEMO_NOTIFICATIONS);
-  const [isDemoMode, setIsDemoMode] = useState<boolean>(true);
+  const [salarySettings, setSalarySettings] = useState<SalarySettings>(EMPTY_SALARY_SETTINGS);
+  const [budgetRules, setBudgetRules] = useState<BudgetRules>(EMPTY_BUDGET_RULES);
+  const [accounts, setAccounts] = useState<FinancialAccount[]>([]);
+  const [transactions, setTransactions] = useState<FinancialTransaction[]>([]);
+  const [incomeRecords, setIncomeRecords] = useState<IncomeRecord[]>([]);
+  const [savingsGoals, setSavingsGoals] = useState<SavingsGoal[]>([]);
+  const [savingsMovements, setSavingsMovements] = useState<SavingsMovement[]>([]);
+  const [bills, setBills] = useState<Bill[]>([]);
+  const [loans, setLoans] = useState<Loan[]>([]);
+  const [notifications, setNotifications] = useState<NotificationItem[]>([]);
+  const [isDemoMode, setIsDemoMode] = useState<boolean>(false);
   const [clientApiKey, setClientApiKey] = useState<string>("");
   const [aiPreferences, setAiPreferencesState] = useState<AIPreferences>({
     is_enabled: true,
@@ -142,10 +181,25 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  // Load persisted state from localStorage on client mount & sync Supabase Auth
+  // Load persisted state from localStorage on client mount & sync Supabase Cloud
   useEffect(() => {
+    let currentUserId = "guest";
+
     try {
-      const stored = localStorage.getItem(STORAGE_KEY);
+      // 1. Check if user profile is stored locally
+      const storedUser = localStorage.getItem(USER_STORAGE_KEY);
+      if (storedUser) {
+        const parsedUser = JSON.parse(storedUser);
+        if (parsedUser.id) currentUserId = parsedUser.id;
+        if (parsedUser.display_name || parsedUser.email) {
+          setUserProfile(parsedUser);
+        }
+      }
+
+      // 2. Load cached records for this specific user/guest
+      const userKey = getStorageKey(currentUserId);
+      const stored = localStorage.getItem(userKey);
+
       if (stored) {
         const parsed = JSON.parse(stored);
         if (parsed.salarySettings) setSalarySettings(parsed.salarySettings);
@@ -158,17 +212,45 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
         if (parsed.bills) setBills(parsed.bills);
         if (parsed.loans) setLoans(parsed.loans);
         if (parsed.notifications) setNotifications(parsed.notifications);
-        if (typeof parsed.isDemoMode === "boolean") setIsDemoMode(parsed.isDemoMode);
+        if (typeof parsed.isDemoMode === "boolean") {
+          setIsDemoMode(currentUserId === "guest" ? parsed.isDemoMode : false);
+        }
         if (parsed.aiPreferences) setAiPreferencesState(parsed.aiPreferences);
         if (parsed.clientApiKey) setClientApiKey(parsed.clientApiKey);
-      }
-
-      const storedUser = localStorage.getItem(USER_STORAGE_KEY);
-      if (storedUser) {
-        const parsedUser = JSON.parse(storedUser);
-        if (parsedUser.display_name || parsedUser.email) {
-          setUserProfile(parsedUser);
-        }
+      } else if (currentUserId !== "guest") {
+        // Authenticated user with no local cache yet: initialize clean state
+        setAccounts([
+          {
+            id: generateUUID(),
+            name: "Cash on Hand",
+            type: "cash",
+            balance: 0,
+            is_default: true,
+          },
+        ]);
+        setSalarySettings(EMPTY_SALARY_SETTINGS);
+        setBudgetRules(EMPTY_BUDGET_RULES);
+        setTransactions([]);
+        setIncomeRecords([]);
+        setSavingsGoals([]);
+        setSavingsMovements([]);
+        setBills([]);
+        setLoans([]);
+        setNotifications([]);
+        setIsDemoMode(false);
+      } else {
+        // Guest user without cache: load demo records
+        setAccounts(DEMO_ACCOUNTS);
+        setSalarySettings(DEMO_SALARY_SETTINGS);
+        setBudgetRules(DEMO_BUDGET_RULES);
+        setTransactions(DEMO_TRANSACTIONS);
+        setIncomeRecords(DEMO_INCOME_RECORDS);
+        setSavingsGoals(DEMO_SAVINGS_GOALS);
+        setSavingsMovements(DEMO_SAVINGS_MOVEMENTS);
+        setBills(DEMO_BILLS);
+        setLoans(DEMO_LOANS);
+        setNotifications(DEMO_NOTIFICATIONS);
+        setIsDemoMode(true);
       }
     } catch (e) {
       console.error("Failed to load PayWise local storage", e);
@@ -176,59 +258,67 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
       setIsInitialized(true);
     }
 
-    // Sync active session if Supabase is connected
+    // 3. Connect and fetch live cloud records if Supabase is active
     if (isSupabaseConfigured()) {
       try {
         const supabase = createClient();
+
+        const syncUserWithCloud = async (user: any) => {
+          const userId = user.id;
+          const meta = (user.user_metadata as Record<string, string>) || {};
+          const resolvedName =
+            meta.full_name ||
+            meta.name ||
+            (user.email ? user.email.split("@")[0] : "User");
+
+          const updatedProfile: UserProfile = {
+            id: userId,
+            email: user.email || "",
+            display_name: resolvedName,
+            currency: "PHP",
+            theme: "system",
+            onboarding_completed: true,
+          };
+
+          setUserProfile(updatedProfile);
+          try {
+            localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(updatedProfile));
+          } catch {}
+
+          // Fetch cloud database records
+          const cloudData = await fetchUserData(userId);
+          if (cloudData) {
+            if (cloudData.accounts && cloudData.accounts.length > 0) {
+              setAccounts(cloudData.accounts);
+            }
+            if (cloudData.salarySettings) {
+              setSalarySettings(cloudData.salarySettings);
+            }
+            if (cloudData.budgetRules) {
+              setBudgetRules(cloudData.budgetRules);
+            }
+            setTransactions(cloudData.transactions || []);
+            setIncomeRecords(cloudData.incomeRecords || []);
+            setSavingsGoals(cloudData.savingsGoals || []);
+            setSavingsMovements(cloudData.savingsMovements || []);
+            setBills(cloudData.bills || []);
+            setLoans(cloudData.loans || []);
+            setNotifications(cloudData.notifications || []);
+            setIsDemoMode(false);
+          } else {
+            setIsDemoMode(false);
+          }
+        };
+
         supabase.auth.getUser().then(({ data }) => {
           if (data?.user) {
-            const meta = (data.user.user_metadata as Record<string, string>) || {};
-            const resolvedName =
-              meta.full_name ||
-              meta.name ||
-              (data.user.email ? data.user.email.split("@")[0] : "User");
-
-            setUserProfile((prev) => {
-              const updated: UserProfile = {
-                ...prev,
-                id: data.user.id,
-                email: data.user.email || prev.email,
-                display_name: resolvedName,
-                onboarding_completed: true,
-              };
-              try {
-                localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(updated));
-              } catch {
-                // Ignore storage errors
-              }
-              return updated;
-            });
+            syncUserWithCloud(data.user);
           }
         });
 
         const { data: authSub } = supabase.auth.onAuthStateChange((_event, session) => {
           if (session?.user) {
-            const meta = (session.user.user_metadata as Record<string, string>) || {};
-            const resolvedName =
-              meta.full_name ||
-              meta.name ||
-              (session.user.email ? session.user.email.split("@")[0] : "User");
-
-            setUserProfile((prev) => {
-              const updated: UserProfile = {
-                ...prev,
-                id: session.user.id,
-                email: session.user.email || prev.email,
-                display_name: resolvedName,
-                onboarding_completed: true,
-              };
-              try {
-                localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(updated));
-              } catch {
-                // Ignore storage errors
-              }
-              return updated;
-            });
+            syncUserWithCloud(session.user);
           }
         });
 
@@ -236,12 +326,12 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
           authSub.subscription.unsubscribe();
         };
       } catch (err) {
-        console.warn("Could not attach Supabase auth listener", err);
+        console.warn("Could not attach Supabase auth sync listener", err);
       }
     }
   }, []);
 
-  // Save to localStorage when state updates
+  // Save to localStorage when state updates (keyed per user)
   useEffect(() => {
     if (!isInitialized) return;
     try {
@@ -260,12 +350,14 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
         aiPreferences,
         clientApiKey,
       };
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+      const userKey = getStorageKey(userProfile.id);
+      localStorage.setItem(userKey, JSON.stringify(payload));
     } catch (e) {
       console.error("Failed to save PayWise state", e);
     }
   }, [
     isInitialized,
+    userProfile.id,
     salarySettings,
     budgetRules,
     accounts,
@@ -325,54 +417,97 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
   ]);
 
   // Action implementations
+  const addAccount = (account: Omit<FinancialAccount, "id" | "created_at">) => {
+    const accId = generateUUID();
+    const newAcc: FinancialAccount = {
+      ...account,
+      id: accId,
+      created_at: new Date().toISOString(),
+    };
+
+    setAccounts((prev) => [...prev, newAcc]);
+
+    if (userProfile.id && userProfile.id !== "guest") {
+      syncUpsertAccount(userProfile.id, newAcc).catch(console.error);
+    }
+  };
+
   const addTransaction = (tx: Omit<FinancialTransaction, "id" | "created_at">) => {
+    const txId = generateUUID();
+    const targetAccountId =
+      tx.account_id && isValidUUID(tx.account_id)
+        ? tx.account_id
+        : accounts[0]?.id || generateUUID();
+
     const newTx: FinancialTransaction = {
       ...tx,
-      id: `tx-${Date.now()}`,
+      id: txId,
+      account_id: targetAccountId,
       created_at: new Date().toISOString(),
     };
 
     setTransactions((prev) => [newTx, ...prev]);
 
-    // Update account balance
-    if (tx.account_id) {
-      setAccounts((prev) =>
-        prev.map((acc) => {
-          if (acc.id === tx.account_id) {
-            const deduction = tx.type === "income" ? -tx.amount : tx.amount;
-            return { ...acc, balance: roundMoney(acc.balance - deduction) };
-          }
-          return acc;
-        })
-      );
+    let updatedAccountBalance: number | undefined;
+    setAccounts((prev) =>
+      prev.map((acc) => {
+        if (acc.id === targetAccountId) {
+          const deduction = tx.type === "income" ? -tx.amount : tx.amount;
+          const newBal = roundMoney(acc.balance - deduction);
+          updatedAccountBalance = newBal;
+          return { ...acc, balance: newBal };
+        }
+        return acc;
+      })
+    );
+
+    if (userProfile.id && userProfile.id !== "guest") {
+      syncInsertTransaction(userProfile.id, newTx, updatedAccountBalance).catch(console.error);
     }
   };
 
   const deleteTransaction = (id: string) => {
     const tx = transactions.find((t) => t.id === id);
+    let revertedBalance: number | undefined;
     if (tx && tx.account_id) {
-      // Revert account balance
       setAccounts((prev) =>
         prev.map((acc) => {
           if (acc.id === tx.account_id) {
             const revert = tx.type === "income" ? -tx.amount : tx.amount;
-            return { ...acc, balance: roundMoney(acc.balance + revert) };
+            const newBal = roundMoney(acc.balance + revert);
+            revertedBalance = newBal;
+            return { ...acc, balance: newBal };
           }
           return acc;
         })
       );
     }
     setTransactions((prev) => prev.filter((t) => t.id !== id));
+
+    if (userProfile.id && userProfile.id !== "guest") {
+      syncDeleteTransaction(userProfile.id, id, tx?.account_id, revertedBalance).catch(console.error);
+    }
   };
 
   const recordSalaryIncome = (income: Omit<IncomeRecord, "id" | "created_at">) => {
+    const incId = generateUUID();
+    const targetAccountId =
+      income.account_id && isValidUUID(income.account_id)
+        ? income.account_id
+        : accounts[0]?.id || generateUUID();
+
     const newRecord: IncomeRecord = {
       ...income,
-      id: `inc-${Date.now()}`,
+      id: incId,
+      account_id: targetAccountId,
       created_at: new Date().toISOString(),
     };
 
     setIncomeRecords((prev) => [newRecord, ...prev]);
+
+    if (userProfile.id && userProfile.id !== "guest") {
+      syncInsertIncome(userProfile.id, newRecord).catch(console.error);
+    }
 
     // Also record transaction and update account
     addTransaction({
@@ -381,7 +516,7 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
       type: "income",
       category: "Salary",
       payment_method: "bank",
-      account_id: income.account_id || accounts[0]?.id,
+      account_id: targetAccountId,
       payday_period: income.payday_period,
       date: income.date,
       notes: income.notes,
@@ -390,7 +525,7 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
     // Add notification
     setNotifications((prev) => [
       {
-        id: `notif-${Date.now()}`,
+        id: generateUUID(),
         title: "Salary Recorded",
         message: `₱${income.amount.toLocaleString()} received for ${income.payday_period}. Available spendable balance updated.`,
         type: "salary",
@@ -402,43 +537,70 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
   };
 
   const updateSalarySettings = (settings: Partial<SalarySettings>) => {
-    setSalarySettings((prev) => ({ ...prev, ...settings }));
+    setSalarySettings((prev) => {
+      const updated = { ...prev, ...settings };
+      if (userProfile.id && userProfile.id !== "guest") {
+        syncSalarySettings(userProfile.id, updated).catch(console.error);
+      }
+      return updated;
+    });
   };
 
   const updateBudgetRules = (rules: Partial<BudgetRules>) => {
-    setBudgetRules((prev) => ({ ...prev, ...rules }));
+    setBudgetRules((prev) => {
+      const updated = { ...prev, ...rules };
+      if (userProfile.id && userProfile.id !== "guest") {
+        syncBudgetRules(userProfile.id, updated).catch(console.error);
+      }
+      return updated;
+    });
   };
 
   const updateCategoryAllocation = (category: string, amount: number) => {
-    setBudgetRules((prev) => ({
-      ...prev,
-      category_allocations: {
-        ...(prev.category_allocations || {}),
-        [category]: Math.max(0, amount),
-      },
-    }));
+    setBudgetRules((prev) => {
+      const updated = {
+        ...prev,
+        category_allocations: {
+          ...(prev.category_allocations || {}),
+          [category]: Math.max(0, amount),
+        },
+      };
+      if (userProfile.id && userProfile.id !== "guest") {
+        syncBudgetRules(userProfile.id, updated).catch(console.error);
+      }
+      return updated;
+    });
   };
 
   const removeCategoryAllocation = (category: string) => {
     setBudgetRules((prev) => {
       const next = { ...(prev.category_allocations || {}) };
       delete next[category];
-      return {
+      const updated = {
         ...prev,
         category_allocations: next,
       };
+      if (userProfile.id && userProfile.id !== "guest") {
+        syncBudgetRules(userProfile.id, updated).catch(console.error);
+      }
+      return updated;
     });
   };
 
   const addSavingsGoal = (goal: Omit<SavingsGoal, "id" | "current_amount" | "created_at" | "updated_at">) => {
+    const goalId = generateUUID();
     const newGoal: SavingsGoal = {
       ...goal,
-      id: `goal-${Date.now()}`,
+      id: goalId,
       current_amount: 0,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     };
     setSavingsGoals((prev) => [...prev, newGoal]);
+
+    if (userProfile.id && userProfile.id !== "guest") {
+      syncInsertSavingsGoal(userProfile.id, newGoal).catch(console.error);
+    }
   };
 
   const recordSavingsTransfer = (
@@ -450,26 +612,15 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
     const targetGoal = savingsGoals.find((g) => g.id === goalId);
     if (!targetGoal) return;
 
-    const newMovement: SavingsMovement = {
-      id: `sm-${Date.now()}`,
-      goal_id: goalId,
-      amount,
-      type,
-      account_id: accountId,
-      date: new Date().toISOString().split("T")[0],
-      created_at: new Date().toISOString(),
-    };
+    const delta = type === "deposit" ? amount : -amount;
+    const newAmount = roundMoney(Math.max(0, targetGoal.current_amount + delta));
 
-    setSavingsMovements((prev) => [newMovement, ...prev]);
-
-    // Update goal balance
     setSavingsGoals((prev) =>
       prev.map((g) => {
         if (g.id === goalId) {
-          const delta = type === "deposit" ? amount : -amount;
           return {
             ...g,
-            current_amount: roundMoney(Math.max(0, g.current_amount + delta)),
+            current_amount: newAmount,
             updated_at: new Date().toISOString(),
           };
         }
@@ -477,24 +628,43 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
       })
     );
 
-    // Update source account if provided
+    const movementId = generateUUID();
+    const movement: SavingsMovement = {
+      id: movementId,
+      goal_id: goalId,
+      amount,
+      type,
+      account_id: accountId && isValidUUID(accountId) ? accountId : undefined,
+      date: new Date().toISOString().split("T")[0],
+      created_at: new Date().toISOString(),
+    };
+
+    setSavingsMovements((prev) => [movement, ...prev]);
+
+    let newAccBalance: number | undefined;
     if (accountId) {
       setAccounts((prev) =>
         prev.map((acc) => {
           if (acc.id === accountId) {
-            const delta = type === "deposit" ? -amount : amount;
-            return { ...acc, balance: roundMoney(acc.balance + delta) };
+            const accDelta = type === "deposit" ? -amount : amount;
+            const newBal = roundMoney(acc.balance + accDelta);
+            newAccBalance = newBal;
+            return { ...acc, balance: newBal };
           }
           return acc;
         })
       );
     }
 
+    if (userProfile.id && userProfile.id !== "guest") {
+      syncSavingsMovement(userProfile.id, movement, newAmount, newAccBalance).catch(console.error);
+    }
+
     // Check if goal reached
     if (type === "deposit" && targetGoal.current_amount + amount >= targetGoal.target_amount) {
       setNotifications((prev) => [
         {
-          id: `notif-${Date.now()}`,
+          id: generateUUID(),
           title: "Goal Reached!",
           message: `Congratulations! You've reached your target of ₱${targetGoal.target_amount.toLocaleString()} for ${targetGoal.name}.`,
           type: "savings_milestone",
@@ -507,13 +677,22 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
   };
 
   const addBill = (bill: Omit<Bill, "id" | "status" | "created_at">) => {
+    const billId = generateUUID();
+    const targetAccountId =
+      bill.account_id && isValidUUID(bill.account_id) ? bill.account_id : undefined;
+
     const newBill: Bill = {
       ...bill,
-      id: `bill-${Date.now()}`,
+      id: billId,
+      account_id: targetAccountId,
       status: "upcoming",
       created_at: new Date().toISOString(),
     };
     setBills((prev) => [...prev, newBill]);
+
+    if (userProfile.id && userProfile.id !== "guest") {
+      syncInsertBill(userProfile.id, newBill).catch(console.error);
+    }
   };
 
   const markBillAsPaid = (billId: string, accountId?: string) => {
@@ -524,6 +703,10 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
       prev.map((b) => (b.id === billId ? { ...b, status: "paid" } : b))
     );
 
+    if (userProfile.id && userProfile.id !== "guest") {
+      syncUpdateBillStatus(userProfile.id, billId, "paid").catch(console.error);
+    }
+
     // Add transaction
     addTransaction({
       title: `Bill Payment: ${bill.name}`,
@@ -531,33 +714,52 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
       type: "bill_payment",
       category: bill.category || "Bills & Utilities",
       payment_method: "gcash",
-      account_id: accountId || accounts[0]?.id,
+      account_id: accountId || bill.account_id || accounts[0]?.id,
       date: new Date().toISOString().split("T")[0],
     });
   };
 
   const addLoan = (loan: Omit<Loan, "id" | "created_at">) => {
+    const loanId = generateUUID();
     const newLoan: Loan = {
       ...loan,
-      id: `loan-${Date.now()}`,
+      id: loanId,
       created_at: new Date().toISOString(),
     };
     setLoans((prev) => [...prev, newLoan]);
+
+    if (userProfile.id && userProfile.id !== "guest") {
+      syncInsertLoan(userProfile.id, newLoan).catch(console.error);
+    }
   };
 
   const recordLoanPayment = (loanId: string, amount: number, accountId?: string) => {
     const targetLoan = loans.find((l) => l.id === loanId);
     if (!targetLoan) return;
 
+    const newBalance = roundMoney(Math.max(0, targetLoan.current_balance - amount));
     setLoans((prev) =>
-      prev.map((l) => {
-        if (l.id === loanId) {
-          const newBal = roundMoney(Math.max(0, l.current_balance - amount));
-          return { ...l, current_balance: newBal };
-        }
-        return l;
-      })
+      prev.map((l) => (l.id === loanId ? { ...l, current_balance: newBalance } : l))
     );
+
+    let newAccBalance: number | undefined;
+    const targetAccId = accountId || accounts[0]?.id;
+    if (targetAccId) {
+      setAccounts((prev) =>
+        prev.map((acc) => {
+          if (acc.id === targetAccId) {
+            const newBal = roundMoney(acc.balance - amount);
+            newAccBalance = newBal;
+            return { ...acc, balance: newBal };
+          }
+          return acc;
+        })
+      );
+    }
+
+    if (userProfile.id && userProfile.id !== "guest") {
+      syncLoanPayment(userProfile.id, loanId, newBalance, newAccBalance, targetAccId).catch(console.error);
+    }
 
     // Add transaction
     addTransaction({
@@ -566,17 +768,16 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
       type: "loan_payment",
       category: "Loan Payments",
       payment_method: "bank",
-      account_id: accountId || accounts[0]?.id,
+      account_id: targetAccId,
       date: new Date().toISOString().split("T")[0],
     });
   };
 
   const planPayday = (allocation: { needs: number; wants: number; savings: number; debt?: number }) => {
-    // User customizes allocation for the active payday
     const debtMsg = allocation.debt !== undefined ? `, Debt/Loans (₱${allocation.debt.toLocaleString()})` : "";
     setNotifications((prev) => [
       {
-        id: `notif-${Date.now()}`,
+        id: generateUUID(),
         title: "Payday Plan Activated",
         message: `Plan saved: Needs (₱${allocation.needs.toLocaleString()}), Wants (₱${allocation.wants.toLocaleString()}), Savings (₱${allocation.savings.toLocaleString()})${debtMsg}.`,
         type: "payday",
@@ -623,14 +824,35 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
         console.error("Sign out error", err);
       }
     }
+    const currentId = userProfile.id;
     setUserProfile(DEFAULT_USER_PROFILE);
     try {
       localStorage.removeItem(USER_STORAGE_KEY);
-      localStorage.removeItem(STORAGE_KEY);
-    } catch {
-      // Ignore
-    }
-    resetAllData();
+      if (currentId) {
+        localStorage.removeItem(getStorageKey(currentId));
+      }
+    } catch {}
+
+    setSalarySettings(EMPTY_SALARY_SETTINGS);
+    setBudgetRules(EMPTY_BUDGET_RULES);
+    setAccounts([
+      {
+        id: generateUUID(),
+        name: "Cash on Hand",
+        type: "cash",
+        balance: 0,
+        is_default: true,
+      },
+    ]);
+    setTransactions([]);
+    setIncomeRecords([]);
+    setSavingsGoals([]);
+    setSavingsMovements([]);
+    setBills([]);
+    setLoans([]);
+    setNotifications([]);
+    setIsDemoMode(false);
+
     if (typeof window !== "undefined") {
       window.location.href = "/login";
     }
@@ -651,25 +873,16 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
   };
 
   const resetAllData = () => {
-    setSalarySettings({
-      monthly_net: 0,
-      payday_1_day: 15,
-      payday_2_day: 30,
-      payday_1_expected: 0,
-      payday_2_expected: 0,
-      is_semi_monthly: true,
-    });
-    setBudgetRules({
-      needs_percent: 50,
-      wants_percent: 20,
-      savings_percent: 20,
-      debt_percent: 10,
-      fourth_pillar_name: "Debt & Loans",
-      preset_name: "50/20/20/10",
-    });
-    setAccounts([
-      { id: "acc-cash", name: "Cash on Hand", type: "cash", balance: 0, is_default: true },
-    ]);
+    const freshAcc: FinancialAccount = {
+      id: generateUUID(),
+      name: "Cash on Hand",
+      type: "cash",
+      balance: 0,
+      is_default: true,
+    };
+    setSalarySettings(EMPTY_SALARY_SETTINGS);
+    setBudgetRules(EMPTY_BUDGET_RULES);
+    setAccounts([freshAcc]);
     setIncomeRecords([]);
     setTransactions([]);
     setSavingsGoals([]);
@@ -678,6 +891,14 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
     setLoans([]);
     setNotifications([]);
     setIsDemoMode(false);
+
+    try {
+      localStorage.removeItem(getStorageKey(userProfile.id));
+    } catch {}
+
+    if (userProfile.id && userProfile.id !== "guest") {
+      resetUserCloudData(userProfile.id).catch(console.error);
+    }
   };
 
   const markNotificationAsRead = (id: string) => {
@@ -770,6 +991,7 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
         budgetSummary,
         thresholdAlerts,
         financialContext,
+        addAccount,
         addTransaction,
         deleteTransaction,
         recordSalaryIncome,

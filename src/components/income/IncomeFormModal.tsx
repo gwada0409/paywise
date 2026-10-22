@@ -28,6 +28,12 @@ export function IncomeFormModal({
   const [date, setDate] = useState<string>(new Date().toISOString().split("T")[0]);
   const [notes, setNotes] = useState<string>("");
 
+  React.useEffect(() => {
+    if (accounts.length > 0 && (!accountId || !accounts.some((a) => a.id === accountId))) {
+      setAccountId(accounts[0].id);
+    }
+  }, [accounts, accountId]);
+
   if (!isOpen) return null;
 
   const handleSubmit = (e: React.FormEvent) => {

@@ -36,6 +36,14 @@ export default function SalaryPage() {
   const [p1Expected, setP1Expected] = useState(salarySettings.payday_1_expected);
   const [p2Expected, setP2Expected] = useState(salarySettings.payday_2_expected);
 
+  React.useEffect(() => {
+    setMonthlyNet(salarySettings.monthly_net);
+    setP1Day(salarySettings.payday_1_day);
+    setP2Day(salarySettings.payday_2_day);
+    setP1Expected(salarySettings.payday_1_expected);
+    setP2Expected(salarySettings.payday_2_expected);
+  }, [salarySettings]);
+
   const handleSaveSettings = () => {
     updateSalarySettings({
       monthly_net: monthlyNet,
