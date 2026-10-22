@@ -114,12 +114,22 @@ export interface FinancialTransaction {
   created_at?: string;
 }
 
+export type BudgetPreset = '50/30/20' | '60/20/20' | '70/20/10' | '40/30/30' | 'custom';
+
+export interface CategoryAllocationItem {
+  category: string;
+  type: 'need' | 'want';
+  allocated_monthly: number;
+}
+
 export interface BudgetRules {
   id?: string;
   user_id?: string;
+  preset_name?: BudgetPreset;
   needs_percent: number; // default 50
   wants_percent: number; // default 30
   savings_percent: number; // default 20
+  category_allocations?: Record<string, number>; // category -> monthly PHP budget
   alert_threshold_80?: boolean;
   alert_threshold_90?: boolean;
   alert_threshold_100?: boolean;

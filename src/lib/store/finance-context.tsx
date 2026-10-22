@@ -65,6 +65,8 @@ interface FinanceContextType {
   recordSalaryIncome: (income: Omit<IncomeRecord, "id" | "created_at">) => void;
   updateSalarySettings: (settings: Partial<SalarySettings>) => void;
   updateBudgetRules: (rules: Partial<BudgetRules>) => void;
+  updateCategoryAllocation: (category: string, amount: number) => void;
+  removeCategoryAllocation: (category: string) => void;
   addSavingsGoal: (goal: Omit<SavingsGoal, "id" | "current_amount" | "created_at" | "updated_at">) => void;
   recordSavingsTransfer: (goalId: string, amount: number, type: "deposit" | "withdrawal", accountId?: string) => void;
   addBill: (bill: Omit<Bill, "id" | "status" | "created_at">) => void;
@@ -317,6 +319,27 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
 
   const updateBudgetRules = (rules: Partial<BudgetRules>) => {
     setBudgetRules((prev) => ({ ...prev, ...rules }));
+  };
+
+  const updateCategoryAllocation = (category: string, amount: number) => {
+    setBudgetRules((prev) => ({
+      ...prev,
+      category_allocations: {
+        ...(prev.category_allocations || {}),
+        [category]: Math.max(0, amount),
+      },
+    }));
+  };
+
+  const removeCategoryAllocation = (category: string) => {
+    setBudgetRules((prev) => {
+      const next = { ...(prev.category_allocations || {}) };
+      delete next[category];
+      return {
+        ...prev,
+        category_allocations: next,
+      };
+    });
   };
 
   const addSavingsGoal = (goal: Omit<SavingsGoal, "id" | "current_amount" | "created_at" | "updated_at">) => {
@@ -613,6 +636,8 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
         recordSalaryIncome,
         updateSalarySettings,
         updateBudgetRules,
+        updateCategoryAllocation,
+        removeCategoryAllocation,
         addSavingsGoal,
         recordSavingsTransfer,
         addBill,

@@ -1,4 +1,4 @@
-import { BudgetRules, BudgetSummary, FinancialTransaction, SavingsMovement } from "@/types";
+import { BudgetRules, BudgetSummary, FinancialTransaction, SavingsMovement, NeedCategory, WantCategory } from "@/types";
 import { roundMoney } from "../utils";
 
 export interface BudgetThresholdAlert {
@@ -8,6 +8,62 @@ export interface BudgetThresholdAlert {
   allocated: number;
   message: string;
   severity: "info" | "warning" | "danger";
+}
+
+export const BUDGET_PRESETS = {
+  "50/30/20": {
+    name: "Balanced Standard",
+    description: "Classic benchmark: 50% Needs, 30% Wants, 20% Savings.",
+    needs: 50,
+    wants: 30,
+    savings: 20,
+  },
+  "60/20/20": {
+    name: "Metro Manila / High Needs",
+    description: "Accounts for higher rent and commuting costs in Philippine cities.",
+    needs: 60,
+    wants: 20,
+    savings: 20,
+  },
+  "70/20/10": {
+    name: "Conservative / Tight",
+    description: "Focus on primary essentials during periods of tight cashflow.",
+    needs: 70,
+    wants: 20,
+    savings: 10,
+  },
+  "40/30/30": {
+    name: "Aggressive Saver / FIRE",
+    description: "Accelerate emergency fund and long-term financial independence.",
+    needs: 40,
+    wants: 30,
+    savings: 30,
+  },
+} as const;
+
+export const DEFAULT_CATEGORY_ALLOCATIONS: Record<string, number> = {
+  Groceries: 6000,
+  Rent: 8000,
+  Electricity: 2500,
+  Water: 600,
+  Internet: 1500,
+  Transportation: 2500,
+  Healthcare: 1000,
+  "Dining Out": 3000,
+  "Online Shopping": 2000,
+  "Coffee & Milk Tea": 1000,
+  Subscriptions: 800,
+  Entertainment: 1200,
+};
+
+export interface CategoryProgress {
+  category: string;
+  type: "need" | "want";
+  spent: number;
+  allocated: number;
+  remaining: number;
+  percentage: number;
+  isOverLimit: boolean;
 }
 
 /**
@@ -146,4 +202,60 @@ export function checkBudgetThresholdAlerts(
   checkCategory("wants", summary.spent_wants, summary.allocated_wants, summary.percent_wants);
 
   return alerts;
+}
+
+/**
+ * Calculates per-category spent vs allocated amounts based on custom allocations.
+ */
+export function calculateCategoryProgressList(
+  transactions: FinancialTransaction[],
+  categoryAllocations: Record<string, number> = DEFAULT_CATEGORY_ALLOCATIONS,
+  multiplier: number = 1
+): CategoryProgress[] {
+  // Aggregate transactions by category
+  const spentMap: Record<string, { spent: number; type: "need" | "want" }> = {};
+
+  for (const tx of transactions) {
+    if (tx.type === "need" || tx.type === "bill_payment" || tx.type === "want") {
+      const type = tx.type === "want" ? "want" : "need";
+      if (!spentMap[tx.category]) {
+        spentMap[tx.category] = { spent: 0, type };
+      }
+      spentMap[tx.category].spent += tx.amount;
+    }
+  }
+
+  // Known categories combining allocations and spent
+  const allCategories = Array.from(
+    new Set([...Object.keys(categoryAllocations), ...Object.keys(spentMap)])
+  );
+
+  const WANT_KEYWORDS = [
+    "dining", "food delivery", "restaurant", "shopping", "coffee", "milk tea",
+    "subscription", "entertainment", "gaming", "gadget", "travel", "hobbies",
+    "wants"
+  ];
+
+  return allCategories.map((cat) => {
+    const rawAllocated = categoryAllocations[cat] ?? 1000;
+    const allocated = roundMoney(rawAllocated * multiplier);
+    const spentData = spentMap[cat];
+    const spent = roundMoney(spentData?.spent ?? 0);
+    const isWant =
+      spentData?.type === "want" ||
+      WANT_KEYWORDS.some((kw) => cat.toLowerCase().includes(kw));
+
+    const remaining = roundMoney(allocated - spent);
+    const percentage = allocated > 0 ? Math.round((spent / allocated) * 100) : 0;
+
+    return {
+      category: cat,
+      type: isWant ? "want" : "need",
+      spent,
+      allocated,
+      remaining,
+      percentage,
+      isOverLimit: spent > allocated,
+    };
+  });
 }

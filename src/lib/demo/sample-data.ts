@@ -21,9 +21,24 @@ export const DEMO_SALARY_SETTINGS: SalarySettings = {
 };
 
 export const DEMO_BUDGET_RULES: BudgetRules = {
+  preset_name: "50/30/20",
   needs_percent: 50,
   wants_percent: 30,
   savings_percent: 20,
+  category_allocations: {
+    Groceries: 6000,
+    Rent: 8000,
+    Electricity: 2500,
+    Water: 600,
+    Internet: 1500,
+    Transportation: 2500,
+    Healthcare: 1000,
+    "Dining Out": 3000,
+    "Online Shopping": 2000,
+    "Coffee & Milk Tea": 1000,
+    Subscriptions: 800,
+    Entertainment: 1200,
+  },
   alert_threshold_80: true,
   alert_threshold_90: true,
   alert_threshold_100: true,
