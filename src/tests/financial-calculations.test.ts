@@ -119,6 +119,41 @@ describe("50/30/20 Budget Calculations & Threshold Alerts", () => {
     expect(allocation.needs + allocation.wants + allocation.savings).toBe(30000);
   });
 
+  it("accurately allocates 4-pillar budget (50/20/20/10) with debt and investments", () => {
+    const fourPillarRules: BudgetRules = {
+      preset_name: "50/20/20/10",
+      needs_percent: 50,
+      wants_percent: 20,
+      savings_percent: 20,
+      debt_percent: 10,
+      fourth_pillar_name: "Debt & Loans",
+    };
+    const allocation = calculateBudgetAllocation(30000, fourPillarRules);
+    expect(allocation.needs).toBe(15000);
+    expect(allocation.wants).toBe(6000);
+    expect(allocation.savings).toBe(6000);
+    expect(allocation.debt).toBe(3000);
+    expect(allocation.needs + allocation.wants + allocation.savings + allocation.debt).toBe(30000);
+
+    const transactions: FinancialTransaction[] = [
+      {
+        id: "d1",
+        title: "Personal Loan Payment",
+        amount: 2500,
+        type: "loan_payment",
+        category: "Debt Payments",
+        payment_method: "bank",
+        date: "2026-10-18",
+      },
+    ];
+
+    const summary = calculateBudgetSummary(30000, fourPillarRules, transactions, []);
+    expect(summary.allocated_debt).toBe(3000);
+    expect(summary.spent_debt).toBe(2500);
+    expect(summary.remaining_debt).toBe(500);
+    expect(summary.percent_debt).toBe(83);
+  });
+
   it("calculates budget usage, remaining amounts, and avoids double counting savings", () => {
     const transactions: FinancialTransaction[] = [
       {

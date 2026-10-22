@@ -114,7 +114,16 @@ export interface FinancialTransaction {
   created_at?: string;
 }
 
-export type BudgetPreset = '50/30/20' | '60/20/20' | '70/20/10' | '40/30/30' | 'custom';
+export type BudgetPreset =
+  | '50/20/20/10'
+  | '60/15/15/10'
+  | '40/20/20/20'
+  | '40/20/30/10'
+  | '50/30/20'
+  | '60/20/20'
+  | '70/20/10'
+  | '40/30/30'
+  | 'custom';
 
 export interface CategoryAllocationItem {
   category: string;
@@ -126,9 +135,11 @@ export interface BudgetRules {
   id?: string;
   user_id?: string;
   preset_name?: BudgetPreset;
-  needs_percent: number; // default 50
-  wants_percent: number; // default 30
-  savings_percent: number; // default 20
+  needs_percent: number; // e.g. 50
+  wants_percent: number; // e.g. 20
+  savings_percent: number; // e.g. 20
+  debt_percent?: number; // e.g. 10 (4th pillar: Debt / Loan Repayment / Investments)
+  fourth_pillar_name?: string; // e.g. "Debt & Loans" (default) or "Investments & Wealth"
   category_allocations?: Record<string, number>; // category -> monthly PHP budget
   alert_threshold_80?: boolean;
   alert_threshold_90?: boolean;
@@ -140,15 +151,19 @@ export interface BudgetSummary {
   allocated_needs: number;
   allocated_wants: number;
   allocated_savings: number;
+  allocated_debt: number;
   spent_needs: number;
   spent_wants: number;
   saved_amount: number;
+  spent_debt: number;
   remaining_needs: number;
   remaining_wants: number;
   remaining_savings: number;
+  remaining_debt: number;
   percent_needs: number;
   percent_wants: number;
   percent_savings: number;
+  percent_debt: number;
 }
 
 export interface SavingsGoal {

@@ -2,7 +2,7 @@ import { BudgetRules, BudgetSummary, FinancialTransaction, SavingsMovement, Need
 import { roundMoney } from "../utils";
 
 export interface BudgetThresholdAlert {
-  type: "needs" | "wants";
+  type: "needs" | "wants" | "debt";
   percentage: number;
   spent: number;
   allocated: number;
@@ -11,33 +11,45 @@ export interface BudgetThresholdAlert {
 }
 
 export const BUDGET_PRESETS = {
+  "50/20/20/10": {
+    name: "Balanced + Debt Payoff",
+    description: "50% Needs, 20% Wants, 20% Savings, 10% Debt & Loans.",
+    needs: 50,
+    wants: 20,
+    savings: 20,
+    debt: 10,
+  },
+  "60/15/15/10": {
+    name: "Metro Manila / High Needs",
+    description: "60% Needs, 15% Wants, 15% Savings, 10% Debt (High Rent & Commute).",
+    needs: 60,
+    wants: 15,
+    savings: 15,
+    debt: 10,
+  },
+  "40/20/20/20": {
+    name: "Quad Equalizer (4-Pillar)",
+    description: "40% Needs, 20% Wants, 20% Savings, 20% Debt & Investments.",
+    needs: 40,
+    wants: 20,
+    savings: 20,
+    debt: 20,
+  },
+  "40/20/30/10": {
+    name: "Aggressive Saver / FIRE",
+    description: "40% Needs, 20% Wants, 30% Savings, 10% Debt / Wealth Building.",
+    needs: 40,
+    wants: 20,
+    savings: 30,
+    debt: 10,
+  },
   "50/30/20": {
-    name: "Balanced Standard",
-    description: "Classic benchmark: 50% Needs, 30% Wants, 20% Savings.",
+    name: "Classic 3-Pillar Benchmark",
+    description: "50% Needs, 30% Wants, 20% Savings, 0% Debt.",
     needs: 50,
     wants: 30,
     savings: 20,
-  },
-  "60/20/20": {
-    name: "Metro Manila / High Needs",
-    description: "Accounts for higher rent and commuting costs in Philippine cities.",
-    needs: 60,
-    wants: 20,
-    savings: 20,
-  },
-  "70/20/10": {
-    name: "Conservative / Tight",
-    description: "Focus on primary essentials during periods of tight cashflow.",
-    needs: 70,
-    wants: 20,
-    savings: 10,
-  },
-  "40/30/30": {
-    name: "Aggressive Saver / FIRE",
-    description: "Accelerate emergency fund and long-term financial independence.",
-    needs: 40,
-    wants: 30,
-    savings: 30,
+    debt: 0,
   },
 } as const;
 
@@ -67,26 +79,33 @@ export interface CategoryProgress {
 }
 
 /**
- * Calculates budget split (50/30/20 default or custom) for a given income amount.
+ * Calculates budget split (4-pillar default 50/20/20/10 or custom) for a given income amount.
  */
 export function calculateBudgetAllocation(
   incomeAmount: number,
-  rules: BudgetRules = { needs_percent: 50, wants_percent: 30, savings_percent: 20 }
+  rules: BudgetRules = { needs_percent: 50, wants_percent: 20, savings_percent: 20, debt_percent: 10 }
 ) {
-  const needs = roundMoney((incomeAmount * (rules.needs_percent || 50)) / 100);
-  const wants = roundMoney((incomeAmount * (rules.wants_percent || 30)) / 100);
-  const savings = roundMoney(incomeAmount - needs - wants); // Ensure exact total matching
+  const needsP = rules.needs_percent ?? 50;
+  const wantsP = rules.wants_percent ?? (rules.debt_percent !== undefined ? 20 : 30);
+  const debtP = rules.debt_percent ?? 0;
+  const savingsP = rules.savings_percent ?? Math.max(0, 100 - needsP - wantsP - debtP);
+
+  const needs = roundMoney((incomeAmount * needsP) / 100);
+  const wants = roundMoney((incomeAmount * wantsP) / 100);
+  const debt = roundMoney((incomeAmount * debtP) / 100);
+  const savings = roundMoney(incomeAmount - needs - wants - debt); // Ensure exact total matching
 
   return {
     needs,
     wants,
     savings,
+    debt,
     total: incomeAmount,
   };
 }
 
 /**
- * Computes full budget summary including actual expenditures and remaining balances.
+ * Computes full budget summary including actual expenditures and remaining balances across 4 pillars.
  */
 export function calculateBudgetSummary(
   incomeBase: number,
@@ -98,9 +117,17 @@ export function calculateBudgetSummary(
 
   let spentNeeds = 0;
   let spentWants = 0;
+  let spentDebt = 0;
 
   for (const tx of transactions) {
-    if (tx.type === "need" || (tx.type === "bill_payment" && tx.category !== "Wants")) {
+    const isDebt =
+      tx.type === "loan_payment" ||
+      tx.category?.toLowerCase().includes("loan") ||
+      tx.category?.toLowerCase().includes("debt");
+
+    if (isDebt) {
+      spentDebt += tx.amount;
+    } else if (tx.type === "need" || (tx.type === "bill_payment" && tx.category !== "Wants")) {
       spentNeeds += tx.amount;
     } else if (tx.type === "want") {
       spentWants += tx.amount;
@@ -125,29 +152,36 @@ export function calculateBudgetSummary(
 
   spentNeeds = roundMoney(spentNeeds);
   spentWants = roundMoney(spentWants);
+  spentDebt = roundMoney(spentDebt);
   savedAmount = roundMoney(Math.max(0, savedAmount));
 
   const remainingNeeds = roundMoney(allocation.needs - spentNeeds);
   const remainingWants = roundMoney(allocation.wants - spentWants);
   const remainingSavings = roundMoney(allocation.savings - savedAmount);
+  const remainingDebt = roundMoney(allocation.debt - spentDebt);
 
   const percentNeeds = allocation.needs > 0 ? Math.round((spentNeeds / allocation.needs) * 100) : 0;
   const percentWants = allocation.wants > 0 ? Math.round((spentWants / allocation.wants) * 100) : 0;
   const percentSavings = allocation.savings > 0 ? Math.round((savedAmount / allocation.savings) * 100) : 0;
+  const percentDebt = allocation.debt > 0 ? Math.round((spentDebt / allocation.debt) * 100) : 0;
 
   return {
     allocated_needs: allocation.needs,
     allocated_wants: allocation.wants,
     allocated_savings: allocation.savings,
+    allocated_debt: allocation.debt,
     spent_needs: spentNeeds,
     spent_wants: spentWants,
     saved_amount: savedAmount,
+    spent_debt: spentDebt,
     remaining_needs: remainingNeeds,
     remaining_wants: remainingWants,
     remaining_savings: remainingSavings,
+    remaining_debt: remainingDebt,
     percent_needs: percentNeeds,
     percent_wants: percentWants,
     percent_savings: percentSavings,
+    percent_debt: percentDebt,
   };
 }
 
@@ -161,12 +195,14 @@ export function checkBudgetThresholdAlerts(
   const alerts: BudgetThresholdAlert[] = [];
 
   const checkCategory = (
-    name: "needs" | "wants",
+    name: "needs" | "wants" | "debt",
     spent: number,
     allocated: number,
     percent: number
   ) => {
     if (allocated <= 0) return;
+
+    const displayName = name === "debt" ? (rules.fourth_pillar_name || "Debt & Loans") : name.toUpperCase();
 
     if (rules.alert_threshold_100 && percent >= 100) {
       alerts.push({
@@ -175,7 +211,7 @@ export function checkBudgetThresholdAlerts(
         spent,
         allocated,
         severity: "danger",
-        message: `You have reached 100% of your ${name.toUpperCase()} budget (₱${spent.toLocaleString()} / ₱${allocated.toLocaleString()}).`,
+        message: `You have reached 100% of your ${displayName} budget (₱${spent.toLocaleString()} / ₱${allocated.toLocaleString()}).`,
       });
     } else if (rules.alert_threshold_90 && percent >= 90) {
       alerts.push({
@@ -184,7 +220,7 @@ export function checkBudgetThresholdAlerts(
         spent,
         allocated,
         severity: "warning",
-        message: `You have used ${percent}% of your ${name.toUpperCase()} budget. Careful with additional spending.`,
+        message: `You have used ${percent}% of your ${displayName} budget. Careful with additional spending.`,
       });
     } else if (rules.alert_threshold_80 && percent >= 80) {
       alerts.push({
@@ -193,13 +229,16 @@ export function checkBudgetThresholdAlerts(
         spent,
         allocated,
         severity: "info",
-        message: `You're at ${percent}% of your ${name.toUpperCase()} budget.`,
+        message: `You're at ${percent}% of your ${displayName} budget.`,
       });
     }
   };
 
   checkCategory("needs", summary.spent_needs, summary.allocated_needs, summary.percent_needs);
   checkCategory("wants", summary.spent_wants, summary.allocated_wants, summary.percent_wants);
+  if (summary.allocated_debt > 0) {
+    checkCategory("debt", summary.spent_debt, summary.allocated_debt, summary.percent_debt);
+  }
 
   return alerts;
 }

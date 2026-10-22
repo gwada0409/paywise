@@ -37,6 +37,19 @@ interface MobileDrawerProps {
   onClose: () => void;
 }
 
+interface DrawerNavItem {
+  label: string;
+  href: string;
+  icon: React.ElementType;
+  isAI?: boolean;
+  badge?: number;
+}
+
+interface NavSection {
+  title: string;
+  items: DrawerNavItem[];
+}
+
 export function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
   const pathname = usePathname();
   const router = useRouter();
@@ -69,14 +82,14 @@ export function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
     }
   };
 
-  const navSections = [
+  const navSections: NavSection[] = [
     {
       title: "Finance Core",
       items: [
         { label: "Dashboard", href: "/dashboard", icon: Wallet },
         { label: "Salary & Payday", href: "/salary", icon: CalendarDays },
         { label: "Transactions", href: "/transactions", icon: ArrowLeftRight },
-        { label: "Budget (50/30/20)", href: "/budget", icon: PieChart },
+        { label: "Budget Allocation", href: "/budget", icon: PieChart },
       ],
     },
     {

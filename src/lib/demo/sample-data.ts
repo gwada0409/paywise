@@ -21,10 +21,12 @@ export const DEMO_SALARY_SETTINGS: SalarySettings = {
 };
 
 export const DEMO_BUDGET_RULES: BudgetRules = {
-  preset_name: "50/30/20",
+  preset_name: "50/20/20/10",
   needs_percent: 50,
-  wants_percent: 30,
+  wants_percent: 20,
   savings_percent: 20,
+  debt_percent: 10,
+  fourth_pillar_name: "Debt & Loans",
   category_allocations: {
     Groceries: 6000,
     Rent: 8000,

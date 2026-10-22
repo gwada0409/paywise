@@ -27,22 +27,24 @@ export function PaydayPlannerModal({ isOpen, onClose }: PaydayPlannerModalProps)
   const upcomingBills = bills.filter((b) => b.status !== "paid");
   const upcomingBillsTotal = upcomingBills.reduce((sum, b) => sum + b.amount, 0);
 
-  // Suggested 50/30/20 split
+  // Suggested 4-pillar split
   const defaultNeeds = roundMoney((receivedAmount * (budgetRules.needs_percent || 50)) / 100);
-  const defaultWants = roundMoney((receivedAmount * (budgetRules.wants_percent || 30)) / 100);
+  const defaultWants = roundMoney((receivedAmount * (budgetRules.wants_percent || 20)) / 100);
   const defaultSavings = roundMoney((receivedAmount * (budgetRules.savings_percent || 20)) / 100);
+  const defaultDebt = roundMoney((receivedAmount * (budgetRules.debt_percent ?? 10)) / 100);
 
   const [needsAlloc, setNeedsAlloc] = useState<number>(defaultNeeds);
   const [wantsAlloc, setWantsAlloc] = useState<number>(defaultWants);
   const [savingsAlloc, setSavingsAlloc] = useState<number>(defaultSavings);
+  const [debtAlloc, setDebtAlloc] = useState<number>(defaultDebt);
 
   if (!isOpen) return null;
 
-  const totalAllocated = roundMoney(needsAlloc + wantsAlloc + savingsAlloc);
+  const totalAllocated = roundMoney(needsAlloc + wantsAlloc + savingsAlloc + debtAlloc);
   const remainingUnallocated = roundMoney(receivedAmount - totalAllocated);
 
-  // Remaining flexible spending after reserving upcoming bills
-  const flexibleAfterBills = roundMoney(receivedAmount - upcomingBillsTotal - savingsAlloc);
+  // Remaining flexible spending after reserving upcoming bills & debt/savings
+  const flexibleAfterBills = roundMoney(receivedAmount - upcomingBillsTotal - savingsAlloc - debtAlloc);
   const isDeficit = flexibleAfterBills < 0;
 
   const handleSave = () => {
@@ -50,6 +52,7 @@ export function PaydayPlannerModal({ isOpen, onClose }: PaydayPlannerModalProps)
       needs: needsAlloc,
       wants: wantsAlloc,
       savings: savingsAlloc,
+      debt: debtAlloc,
     });
     onClose();
   };
@@ -93,8 +96,9 @@ export function PaydayPlannerModal({ isOpen, onClose }: PaydayPlannerModalProps)
               onChange={(val) => {
                 setReceivedAmount(val);
                 setNeedsAlloc(roundMoney((val * (budgetRules.needs_percent || 50)) / 100));
-                setWantsAlloc(roundMoney((val * (budgetRules.wants_percent || 30)) / 100));
+                setWantsAlloc(roundMoney((val * (budgetRules.wants_percent || 20)) / 100));
                 setSavingsAlloc(roundMoney((val * (budgetRules.savings_percent || 20)) / 100));
+                setDebtAlloc(roundMoney((val * (budgetRules.debt_percent ?? 10)) / 100));
               }}
             />
           </div>
@@ -158,15 +162,17 @@ export function PaydayPlannerModal({ isOpen, onClose }: PaydayPlannerModalProps)
           {/* Allocation Breakdown */}
           <div className="space-y-3 pt-1">
             <div className="flex justify-between text-xs font-semibold text-muted-foreground">
-              <span>Payday Distribution</span>
+              <span>Payday 4-Pillar Distribution</span>
               <span>
                 Remaining: <span className="tabular-nums">₱{remainingUnallocated.toLocaleString()}</span>
               </span>
             </div>
 
-            <div className="grid grid-cols-3 gap-2">
-              <div className="rounded-xl border border-blue-500/20 bg-card p-3 text-center">
-                <span className="text-[11px] font-bold text-blue-600 dark:text-blue-400">Needs (50%)</span>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              <div className="rounded-xl border border-blue-500/20 bg-card p-2.5 text-center">
+                <span className="text-[11px] font-bold text-blue-600 dark:text-blue-400">
+                  Needs ({budgetRules.needs_percent || 50}%)
+                </span>
                 <input
                   type="number"
                   value={needsAlloc}
@@ -175,8 +181,10 @@ export function PaydayPlannerModal({ isOpen, onClose }: PaydayPlannerModalProps)
                 />
               </div>
 
-              <div className="rounded-xl border border-amber-500/20 bg-card p-3 text-center">
-                <span className="text-[11px] font-bold text-amber-700 dark:text-amber-400">Wants (30%)</span>
+              <div className="rounded-xl border border-amber-500/20 bg-card p-2.5 text-center">
+                <span className="text-[11px] font-bold text-amber-700 dark:text-amber-400">
+                  Wants ({budgetRules.wants_percent || 20}%)
+                </span>
                 <input
                   type="number"
                   value={wantsAlloc}
@@ -185,12 +193,26 @@ export function PaydayPlannerModal({ isOpen, onClose }: PaydayPlannerModalProps)
                 />
               </div>
 
-              <div className="rounded-xl border border-emerald-500/20 bg-card p-3 text-center">
-                <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400">Savings (20%)</span>
+              <div className="rounded-xl border border-emerald-500/20 bg-card p-2.5 text-center">
+                <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
+                  Savings ({budgetRules.savings_percent || 20}%)
+                </span>
                 <input
                   type="number"
                   value={savingsAlloc}
                   onChange={(e) => setSavingsAlloc(Number(e.target.value))}
+                  className="mt-1 w-full bg-transparent tabular-nums text-center text-sm font-bold text-foreground focus:outline-none"
+                />
+              </div>
+
+              <div className="rounded-xl border border-teal-500/20 bg-card p-2.5 text-center">
+                <span className="text-[11px] font-bold text-teal-600 dark:text-teal-400">
+                  {budgetRules.fourth_pillar_name || "Debt"} ({budgetRules.debt_percent ?? 10}%)
+                </span>
+                <input
+                  type="number"
+                  value={debtAlloc}
+                  onChange={(e) => setDebtAlloc(Number(e.target.value))}
                   className="mt-1 w-full bg-transparent tabular-nums text-center text-sm font-bold text-foreground focus:outline-none"
                 />
               </div>
@@ -202,14 +224,14 @@ export function PaydayPlannerModal({ isOpen, onClose }: PaydayPlannerModalProps)
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 rounded-xl border border-border bg-card py-3 text-sm font-semibold text-foreground hover:bg-muted/50 active:scale-95 transition-all min-h-[44px]"
+              className="flex-1 rounded-xl border border-border bg-card py-3 text-sm font-semibold text-foreground hover:bg-muted/50 active:scale-[0.96] transition-transform min-h-[44px]"
             >
               Cancel
             </button>
             <button
               type="button"
               onClick={handleSave}
-              className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-primary py-3 text-sm font-bold text-primary-foreground shadow-md hover:opacity-95 active:scale-95 transition-all min-h-[44px]"
+              className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-primary py-3 text-sm font-bold text-primary-foreground shadow-md hover:opacity-95 active:scale-[0.96] transition-transform min-h-[44px]"
             >
               <Check className="h-4 w-4" />
               Activate Payday Plan

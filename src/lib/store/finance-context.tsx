@@ -73,7 +73,7 @@ interface FinanceContextType {
   markBillAsPaid: (billId: string, accountId?: string) => void;
   addLoan: (loan: Omit<Loan, "id" | "created_at">) => void;
   recordLoanPayment: (loanId: string, amount: number, accountId?: string) => void;
-  planPayday: (allocation: { needs: number; wants: number; savings: number }) => void;
+  planPayday: (allocation: { needs: number; wants: number; savings: number; debt?: number }) => void;
   setAIPreferences: (prefs: Partial<AIPreferences>) => void;
   setClientApiKey: (key: string) => void;
   loadDemoData: () => void;
@@ -483,13 +483,14 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
     });
   };
 
-  const planPayday = (allocation: { needs: number; wants: number; savings: number }) => {
+  const planPayday = (allocation: { needs: number; wants: number; savings: number; debt?: number }) => {
     // User customizes allocation for the active payday
+    const debtMsg = allocation.debt !== undefined ? `, Debt/Loans (₱${allocation.debt.toLocaleString()})` : "";
     setNotifications((prev) => [
       {
         id: `notif-${Date.now()}`,
         title: "Payday Plan Activated",
-        message: `Plan saved: Needs (₱${allocation.needs.toLocaleString()}), Wants (₱${allocation.wants.toLocaleString()}), Savings (₱${allocation.savings.toLocaleString()}).`,
+        message: `Plan saved: Needs (₱${allocation.needs.toLocaleString()}), Wants (₱${allocation.wants.toLocaleString()}), Savings (₱${allocation.savings.toLocaleString()})${debtMsg}.`,
         type: "payday",
         is_read: false,
         created_at: new Date().toISOString(),
