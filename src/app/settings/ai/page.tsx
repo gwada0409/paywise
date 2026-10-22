@@ -28,11 +28,24 @@ export default function AISettingsPage() {
   } = useFinance();
 
   const [inputKey, setInputKey] = useState("");
-  const [selectedModel, setSelectedModel] = useState(aiPreferences.model_name || "gemini-1.5-flash");
+  const safeModel =
+    aiPreferences.model_name === "gemini-2.0-flash"
+      ? "gemini-1.5-flash"
+      : (aiPreferences.model_name || "gemini-1.5-flash");
+  const [selectedModel, setSelectedModel] = useState(safeModel);
   const [isEnabled, setIsEnabled] = useState(aiPreferences.is_enabled);
   const [shareContext, setShareContext] = useState(aiPreferences.share_financial_context);
   const [testing, setTesting] = useState(false);
   const [testResult, setTestResult] = useState<{ success: boolean; message: string } | null>(null);
+
+  React.useEffect(() => {
+    if (aiPreferences.model_name === "gemini-2.0-flash") {
+      setAIPreferences({ model_name: "gemini-1.5-flash" });
+      setSelectedModel("gemini-1.5-flash");
+    } else if (aiPreferences.model_name) {
+      setSelectedModel(aiPreferences.model_name);
+    }
+  }, [aiPreferences.model_name, setAIPreferences]);
 
   const handleTestConnection = async () => {
     setTesting(true);
