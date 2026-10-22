@@ -322,3 +322,29 @@ CREATE INDEX IF NOT EXISTS idx_transactions_type ON public.financial_transaction
 CREATE INDEX IF NOT EXISTS idx_bills_user_due ON public.bills (user_id, due_day);
 CREATE INDEX IF NOT EXISTS idx_notifications_user_unread ON public.notifications (user_id, is_read);
 CREATE INDEX IF NOT EXISTS idx_ai_messages_conv ON public.ai_messages (conversation_id, created_at ASC);
+
+-- ==============================================================================
+-- Auto-Profile Trigger for New Supabase Registrations
+-- ==============================================================================
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS TRIGGER AS $$
+BEGIN
+  INSERT INTO public.profiles (id, display_name)
+  VALUES (
+    NEW.id,
+    COALESCE(
+      NEW.raw_user_meta_data->>'full_name',
+      NEW.raw_user_meta_data->>'name',
+      split_part(NEW.email, '@', 1)
+    )
+  )
+  ON CONFLICT (id) DO UPDATE
+  SET display_name = EXCLUDED.display_name;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+CREATE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();

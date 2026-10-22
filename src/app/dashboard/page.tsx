@@ -40,6 +40,8 @@ export default function DashboardPage() {
     bills,
     markBillAsPaid,
     salarySettings,
+    isDemoMode,
+    resetAllData,
   } = useFinance();
 
   const [isBalanceHidden, setIsBalanceHidden] = useState(false);
@@ -54,15 +56,15 @@ export default function DashboardPage() {
   // Group spending for Food, Travel, Shopping
   const foodSpending = transactions
     .filter((t) => t.category.toLowerCase().includes("grocer") || t.category.toLowerCase().includes("dining") || t.category.toLowerCase().includes("food"))
-    .reduce((s, t) => s + t.amount, 0) || 3200;
+    .reduce((s, t) => s + t.amount, 0);
 
   const travelSpending = transactions
     .filter((t) => t.category.toLowerCase().includes("transport") || t.category.toLowerCase().includes("travel"))
-    .reduce((s, t) => s + t.amount, 0) || 1680;
+    .reduce((s, t) => s + t.amount, 0);
 
   const shoppingSpending = transactions
     .filter((t) => t.category.toLowerCase().includes("shop") || t.category.toLowerCase().includes("gadget") || t.category.toLowerCase().includes("hobbies"))
-    .reduce((s, t) => s + t.amount, 0) || 965;
+    .reduce((s, t) => s + t.amount, 0);
 
   const upcomingBills = bills.filter((b) => b.status !== "paid").slice(0, 3);
   const recentTransactions = transactions.slice(0, 5);
@@ -88,6 +90,37 @@ export default function DashboardPage() {
     <AppShell>
       <div className="space-y-6 max-w-xl mx-auto md:max-w-4xl animate-in fade-in duration-300">
         {/* =========================================================================
+            0. DEMO MODE BANNER (When viewing Philippine sample data)
+           ========================================================================= */}
+        {isDemoMode && (
+          <div className="rounded-2xl border border-amber-200 dark:border-amber-800/60 bg-amber-50/90 dark:bg-amber-950/40 p-3 sm:p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+            <div className="flex items-center gap-2.5">
+              <span className="flex h-2.5 w-2.5 rounded-full bg-amber-500 animate-pulse shrink-0" />
+              <div>
+                <p className="text-xs font-bold text-amber-900 dark:text-amber-200">
+                  Philippine Demo Dataset Active
+                </p>
+                <p className="text-[11px] text-amber-700 dark:text-amber-300">
+                  Viewing Juan Dela Cruz sample transactions. Ready to record your own paydays?
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+              <button
+                type="button"
+                onClick={() => {
+                  resetAllData();
+                  toast.success("Demo records cleared! Your personal dashboard is ready.");
+                }}
+                className="px-3 py-1.5 text-xs font-bold rounded-full bg-white dark:bg-slate-800 text-amber-900 dark:text-amber-200 border border-amber-300 dark:border-amber-700 hover:bg-amber-50 active:scale-95 transition-all cursor-pointer shadow-2xs"
+              >
+                Clear Demo & Start Fresh
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* =========================================================================
             1. MAIN BALANCE SECTION
            ========================================================================= */}
         <div className="pt-2 text-center sm:text-left">
@@ -112,7 +145,7 @@ export default function DashboardPage() {
               </span>
             ) : (
               <CurrencyDisplay
-                amount={spendableBreakdown.liquidCashTotal || 45764.96}
+                amount={spendableBreakdown.liquidCashTotal || 0}
                 size="4xl"
                 weight="bold"
                 className="text-ref-navy text-4xl sm:text-5xl"
@@ -120,18 +153,31 @@ export default function DashboardPage() {
             )}
           </div>
 
-          {/* Green Positive-Change Chip (Interactive to Savings) */}
+          {/* Dynamic Positive-Change Chip (Interactive to Savings) */}
           <Link
             href="/savings"
             title="View savings details"
             className="mt-2.5 inline-flex items-center gap-2 rounded-full glass-pill border border-white/60 dark:border-slate-700 bg-white/40 dark:bg-slate-800/60 px-3 py-1 shadow-2xs hover:bg-white/70 active:scale-[0.96] transition-transform cursor-pointer"
           >
-            <span className="inline-flex items-center gap-0.5 rounded-full bg-emerald-500/15 dark:bg-emerald-500/25 px-2 py-0.5 text-[11px] font-bold text-emerald-700 dark:text-emerald-300">
-              ↑ ₱954.23
-            </span>
-            <span className="text-xs font-medium text-slate-600 dark:text-slate-300">
-              Nice job! You&apos;ve saved this month →
-            </span>
+            {budgetSummary.saved_amount > 0 ? (
+              <>
+                <span className="inline-flex items-center gap-0.5 rounded-full bg-emerald-500/15 dark:bg-emerald-500/25 px-2 py-0.5 text-[11px] font-bold text-emerald-700 dark:text-emerald-300">
+                  ↑ ₱{budgetSummary.saved_amount.toLocaleString()}
+                </span>
+                <span className="text-xs font-medium text-slate-600 dark:text-slate-300">
+                  Nice job! You&apos;ve saved this month →
+                </span>
+              </>
+            ) : (
+              <>
+                <span className="inline-flex items-center gap-0.5 rounded-full bg-slate-500/15 dark:bg-slate-500/25 px-2 py-0.5 text-[11px] font-bold text-slate-700 dark:text-slate-300">
+                  ₱0.00 saved
+                </span>
+                <span className="text-xs font-medium text-slate-600 dark:text-slate-300">
+                  Start setting your savings goals →
+                </span>
+              </>
+            )}
           </Link>
         </div>
 
@@ -225,9 +271,9 @@ export default function DashboardPage() {
             <SpendingEqualizerCard
               category="Food"
               amount={foodSpending}
-              status="MODERATE"
+              status={foodSpending > 5000 ? "OVER LIMIT" : foodSpending > 2500 ? "MODERATE" : "NORMAL"}
               colorTheme="yellow"
-              bars={[40, 60, 85, 55, 75, 95, 60, 45, 80, 70, 90, 75]}
+              bars={foodSpending === 0 ? [15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15] : [40, 60, 85, 55, 75, 95, 60, 45, 80, 70, 90, 75]}
               href="/transactions"
             />
 
@@ -235,9 +281,9 @@ export default function DashboardPage() {
             <SpendingEqualizerCard
               category="Travel"
               amount={travelSpending}
-              status="OVER LIMIT"
+              status={travelSpending > 3000 ? "OVER LIMIT" : travelSpending > 1500 ? "MODERATE" : "NORMAL"}
               colorTheme="coral"
-              bars={[30, 45, 60, 75, 90, 100, 85, 95, 80, 70, 65, 50]}
+              bars={travelSpending === 0 ? [15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15] : [30, 45, 60, 75, 90, 100, 85, 95, 80, 70, 65, 50]}
               href="/transactions"
             />
 
@@ -245,9 +291,9 @@ export default function DashboardPage() {
             <SpendingEqualizerCard
               category="Shopping"
               amount={shoppingSpending}
-              status="NORMAL"
+              status={shoppingSpending > 2000 ? "OVER LIMIT" : shoppingSpending > 1000 ? "MODERATE" : "NORMAL"}
               colorTheme="green"
-              bars={[20, 35, 50, 40, 60, 45, 55, 70, 50, 40, 35, 25]}
+              bars={shoppingSpending === 0 ? [15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15] : [20, 35, 50, 40, 60, 45, 55, 70, 50, 40, 35, 25]}
               href="/transactions"
             />
           </div>

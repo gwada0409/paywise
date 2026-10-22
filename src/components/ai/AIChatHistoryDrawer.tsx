@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { Search, SquarePen, X, MessageSquare, ChevronRight, User } from "lucide-react";
+import { useFinance } from "@/lib/store/finance-context";
 
 interface HistoryItem {
   id: string;
@@ -34,6 +35,7 @@ export function AIChatHistoryDrawer({
   onSelectChat,
   onNewChat,
 }: AIChatHistoryDrawerProps) {
+  const { userProfile } = useFinance();
   const [searchQuery, setSearchQuery] = useState("");
 
   if (!isOpen) return null;
@@ -122,14 +124,16 @@ export function AIChatHistoryDrawer({
           })}
         </div>
 
-        {/* User Footer (Reference 2 Right Phone Bottom) */}
+        {/* User Footer */}
         <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#16A34A]/10 text-[#16A34A] font-bold text-xs">
-            <User className="h-4 w-4" />
+          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#16A34A]/10 text-[#16A34A] font-bold text-xs uppercase">
+            {userProfile?.display_name ? userProfile.display_name.charAt(0) : <User className="h-4 w-4" />}
           </div>
           <div className="truncate text-xs">
-            <p className="font-bold text-slate-900 dark:text-white">Juan Dela Cruz</p>
-            <p className="text-slate-400 text-[11px]">id : juandelacruz_ph</p>
+            <p className="font-bold text-slate-900 dark:text-white truncate">
+              {userProfile?.display_name || "Juan Dela Cruz"}
+            </p>
+            <p className="text-slate-400 text-[11px] truncate">{userProfile?.email || "juan.delacruz@paywise.ph"}</p>
           </div>
         </div>
       </div>

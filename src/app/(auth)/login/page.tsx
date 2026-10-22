@@ -10,7 +10,7 @@ import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
 
 export default function LoginPage() {
   const router = useRouter();
-  const { loadDemoData } = useFinance();
+  const { loadDemoData, updateUserProfile } = useFinance();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -22,7 +22,7 @@ export default function LoginPage() {
     if (isSupabaseConfigured()) {
       try {
         const supabase = createClient();
-        const { error } = await supabase.auth.signInWithPassword({
+        const { data: signInData, error } = await supabase.auth.signInWithPassword({
           email,
           password,
         });
@@ -31,6 +31,16 @@ export default function LoginPage() {
           toast.error(error.message || "Failed to sign in. Please check your credentials.");
           setLoading(false);
           return;
+        }
+
+        if (signInData?.user) {
+          const meta = (signInData.user.user_metadata as Record<string, string>) || {};
+          const resolvedName = meta.full_name || meta.name || email.split("@")[0];
+          updateUserProfile({
+            id: signInData.user.id,
+            email: signInData.user.email || email,
+            display_name: resolvedName,
+          });
         }
 
         toast.success("Welcome back to PayWise!");

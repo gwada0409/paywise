@@ -15,7 +15,9 @@ import {
   AIPreferences,
   FinancialContextSummary,
   BudgetSummary,
+  UserProfile,
 } from "@/types";
+import { createClient, isSupabaseConfigured } from "../supabase/client";
 import {
   DEMO_SALARY_SETTINGS,
   DEMO_BUDGET_RULES,
@@ -36,6 +38,7 @@ import { roundMoney } from "../utils";
 
 interface FinanceContextType {
   // State
+  userProfile: UserProfile;
   salarySettings: SalarySettings;
   budgetRules: BudgetRules;
   accounts: FinancialAccount[];
@@ -60,6 +63,8 @@ interface FinanceContextType {
   financialContext: FinancialContextSummary;
 
   // Actions
+  updateUserProfile: (profile: Partial<UserProfile>) => Promise<void> | void;
+  signOut: () => Promise<void>;
   addTransaction: (tx: Omit<FinancialTransaction, "id" | "created_at">) => void;
   deleteTransaction: (id: string) => void;
   recordSalaryIncome: (income: Omit<IncomeRecord, "id" | "created_at">) => void;
@@ -87,8 +92,19 @@ interface FinanceContextType {
 const FinanceContext = createContext<FinanceContextType | null>(null);
 
 const STORAGE_KEY = "paywise_finance_state_v1";
+const USER_STORAGE_KEY = "paywise_user_profile_v1";
+
+const DEFAULT_USER_PROFILE: UserProfile = {
+  id: "guest",
+  email: "guest@paywise.ph",
+  display_name: "Juan Dela Cruz",
+  currency: "PHP",
+  theme: "system",
+  onboarding_completed: false,
+};
 
 export function FinanceProvider({ children }: { children: React.ReactNode }) {
+  const [userProfile, setUserProfile] = useState<UserProfile>(DEFAULT_USER_PROFILE);
   const [salarySettings, setSalarySettings] = useState<SalarySettings>(DEMO_SALARY_SETTINGS);
   const [budgetRules, setBudgetRules] = useState<BudgetRules>(DEMO_BUDGET_RULES);
   const [accounts, setAccounts] = useState<FinancialAccount[]>(DEMO_ACCOUNTS);
@@ -126,7 +142,7 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  // Load persisted state from localStorage on client mount
+  // Load persisted state from localStorage on client mount & sync Supabase Auth
   useEffect(() => {
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
@@ -146,10 +162,82 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
         if (parsed.aiPreferences) setAiPreferencesState(parsed.aiPreferences);
         if (parsed.clientApiKey) setClientApiKey(parsed.clientApiKey);
       }
+
+      const storedUser = localStorage.getItem(USER_STORAGE_KEY);
+      if (storedUser) {
+        const parsedUser = JSON.parse(storedUser);
+        if (parsedUser.display_name || parsedUser.email) {
+          setUserProfile(parsedUser);
+        }
+      }
     } catch (e) {
       console.error("Failed to load PayWise local storage", e);
     } finally {
       setIsInitialized(true);
+    }
+
+    // Sync active session if Supabase is connected
+    if (isSupabaseConfigured()) {
+      try {
+        const supabase = createClient();
+        supabase.auth.getUser().then(({ data }) => {
+          if (data?.user) {
+            const meta = (data.user.user_metadata as Record<string, string>) || {};
+            const resolvedName =
+              meta.full_name ||
+              meta.name ||
+              (data.user.email ? data.user.email.split("@")[0] : "User");
+
+            setUserProfile((prev) => {
+              const updated: UserProfile = {
+                ...prev,
+                id: data.user.id,
+                email: data.user.email || prev.email,
+                display_name: resolvedName,
+                onboarding_completed: true,
+              };
+              try {
+                localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(updated));
+              } catch {
+                // Ignore storage errors
+              }
+              return updated;
+            });
+          }
+        });
+
+        const { data: authSub } = supabase.auth.onAuthStateChange((_event, session) => {
+          if (session?.user) {
+            const meta = (session.user.user_metadata as Record<string, string>) || {};
+            const resolvedName =
+              meta.full_name ||
+              meta.name ||
+              (session.user.email ? session.user.email.split("@")[0] : "User");
+
+            setUserProfile((prev) => {
+              const updated: UserProfile = {
+                ...prev,
+                id: session.user.id,
+                email: session.user.email || prev.email,
+                display_name: resolvedName,
+                onboarding_completed: true,
+              };
+              try {
+                localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(updated));
+              } catch {
+                // Ignore storage errors
+              }
+              return updated;
+            });
+          }
+        });
+
+        return () => {
+          authSub.subscription.unsubscribe();
+        };
+      } catch (err) {
+        console.warn("Could not attach Supabase auth listener", err);
+      }
     }
   }, []);
 
@@ -503,6 +591,51 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
     setAiPreferencesState((prev) => ({ ...prev, ...prefs }));
   };
 
+  const updateUserProfile = async (profileUpdate: Partial<UserProfile>) => {
+    setUserProfile((prev) => {
+      const updated: UserProfile = { ...prev, ...profileUpdate };
+      try {
+        localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(updated));
+      } catch (err) {
+        console.error("Failed to store user profile", err);
+      }
+      return updated;
+    });
+
+    if (isSupabaseConfigured() && profileUpdate.display_name) {
+      try {
+        const supabase = createClient();
+        await supabase.auth.updateUser({
+          data: { full_name: profileUpdate.display_name },
+        });
+      } catch (err) {
+        console.warn("Could not sync profile name to Supabase:", err);
+      }
+    }
+  };
+
+  const signOut = async () => {
+    if (isSupabaseConfigured()) {
+      try {
+        const supabase = createClient();
+        await supabase.auth.signOut();
+      } catch (err) {
+        console.error("Sign out error", err);
+      }
+    }
+    setUserProfile(DEFAULT_USER_PROFILE);
+    try {
+      localStorage.removeItem(USER_STORAGE_KEY);
+      localStorage.removeItem(STORAGE_KEY);
+    } catch {
+      // Ignore
+    }
+    resetAllData();
+    if (typeof window !== "undefined") {
+      window.location.href = "/login";
+    }
+  };
+
   const loadDemoData = () => {
     setSalarySettings(DEMO_SALARY_SETTINGS);
     setBudgetRules(DEMO_BUDGET_RULES);
@@ -528,12 +661,14 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
     });
     setBudgetRules({
       needs_percent: 50,
-      wants_percent: 30,
+      wants_percent: 20,
       savings_percent: 20,
+      debt_percent: 10,
+      fourth_pillar_name: "Debt & Loans",
+      preset_name: "50/20/20/10",
     });
     setAccounts([
-      { id: "acc-cash", name: "Cash on Hand", type: "cash", balance: 0 },
-      { id: "acc-gcash", name: "GCash Wallet", type: "gcash", balance: 0 },
+      { id: "acc-cash", name: "Cash on Hand", type: "cash", balance: 0, is_default: true },
     ]);
     setIncomeRecords([]);
     setTransactions([]);
@@ -612,6 +747,9 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
   return (
     <FinanceContext.Provider
       value={{
+        userProfile,
+        updateUserProfile,
+        signOut,
         salarySettings,
         budgetRules,
         accounts,

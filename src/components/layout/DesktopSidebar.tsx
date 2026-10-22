@@ -17,6 +17,7 @@ import {
   Settings,
   Bot,
   User,
+  LogOut,
   LucideIcon,
 } from "lucide-react";
 import { ThemeToggle } from "./ThemeToggle";
@@ -37,7 +38,7 @@ interface NavGroup {
 
 export function DesktopSidebar() {
   const pathname = usePathname();
-  const { notifications, isDemoMode } = useFinance();
+  const { notifications, isDemoMode, userProfile, signOut } = useFinance();
   const unreadCount = notifications.filter((n) => !n.is_read).length;
 
   const navGroups: NavGroup[] = [
@@ -159,16 +160,28 @@ export function DesktopSidebar() {
       </div>
 
       {/* User profile footer */}
-      <div className="border-t border-sky-100 dark:border-slate-800 p-4 bg-white/50 dark:bg-slate-900/50">
-        <Link href="/settings" className="flex items-center gap-3 hover:opacity-80 active:scale-[0.98] transition-all cursor-pointer">
-          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-sky-100 text-[#4A90FF] dark:bg-slate-800 dark:text-sky-300">
-            <User className="h-4 w-4" />
+      <div className="border-t border-sky-100 dark:border-slate-800 p-3.5 bg-white/50 dark:bg-slate-900/50 flex items-center justify-between gap-2">
+        <Link href="/settings" className="flex items-center gap-2.5 hover:opacity-80 active:scale-[0.98] transition-all cursor-pointer min-w-0 flex-1">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-sky-100 text-[#4A90FF] dark:bg-slate-800 dark:text-sky-300 font-bold text-xs uppercase">
+            {userProfile?.display_name ? userProfile.display_name.charAt(0) : <User className="h-4 w-4" />}
           </div>
-          <div className="truncate">
-            <p className="text-sm font-bold text-slate-900 dark:text-white">Juan Dela Cruz</p>
-            <p className="text-xs text-slate-400 truncate">Philippine Payday Tracker</p>
+          <div className="truncate min-w-0">
+            <p className="text-xs font-bold text-slate-900 dark:text-white truncate">
+              {userProfile?.display_name || "Juan Dela Cruz"}
+            </p>
+            <p className="text-[11px] text-slate-400 truncate">
+              {isDemoMode ? "Demo Mode" : (userProfile?.email || "Personal Account")}
+            </p>
           </div>
         </Link>
+        <button
+          type="button"
+          onClick={() => signOut()}
+          title="Sign Out"
+          className="p-1.5 rounded-xl text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 active:scale-95 transition-all cursor-pointer shrink-0"
+        >
+          <LogOut className="h-4 w-4" />
+        </button>
       </div>
     </aside>
   );

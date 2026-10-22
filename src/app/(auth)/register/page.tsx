@@ -6,9 +6,11 @@ import { useRouter } from "next/navigation";
 import { Wallet, ArrowRight, Lock, Mail, User } from "lucide-react";
 import { toast } from "sonner";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
+import { useFinance } from "@/lib/store/finance-context";
 
 export default function RegisterPage() {
   const router = useRouter();
+  const { updateUserProfile, resetAllData } = useFinance();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -17,6 +19,10 @@ export default function RegisterPage() {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+
+    // Save profile and start fresh with personal account (₱0 balance, clear demo)
+    updateUserProfile({ display_name: name, email });
+    resetAllData();
 
     if (isSupabaseConfigured()) {
       try {
