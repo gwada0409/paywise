@@ -98,11 +98,11 @@
 
   /* Safe area insets for mobile screens */
   .pb-safe {
-    padding-bottom: env(safe-area-inset-bottom, 1.25rem);
+    padding-bottom: max(env(safe-area-inset-bottom, 1rem), 1rem);
   }
 
   .pt-safe {
-    padding-top: env(safe-area-inset-top, 0.75rem);
+    padding-top: max(env(safe-area-inset-top, 2.75rem), 2.75rem);
   }
 
   /* Smooth custom scrollbars */

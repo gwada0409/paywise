@@ -18,6 +18,7 @@ import {
   UserProfile,
 } from "@/types";
 import { createClient, isSupabaseConfigured } from "../supabase/client";
+import { toast } from "sonner";
 import {
   generateUUID,
   isValidUUID,
@@ -28,6 +29,8 @@ import {
   syncSalarySettings,
   syncBudgetRules,
   syncUpsertAccount,
+  syncUpdateAccountBalance,
+  syncAllLocalToCloud,
   syncInsertBill,
   syncUpdateBillStatus,
   syncInsertSavingsGoal,
@@ -72,6 +75,7 @@ interface FinanceContextType {
   clientApiKey: string;
   isInitialized: boolean;
   isOnline: boolean;
+  isSyncing: boolean;
 
   // Derived calculations
   spendableBreakdown: SpendableBalanceBreakdown;
@@ -81,6 +85,8 @@ interface FinanceContextType {
   financialContext: FinancialContextSummary;
 
   // Actions
+  syncWithCloud: () => Promise<void>;
+  updateAccountBalance: (accountId: string, newBalance: number) => void;
   updateUserProfile: (profile: Partial<UserProfile>) => Promise<void> | void;
   signOut: () => Promise<void>;
   addAccount: (account: Omit<FinancialAccount, "id" | "created_at">) => void;
@@ -200,6 +206,7 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
   });
   const [isInitialized, setIsInitialized] = useState<boolean>(false);
   const [isOnline, setIsOnline] = useState<boolean>(true);
+  const [isSyncing, setIsSyncing] = useState<boolean>(false);
 
   // Monitor online status
   useEffect(() => {
@@ -291,6 +298,7 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
         const supabase = createClient();
 
         const syncUserWithCloud = async (user: any) => {
+          setIsSyncing(true);
           const userId = user.id;
           const meta = (user.user_metadata as Record<string, string>) || {};
           const resolvedName =
@@ -313,7 +321,32 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
           } catch {}
 
           // Fetch cloud database records
-          const cloudData = await fetchUserData(userId);
+          let cloudData = await fetchUserData(userId);
+
+          // Check if cloud is empty but local has data to push up
+          try {
+            const localStored = localStorage.getItem(getStorageKey(userId));
+            const localParsed = localStored ? JSON.parse(localStored) : null;
+            const guestStored = localStorage.getItem(getStorageKey("guest"));
+            const guestParsed = guestStored ? JSON.parse(guestStored) : null;
+            const sourceLocal = localParsed || (guestParsed && !guestParsed.isDemoMode ? guestParsed : null);
+
+            const hasCloudData =
+              cloudData &&
+              ((cloudData.transactions && cloudData.transactions.length > 0) ||
+                (cloudData.accounts && cloudData.accounts.some((a) => a.balance > 0)) ||
+                (cloudData.salarySettings && cloudData.salarySettings.monthly_net > 0) ||
+                (cloudData.bills && cloudData.bills.length > 0));
+
+            if (!hasCloudData && sourceLocal) {
+              console.log("[Sync] Reconciling local data to Supabase cloud for user:", userId);
+              await syncAllLocalToCloud(userId, sourceLocal);
+              cloudData = await fetchUserData(userId);
+            }
+          } catch (e) {
+            console.warn("Could not reconcile local cache with Supabase:", e);
+          }
+
           if (cloudData) {
             if (cloudData.accounts && cloudData.accounts.length > 0) {
               setAccounts(cleanAndDeduplicateAccounts(cloudData.accounts));
@@ -335,6 +368,7 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
           } else {
             setIsDemoMode(false);
           }
+          setIsSyncing(false);
         };
 
         supabase.auth.getUser().then(({ data }) => {
@@ -1008,12 +1042,86 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const updateAccountBalance = (accountId: string, newBalance: number) => {
+    const rounded = roundMoney(newBalance);
+    setAccounts((prev) =>
+      prev.map((acc) => (acc.id === accountId ? { ...acc, balance: rounded } : acc))
+    );
+
+    if (userProfile.id && userProfile.id !== "guest") {
+      syncUpdateAccountBalance(userProfile.id, accountId, rounded).catch(console.error);
+    }
+    toast.success("Account balance updated successfully!");
+  };
+
+  const syncWithCloud = async () => {
+    if (!isSupabaseConfigured()) {
+      toast.info("Offline mode active. All records are safely saved locally.");
+      return;
+    }
+    if (!userProfile.id || userProfile.id === "guest") {
+      toast.info("Sign in with an account to sync live records across devices.");
+      return;
+    }
+
+    setIsSyncing(true);
+    try {
+      let cloudData = await fetchUserData(userProfile.id);
+
+      // Check if cloud was empty but local has data to push
+      const localStored = localStorage.getItem(getStorageKey(userProfile.id));
+      const localParsed = localStored ? JSON.parse(localStored) : null;
+      const guestStored = localStorage.getItem(getStorageKey("guest"));
+      const guestParsed = guestStored ? JSON.parse(guestStored) : null;
+      const sourceLocal = localParsed || (guestParsed && !guestParsed.isDemoMode ? guestParsed : null);
+
+      const hasCloudData =
+        cloudData &&
+        ((cloudData.transactions && cloudData.transactions.length > 0) ||
+          (cloudData.accounts && cloudData.accounts.some((a) => a.balance > 0)) ||
+          (cloudData.salarySettings && cloudData.salarySettings.monthly_net > 0) ||
+          (cloudData.bills && cloudData.bills.length > 0));
+
+      if (!hasCloudData && sourceLocal) {
+        await syncAllLocalToCloud(userProfile.id, sourceLocal);
+        cloudData = await fetchUserData(userProfile.id);
+      }
+
+      if (cloudData) {
+        if (cloudData.accounts && cloudData.accounts.length > 0) {
+          setAccounts(cleanAndDeduplicateAccounts(cloudData.accounts));
+        }
+        if (cloudData.salarySettings) setSalarySettings(cloudData.salarySettings);
+        if (cloudData.budgetRules) setBudgetRules(cloudData.budgetRules);
+        setTransactions(cloudData.transactions || []);
+        setIncomeRecords(cloudData.incomeRecords || []);
+        setSavingsGoals(cloudData.savingsGoals || []);
+        setSavingsMovements(cloudData.savingsMovements || []);
+        setBills(cloudData.bills || []);
+        setLoans(cloudData.loans || []);
+        setNotifications(cloudData.notifications || []);
+        setIsDemoMode(false);
+        toast.success("Synced with cloud! Data is up to date.");
+      } else {
+        toast.info("Cloud connected. No remote updates found.");
+      }
+    } catch (err) {
+      console.error("Manual sync error:", err);
+      toast.error("Failed to sync with cloud. Please check your connection.");
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
   return (
     <FinanceContext.Provider
       value={{
         userProfile,
         updateUserProfile,
         signOut,
+        syncWithCloud,
+        updateAccountBalance,
+        isSyncing,
         salarySettings,
         budgetRules,
         accounts,

@@ -407,6 +407,35 @@ export async function syncInsertTransaction(
     const supabase = createClient();
     const accountUuid = tx.account_id && isValidUUID(tx.account_id) ? tx.account_id : null;
 
+    // Check if accountUuid exists in Supabase to avoid foreign key violation
+    let validAccountUuid: string | null = null;
+    if (accountUuid) {
+      const { data: accCheck } = await supabase
+        .from("financial_accounts")
+        .select("id")
+        .eq("id", accountUuid)
+        .eq("user_id", userId)
+        .maybeSingle();
+
+      if (accCheck?.id) {
+        validAccountUuid = accCheck.id;
+      }
+    }
+
+    // Fallback: match by payment method name if account not found by UUID
+    if (!validAccountUuid && tx.payment_method) {
+      const { data: matchedAcc } = await supabase
+        .from("financial_accounts")
+        .select("id")
+        .eq("user_id", userId)
+        .ilike("name", `%${tx.payment_method}%`)
+        .maybeSingle();
+
+      if (matchedAcc?.id) {
+        validAccountUuid = matchedAcc.id;
+      }
+    }
+
     const row = {
       id: isValidUUID(tx.id) ? tx.id : generateUUID(),
       user_id: userId,
@@ -415,7 +444,7 @@ export async function syncInsertTransaction(
       type: tx.type,
       category: tx.category,
       payment_method: tx.payment_method,
-      account_id: accountUuid,
+      account_id: validAccountUuid,
       payday_period: tx.payday_period || "other",
       date: tx.date,
       notes: tx.notes || null,
@@ -426,11 +455,11 @@ export async function syncInsertTransaction(
       console.error("[DB] Failed to insert transaction to Supabase:", txErr);
     }
 
-    if (accountUuid && typeof newAccountBalance === "number") {
+    if (validAccountUuid && typeof newAccountBalance === "number") {
       const { error: accErr } = await supabase
         .from("financial_accounts")
         .update({ balance: newAccountBalance })
-        .eq("id", accountUuid)
+        .eq("id", validAccountUuid)
         .eq("user_id", userId);
 
       if (accErr) {
@@ -439,6 +468,112 @@ export async function syncInsertTransaction(
     }
   } catch (err) {
     console.error("Failed to sync transaction to Supabase:", err);
+  }
+}
+
+/**
+ * Updates an account balance in Supabase
+ */
+export async function syncUpdateAccountBalance(userId: string, accountId: string, balance: number) {
+  if (!isSupabaseConfigured() || !userId || userId === "guest") return;
+  try {
+    const supabase = createClient();
+    await supabase
+      .from("financial_accounts")
+      .update({ balance: roundMoney(balance) })
+      .eq("id", accountId)
+      .eq("user_id", userId);
+  } catch (err) {
+    console.error("Failed to update account balance in Supabase:", err);
+  }
+}
+
+/**
+ * Inserts an income record into Supabase
+ */
+export async function syncInsertIncome(userId: string, inc: IncomeRecord) {
+  if (!isSupabaseConfigured() || !userId || userId === "guest") return;
+
+  try {
+    const supabase = createClient();
+    const accountUuid = inc.account_id && isValidUUID(inc.account_id) ? inc.account_id : null;
+    let validAccountUuid: string | null = null;
+    if (accountUuid) {
+      const { data: accCheck } = await supabase
+        .from("financial_accounts")
+        .select("id")
+        .eq("id", accountUuid)
+        .eq("user_id", userId)
+        .maybeSingle();
+
+      if (accCheck?.id) {
+        validAccountUuid = accCheck.id;
+      }
+    }
+
+    await supabase.from("income_records").insert({
+      id: isValidUUID(inc.id) ? inc.id : generateUUID(),
+      user_id: userId,
+      amount: inc.amount,
+      date: inc.date,
+      payday_period: inc.payday_period || "other",
+      type: inc.type || "salary",
+      account_id: validAccountUuid,
+      notes: inc.notes || null,
+    });
+  } catch (err) {
+    console.error("Failed to sync income record to Supabase:", err);
+  }
+}
+
+/**
+ * Pushes all unsynced local data to Supabase for the authenticated user
+ */
+export async function syncAllLocalToCloud(userId: string, localData: any) {
+  if (!isSupabaseConfigured() || !userId || userId === "guest" || !localData) return;
+
+  try {
+    // 1. Sync Salary Settings
+    if (localData.salarySettings && localData.salarySettings.monthly_net > 0) {
+      await syncSalarySettings(userId, localData.salarySettings);
+    }
+
+    // 2. Sync Budget Rules
+    if (localData.budgetRules) {
+      await syncBudgetRules(userId, localData.budgetRules);
+    }
+
+    // 3. Sync Accounts
+    if (localData.accounts && Array.isArray(localData.accounts) && localData.accounts.length > 0) {
+      for (const acc of localData.accounts) {
+        await syncUpsertAccount(userId, acc);
+      }
+    }
+
+    // 4. Sync Transactions
+    if (localData.transactions && Array.isArray(localData.transactions) && localData.transactions.length > 0) {
+      for (const tx of localData.transactions) {
+        await syncInsertTransaction(userId, tx);
+      }
+    }
+
+    // 5. Sync Bills
+    if (localData.bills && Array.isArray(localData.bills) && localData.bills.length > 0) {
+      for (const bill of localData.bills) {
+        await syncInsertBill(userId, bill);
+      }
+    }
+
+    // 6. Sync Income Records
+    if (localData.incomeRecords && Array.isArray(localData.incomeRecords) && localData.incomeRecords.length > 0) {
+      for (const inc of localData.incomeRecords) {
+        await syncInsertIncome(userId, inc);
+      }
+    }
+
+    console.log("[DB] Pushed local records to Supabase for user:", userId);
+  } catch (err) {
+    console.error("Failed to sync local data to Supabase:", err);
   }
 }
 
@@ -467,31 +602,6 @@ export async function syncDeleteTransaction(
     }
   } catch (err) {
     console.error("Failed to sync delete transaction to Supabase:", err);
-  }
-}
-
-/**
- * Inserts an income record into Supabase
- */
-export async function syncInsertIncome(userId: string, inc: IncomeRecord) {
-  if (!isSupabaseConfigured() || !userId || userId === "guest") return;
-
-  try {
-    const supabase = createClient();
-    const accountUuid = inc.account_id && isValidUUID(inc.account_id) ? inc.account_id : null;
-
-    await supabase.from("income_records").insert({
-      id: isValidUUID(inc.id) ? inc.id : generateUUID(),
-      user_id: userId,
-      amount: inc.amount,
-      date: inc.date,
-      payday_period: inc.payday_period || "other",
-      type: inc.type || "salary",
-      account_id: accountUuid,
-      notes: inc.notes || null,
-    });
-  } catch (err) {
-    console.error("Failed to sync income record to Supabase:", err);
   }
 }
 

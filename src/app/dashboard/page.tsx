@@ -20,6 +20,7 @@ import {
   Clock,
   AlertCircle,
   TrendingUp,
+  X,
 } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
 import { useFinance } from "@/lib/store/finance-context";
@@ -34,7 +35,7 @@ import { IncomeFormModal } from "@/components/income/IncomeFormModal";
 import { BillFormModal } from "@/components/bills/BillFormModal";
 import { QuickActionsModal } from "@/components/dashboard/QuickActionsModal";
 import { TransactionDetailModal } from "@/components/transactions/TransactionDetailModal";
-import { FinancialTransaction, TransactionType } from "@/types";
+import { FinancialTransaction, TransactionType, FinancialAccount } from "@/types";
 import { formatDate } from "@/lib/utils";
 import { toast } from "sonner";
 
@@ -50,6 +51,9 @@ export default function DashboardPage() {
     salarySettings,
     isDemoMode,
     resetAllData,
+    updateAccountBalance,
+    syncWithCloud,
+    isSyncing,
   } = useFinance();
 
   const [isBalanceHidden, setIsBalanceHidden] = useState(false);
@@ -61,6 +65,8 @@ export default function DashboardPage() {
   const [isQuickActionsOpen, setIsQuickActionsOpen] = useState(false);
   const [selectedTxForDetail, setSelectedTxForDetail] = useState<FinancialTransaction | null>(null);
   const [isReceiptScannerOpen, setIsReceiptScannerOpen] = useState(false);
+  const [selectedAccountForEdit, setSelectedAccountForEdit] = useState<FinancialAccount | null>(null);
+  const [editBalanceAmount, setEditBalanceAmount] = useState<number>(0);
 
   // Group spending for Food, Travel, Shopping
   const foodSpending = transactions
@@ -303,9 +309,15 @@ export default function DashboardPage() {
                 {accounts
                   .filter((a) => !a.is_archived)
                   .map((acc) => (
-                    <div
+                    <button
                       key={acc.id}
-                      className="shrink-0 flex items-center gap-2 px-3 py-1.5 rounded-2xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200/60 dark:border-slate-700/60 text-xs shadow-2xs"
+                      type="button"
+                      onClick={() => {
+                        setSelectedAccountForEdit(acc);
+                        setEditBalanceAmount(acc.balance);
+                      }}
+                      title={`Tap to adjust ${acc.name} balance`}
+                      className="shrink-0 flex items-center gap-2 px-3 py-1.5 rounded-2xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200/60 dark:border-slate-700/60 text-xs shadow-2xs hover:border-primary/50 active:scale-95 transition-all cursor-pointer"
                     >
                       <span className="h-2 w-2 rounded-full bg-primary" />
                       <span className="font-bold text-slate-700 dark:text-slate-200">
@@ -314,7 +326,7 @@ export default function DashboardPage() {
                       <span className="font-extrabold tabular-nums text-slate-900 dark:text-white">
                         ₱{isBalanceHidden ? "••••" : acc.balance.toLocaleString()}
                       </span>
-                    </div>
+                    </button>
                   ))}
               </div>
             </div>
@@ -694,6 +706,88 @@ export default function DashboardPage() {
         isOpen={isReceiptScannerOpen}
         onClose={() => setIsReceiptScannerOpen(false)}
       />
+
+      {/* Quick Edit Account Balance Modal */}
+      {selectedAccountForEdit && (
+        <div
+          onClick={() => setSelectedAccountForEdit(null)}
+          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-xs p-0 sm:p-4 animate-in fade-in duration-200 select-none touch-manipulation cursor-pointer"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-sm rounded-t-[32px] sm:rounded-3xl bg-card border border-border p-6 shadow-2xl space-y-4 pb-safe cursor-default"
+          >
+            <div className="mx-auto -mt-1 mb-2 h-1.5 w-12 rounded-full bg-slate-300 dark:bg-slate-700 sm:hidden" />
+            <div className="flex items-center justify-between pb-2 border-b border-border">
+              <div className="flex items-center gap-2">
+                <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                  <Wallet className="h-4 w-4" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-foreground">
+                    Update {selectedAccountForEdit.name}
+                  </h3>
+                  <p className="text-[11px] text-muted-foreground">
+                    Adjust current liquid balance
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSelectedAccountForEdit(null)}
+                className="p-1 rounded-full text-muted-foreground hover:bg-muted"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                updateAccountBalance(selectedAccountForEdit.id, editBalanceAmount);
+                setSelectedAccountForEdit(null);
+              }}
+              className="space-y-4 pt-1"
+            >
+              <div>
+                <label className="text-xs font-semibold text-muted-foreground block mb-1">
+                  Current Balance (PHP)
+                </label>
+                <div className="relative">
+                  <span className="absolute left-3 top-2.5 text-sm font-bold text-muted-foreground">
+                    ₱
+                  </span>
+                  <input
+                    type="number"
+                    step="0.01"
+                    autoFocus
+                    value={editBalanceAmount || ""}
+                    onChange={(e) => setEditBalanceAmount(parseFloat(e.target.value) || 0)}
+                    placeholder="0.00"
+                    className="w-full pl-8 pr-4 py-2.5 text-sm rounded-xl bg-muted/40 border border-border focus:outline-none focus:ring-2 focus:ring-primary/40 font-bold"
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 pt-1">
+                <button
+                  type="button"
+                  onClick={() => setSelectedAccountForEdit(null)}
+                  className="flex-1 py-2.5 rounded-full border border-border text-xs font-bold text-muted-foreground hover:bg-muted active:scale-95 transition-all"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 py-2.5 rounded-full bg-primary text-xs font-bold text-white shadow-xs active:scale-95 transition-all"
+                >
+                  Save Balance
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </AppShell>
   );
 }

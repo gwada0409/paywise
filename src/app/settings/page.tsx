@@ -31,7 +31,7 @@ import { useFinance } from "@/lib/store/finance-context";
 import { usePWA } from "@/components/pwa/PWARegister";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { CurrencyDisplay } from "@/components/common/CurrencyDisplay";
-import { AccountType } from "@/types";
+import { AccountType, FinancialAccount } from "@/types";
 import { toast } from "sonner";
 
 export default function SettingsPage() {
@@ -48,11 +48,16 @@ export default function SettingsPage() {
     importLocalData,
     accounts,
     addAccount,
+    updateAccountBalance,
+    syncWithCloud,
+    isSyncing,
   } = useFinance();
   const { isInstallable, isInstalled, installPWA } = usePWA();
 
   const [displayName, setDisplayName] = useState(userProfile?.display_name || "Juan Dela Cruz");
   const [email, setEmail] = useState(userProfile?.email || "juan.delacruz@paywise.ph");
+  const [editingAccount, setEditingAccount] = useState<FinancialAccount | null>(null);
+  const [editBalance, setEditBalance] = useState<number>(0);
   const [isSavingProfile, setIsSavingProfile] = useState(false);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
@@ -290,7 +295,7 @@ export default function SettingsPage() {
             {uniqueAccounts.map((acc) => (
               <div
                 key={acc.id}
-                className="flex items-center justify-between p-3.5 rounded-2xl border border-border/50 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/50"
+                className="flex items-center justify-between p-3.5 rounded-2xl border border-border/50 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/50 hover:border-primary/40 transition-colors"
               >
                 <div className="flex items-center gap-2.5">
                   <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-primary shrink-0">
@@ -315,8 +320,21 @@ export default function SettingsPage() {
                   </div>
                 </div>
 
-                <div className="text-right">
-                  <CurrencyDisplay amount={acc.balance} size="sm" weight="bold" />
+                <div className="flex items-center gap-2">
+                  <div className="text-right">
+                    <CurrencyDisplay amount={acc.balance} size="sm" weight="bold" />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setEditingAccount(acc);
+                      setEditBalance(acc.balance);
+                    }}
+                    className="p-1.5 px-2.5 rounded-xl bg-primary/10 text-primary hover:bg-primary/20 active:scale-95 transition-all text-xs font-bold cursor-pointer"
+                    title="Edit account balance"
+                  >
+                    Edit
+                  </button>
                 </div>
               </div>
             ))}
@@ -548,6 +566,22 @@ export default function SettingsPage() {
               </div>
             </div>
 
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl border border-sky-200/80 dark:border-sky-800/60 bg-sky-50/50 dark:bg-sky-950/20">
+              <div>
+                <p className="text-xs font-bold text-sky-900 dark:text-sky-300">Live Cloud Synchronization</p>
+                <p className="text-[11px] text-muted-foreground">Force sync and reconcile your balances, transactions, and bills with Supabase.</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => syncWithCloud()}
+                disabled={isSyncing}
+                className="inline-flex items-center gap-1.5 rounded-full bg-primary text-white px-4 py-2 text-xs font-bold shadow-xs hover:bg-primary/90 active:scale-95 transition-all shrink-0 min-h-[38px] cursor-pointer"
+              >
+                <RefreshCw className={`h-3.5 w-3.5 ${isSyncing ? "animate-spin" : ""}`} />
+                <span>{isSyncing ? "Syncing..." : "Sync Cloud Now"}</span>
+              </button>
+            </div>
+
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl border border-rose-100 dark:border-rose-950/60 bg-rose-50/40 dark:bg-rose-950/20">
               <div>
                 <p className="text-xs font-bold text-rose-600 dark:text-rose-400">Reset All Financial Records</p>
@@ -582,6 +616,87 @@ export default function SettingsPage() {
           </div>
         </div>
       </div>
+
+      {/* Edit Account Balance Modal */}
+      {editingAccount && (
+        <div
+          onClick={() => setEditingAccount(null)}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-200 select-none touch-manipulation cursor-pointer"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-sm rounded-3xl bg-card border border-border p-6 shadow-2xl space-y-4 cursor-default"
+          >
+            <div className="flex items-center justify-between pb-2 border-b border-border">
+              <div className="flex items-center gap-2">
+                <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                  <Wallet className="h-4 w-4" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-foreground">
+                    Update {editingAccount.name}
+                  </h3>
+                  <p className="text-[11px] text-muted-foreground">
+                    Adjust current liquid balance
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setEditingAccount(null)}
+                className="p-1 rounded-full text-muted-foreground hover:bg-muted"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                updateAccountBalance(editingAccount.id, editBalance);
+                setEditingAccount(null);
+              }}
+              className="space-y-4 pt-1"
+            >
+              <div>
+                <label className="text-xs font-semibold text-muted-foreground block mb-1">
+                  Current Balance (PHP)
+                </label>
+                <div className="relative">
+                  <span className="absolute left-3 top-2.5 text-sm font-bold text-muted-foreground">
+                    ₱
+                  </span>
+                  <input
+                    type="number"
+                    step="0.01"
+                    autoFocus
+                    value={editBalance || ""}
+                    onChange={(e) => setEditBalance(parseFloat(e.target.value) || 0)}
+                    placeholder="0.00"
+                    className="w-full pl-8 pr-4 py-2.5 text-sm rounded-xl bg-muted/40 border border-border focus:outline-none focus:ring-2 focus:ring-primary/40 font-bold"
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 pt-1">
+                <button
+                  type="button"
+                  onClick={() => setEditingAccount(null)}
+                  className="flex-1 py-2.5 rounded-full border border-border text-xs font-bold text-muted-foreground hover:bg-muted active:scale-95 transition-all cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 py-2.5 rounded-full bg-primary text-xs font-bold text-white shadow-xs active:scale-95 transition-all cursor-pointer"
+                >
+                  Save Balance
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </AppShell>
   );
 }
