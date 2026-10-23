@@ -16,7 +16,7 @@ export function MobileHeader() {
 
   return (
     <>
-      <header className="sticky top-0 z-30 w-full bg-white dark:bg-[#0A111E] border-b border-slate-200/80 dark:border-slate-800/80 shadow-2xs select-none touch-manipulation transition-colors md:hidden pt-[max(env(safe-area-inset-top),2.75rem)] pb-2 px-4 sm:px-5">
+      <header className="sticky top-0 z-30 w-full bg-white dark:bg-[#0A111E] border-b border-slate-200/80 dark:border-slate-800/80 shadow-2xs select-none touch-manipulation transition-colors md:hidden pt-mobile-header pb-2.5 px-4 sm:px-5">
         <div className="flex h-11 w-full items-center justify-between">
           {/* Left: Drawer Menu Button + Contextual Greeting */}
           <div className="flex items-center gap-2 sm:gap-2.5">

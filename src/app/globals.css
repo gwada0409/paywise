@@ -102,7 +102,11 @@
   }
 
   .pt-safe {
-    padding-top: max(env(safe-area-inset-top, 2.75rem), 2.75rem);
+    padding-top: max(calc(env(safe-area-inset-top, 0px) + 0.5rem), 3rem);
+  }
+
+  .pt-mobile-header {
+    padding-top: max(calc(env(safe-area-inset-top, 0px) + 0.625rem), 3.25rem);
   }
 
   /* Smooth custom scrollbars */

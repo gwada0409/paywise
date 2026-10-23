@@ -134,7 +134,7 @@ export function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
       {/* Slide-out Panel */}
       <div className="fixed inset-y-0 left-0 z-50 flex w-full max-w-xs flex-col bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 shadow-2xl animate-in slide-in-from-left duration-250 select-none touch-manipulation">
         {/* Drawer Header */}
-        <div className="flex h-16 items-center justify-between px-5 border-b border-slate-100 dark:border-slate-800">
+        <div className="flex items-center justify-between px-5 pb-3 border-b border-slate-100 dark:border-slate-800 pt-mobile-header">
           <div className="flex items-center gap-3">
             <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-xs">
               <svg viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5 max-w-full">
@@ -169,7 +169,7 @@ export function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
           <button
             onClick={onClose}
             aria-label="Close menu"
-            className="flex h-8 w-8 items-center justify-center rounded-full text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white active:opacity-70 transition-opacity touch-manipulation"
+            className="flex h-10 w-10 min-h-[44px] min-w-[44px] items-center justify-center rounded-full text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white active:scale-95 transition-all touch-manipulation"
           >
             <X className="h-5 w-5" />
           </button>

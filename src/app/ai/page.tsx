@@ -163,7 +163,7 @@ export default function AIPage() {
       {/* =========================================================================
           1. AI CHAT HEADER (Reference 2: Back Arrow, Green Waveform Logo, History Clock)
          ========================================================================= */}
-      <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-slate-100 dark:border-slate-800/80 bg-white/95 dark:bg-slate-950/95 backdrop-blur-md">
+      <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-slate-100 dark:border-slate-800/80 bg-white dark:bg-slate-950">
         <button
           onClick={() => router.push("/dashboard")}
           className="flex h-9 w-9 items-center justify-center rounded-full text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 active:scale-95 transition-all"
