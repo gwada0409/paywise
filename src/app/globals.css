@@ -122,28 +122,42 @@
   }
 }
 
-/* Reference 1 gradient background */
+/* Reference 1 gradient background: calm, high-trust atmospheric ground */
 .ref-gradient-canvas {
-  background: linear-gradient(180deg, #B9E5FF 0%, #E3F2FE 28%, #F5F9FF 65%, #FFFFFF 100%); /* taste-skill-ignore */
+  background: linear-gradient(180deg, #EDF5FD 0%, #F5F9FD 22%, #FAFBFD 55%, #FFFFFF 100%); /* taste-skill-ignore */
 }
 
 .dark .ref-gradient-canvas {
-  background: linear-gradient(180deg, #0f1d35 0%, #0d182c 30%, #09101d 70%, #070c17 100%); /* taste-skill-ignore */
+  background: linear-gradient(180deg, #0A111E 0%, #0C1423 25%, #0A0F1B 60%, #060911 100%); /* taste-skill-ignore */
 }
 
-/* Glassmorphism translucent pills */
+/* Glassmorphism translucent pills & surfaces */
 .glass-pill {
-  background: rgba(255, 255, 255, 0.65);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.85);
 }
 
 .dark .glass-pill {
-  background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+.dark .glass-card {
+  background: rgba(15, 23, 42, 0.82);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(51, 65, 85, 0.5);
 }
 
 /* Hide scrollbar for category pills / chips */

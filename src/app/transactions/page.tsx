@@ -114,41 +114,42 @@ export default function TransactionsPage() {
         </div>
 
         {/* Transactions List */}
-        <div className="rounded-4xl p-5 bg-white/95 dark:bg-slate-800/95 border border-sky-100/80 dark:border-slate-700 shadow-xs">
-          <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-700">
-            <h2 className="text-xs font-semibold text-ref-muted">
-              {filteredTransactions.length} record{filteredTransactions.length === 1 ? "" : "s"}
+        <div className="rounded-[28px] p-4.5 sm:p-5 bg-white/95 dark:bg-slate-900/95 border border-slate-200/80 dark:border-slate-800 shadow-2xs">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+            <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+              {filteredTransactions.length} transaction{filteredTransactions.length === 1 ? "" : "s"}
             </h2>
-            <div className="text-xs text-ref-muted">
-              Net: <CurrencyDisplay amount={totalFilteredAmount} colored size="sm" weight="bold" />
+            <div className="text-xs text-muted-foreground font-semibold flex items-center gap-1">
+              <span>Net:</span>
+              <CurrencyDisplay amount={totalFilteredAmount} colored size="sm" weight="bold" />
             </div>
           </div>
 
-          <div className="divide-y divide-slate-100 dark:divide-slate-700/60">
+          <div className="divide-y divide-slate-100 dark:divide-slate-800/80">
             {filteredTransactions.map((tx) => (
-              <div key={tx.id} className="py-3.5 flex items-center justify-between gap-3">
-                <div className="min-w-0">
-                  <div className="flex items-center gap-2">
-                    <p className="text-sm font-bold text-ref-navy dark:text-white truncate">
+              <div key={tx.id} className="py-3.5 flex items-center justify-between gap-3 group">
+                <div className="min-w-0 pr-2">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <p className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white truncate">
                       {tx.title}
                     </p>
                     <span
-                      className={`rounded-full px-2 py-0.5 text-[10px] font-bold capitalize ${
+                      className={`rounded-full px-2 py-0.5 text-[9px] sm:text-[10px] font-extrabold capitalize ${
                         tx.type === "need"
-                          ? "bg-sky-50 text-sky-800 dark:bg-sky-950/60 dark:text-sky-300"
+                          ? "bg-sky-500/15 text-sky-700 dark:text-sky-300 border border-sky-500/20"
                           : tx.type === "want"
-                          ? "bg-amber-50 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300"
+                          ? "bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/20"
                           : tx.type === "income"
-                          ? "bg-emerald-50 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300"
-                          : "bg-slate-100 text-slate-800 dark:bg-slate-700 dark:text-slate-200"
+                          ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20"
+                          : "bg-slate-500/15 text-slate-700 dark:text-slate-300 border border-slate-500/20"
                       }`}
                     >
                       {tx.type.replace("_", " ")}
                     </span>
                   </div>
 
-                  <p className="text-xs text-ref-muted mt-0.5 truncate">
-                    {formatDate(tx.date)} • {tx.payment_method} • {tx.category}
+                  <p className="text-[11px] text-muted-foreground mt-0.5 truncate">
+                    {formatDate(tx.date)} • <span className="font-semibold text-slate-700 dark:text-slate-300">{tx.payment_method.toUpperCase()}</span> • {tx.category}
                   </p>
                 </div>
 
@@ -160,15 +161,22 @@ export default function TransactionsPage() {
                     weight="bold"
                   />
                   <button
+                    type="button"
                     onClick={() => deleteTransaction(tx.id)}
-                    className="p-1 rounded text-slate-400 hover:text-rose-500"
-                    title="Delete"
+                    className="p-1.5 rounded-xl text-slate-400 hover:text-rose-500 hover:bg-rose-500/10 active:scale-90 transition-all cursor-pointer"
+                    title="Delete transaction"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                   </button>
                 </div>
               </div>
             ))}
+
+            {filteredTransactions.length === 0 && (
+              <div className="py-8 text-center text-xs text-muted-foreground">
+                No transactions match your search or filter criteria.
+              </div>
+            )}
           </div>
         </div>
       </div>
