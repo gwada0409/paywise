@@ -6,17 +6,21 @@ import {
   Plus,
   Search,
   Trash2,
+  Camera,
+  Sparkles,
 } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
 import { useFinance } from "@/lib/store/finance-context";
 import { CurrencyDisplay } from "@/components/common/CurrencyDisplay";
 import { TransactionBottomSheet } from "@/components/transactions/TransactionBottomSheet";
+import { ReceiptScannerModal } from "@/components/receipts/ReceiptScannerModal";
 import { formatDate } from "@/lib/utils";
 
 export default function TransactionsPage() {
   const { transactions, deleteTransaction } = useFinance();
 
   const [isAddTxOpen, setIsAddTxOpen] = useState(false);
+  const [isScannerOpen, setIsScannerOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedType, setSelectedType] = useState<string>("all");
   const [selectedMethod, setSelectedMethod] = useState<string>("all");
@@ -61,13 +65,22 @@ export default function TransactionsPage() {
             </p>
           </div>
 
-          <button
-            onClick={() => setIsAddTxOpen(true)}
-            className="inline-flex items-center gap-1.5 rounded-full bg-[#4A90FF] px-4 py-2 text-xs font-bold text-white shadow-sm hover:opacity-95 active:scale-95 transition-all min-h-[40px]"
-          >
-            <Plus className="h-4 w-4" />
-            Add Expense
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setIsScannerOpen(true)}
+              className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-tr from-sky-500/15 via-indigo-500/15 to-purple-500/15 border border-sky-500/30 px-3.5 py-2 text-xs font-bold text-sky-700 dark:text-sky-300 shadow-xs hover:bg-sky-500/20 active:scale-95 transition-all min-h-[40px]"
+            >
+              <Camera className="h-4 w-4 text-sky-500" />
+              <span>Scan OCR</span>
+            </button>
+            <button
+              onClick={() => setIsAddTxOpen(true)}
+              className="inline-flex items-center gap-1.5 rounded-full bg-[#4A90FF] px-4 py-2 text-xs font-bold text-white shadow-sm hover:opacity-95 active:scale-95 transition-all min-h-[40px]"
+            >
+              <Plus className="h-4 w-4" />
+              Add Expense
+            </button>
+          </div>
         </div>
 
         {/* Search & Filter Bar */}
@@ -163,6 +176,10 @@ export default function TransactionsPage() {
       <TransactionBottomSheet
         isOpen={isAddTxOpen}
         onClose={() => setIsAddTxOpen(false)}
+      />
+      <ReceiptScannerModal
+        isOpen={isScannerOpen}
+        onClose={() => setIsScannerOpen(false)}
       />
     </AppShell>
   );

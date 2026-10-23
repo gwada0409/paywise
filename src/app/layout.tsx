@@ -29,9 +29,9 @@ export const metadata: Metadata = {
     title: "PayWise",
   },
   icons: {
-    icon: "/icon-192.svg",
-    shortcut: "/icon-192.svg",
-    apple: "/icon-192.svg",
+    icon: "/favicon.png",
+    shortcut: "/icon-192.png",
+    apple: "/apple-touch-icon.png",
   },
 };
 
@@ -46,7 +46,9 @@ export default function RootLayout({
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-        <link rel="apple-touch-icon" href="/icon-192.svg" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png" />
+        <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
         <script
           dangerouslySetInnerHTML={{
             __html: `

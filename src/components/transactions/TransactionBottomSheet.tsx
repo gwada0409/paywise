@@ -1,10 +1,11 @@
 "use client";
 
 import React, { useState } from "react";
-import { X, Check, ArrowDownRight, ArrowUpRight, Plus } from "lucide-react";
+import { X, Check, ArrowDownRight, ArrowUpRight, Plus, Camera, Sparkles } from "lucide-react";
 import { useFinance } from "@/lib/store/finance-context";
 import { TransactionType, PaymentMethod } from "@/types";
 import { CurrencyInput } from "../common/CurrencyInput";
+import { ReceiptScannerModal } from "../receipts/ReceiptScannerModal";
 import { toast } from "sonner";
 
 interface TransactionBottomSheetProps {
@@ -53,6 +54,7 @@ export function TransactionBottomSheet({
   const [accountId, setAccountId] = useState<string>(accounts[0]?.id || "");
   const [date, setDate] = useState<string>(new Date().toISOString().split("T")[0]);
   const [notes, setNotes] = useState<string>("");
+  const [isScannerOpen, setIsScannerOpen] = useState<boolean>(false);
 
   React.useEffect(() => {
     if (accounts.length > 0 && (!accountId || !accounts.some((a) => a.id === accountId))) {
@@ -146,6 +148,28 @@ export function TransactionBottomSheet({
         </div>
 
         <form onSubmit={handleSubmit} className="mt-4 space-y-4">
+          {/* Quick Receipt / Screenshot Scan Trigger */}
+          <button
+            type="button"
+            onClick={() => setIsScannerOpen(true)}
+            className="w-full flex items-center justify-between p-2.5 rounded-2xl bg-gradient-to-r from-sky-500/10 via-indigo-500/10 to-purple-500/10 hover:from-sky-500/15 hover:via-indigo-500/15 hover:to-purple-500/15 border border-sky-500/25 text-xs font-semibold text-sky-800 dark:text-sky-300 transition-all cursor-pointer group active:scale-[0.98]"
+          >
+            <div className="flex items-center gap-2.5">
+              <div className="flex h-7 w-7 items-center justify-center rounded-xl bg-gradient-to-tr from-sky-500 to-indigo-600 text-white shadow-xs">
+                <Camera className="h-4 w-4" />
+              </div>
+              <div className="text-left">
+                <p className="font-bold text-foreground group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors">
+                  Scan GCash / Maya Screenshot
+                </p>
+                <p className="text-[10px] text-muted-foreground">
+                  Auto-extract amount, merchant, and category with Gemini
+                </p>
+              </div>
+            </div>
+            <Sparkles className="h-4 w-4 text-amber-500 shrink-0" />
+          </button>
+
           {/* Amount Input */}
           <div>
             <label className="block text-xs font-semibold text-muted-foreground mb-1.5">
@@ -355,6 +379,12 @@ export function TransactionBottomSheet({
           </div>
         </form>
       </div>
+
+      {/* Embedded Scanner Modal */}
+      <ReceiptScannerModal
+        isOpen={isScannerOpen}
+        onClose={() => setIsScannerOpen(false)}
+      />
     </div>
   );
 }

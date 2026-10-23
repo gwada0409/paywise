@@ -16,11 +16,15 @@ import {
   LayoutGrid,
   Plus,
   Check,
+  Camera,
 } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
 import { useFinance } from "@/lib/store/finance-context";
 import { CurrencyDisplay } from "@/components/common/CurrencyDisplay";
 import { SpendingEqualizerCard } from "@/components/dashboard/SpendingEqualizerCard";
+import { CanIAffordThisCard } from "@/components/dashboard/CanIAffordThisCard";
+import { PWAInstallBanner } from "@/components/pwa/PWAInstallBanner";
+import { ReceiptScannerModal } from "@/components/receipts/ReceiptScannerModal";
 import { TransactionBottomSheet } from "@/components/transactions/TransactionBottomSheet";
 import { PaydayPlannerModal } from "@/components/payday/PaydayPlannerModal";
 import { IncomeFormModal } from "@/components/income/IncomeFormModal";
@@ -52,6 +56,7 @@ export default function DashboardPage() {
   const [isBillModalOpen, setIsBillModalOpen] = useState(false);
   const [isQuickActionsOpen, setIsQuickActionsOpen] = useState(false);
   const [selectedTxForDetail, setSelectedTxForDetail] = useState<FinancialTransaction | null>(null);
+  const [isReceiptScannerOpen, setIsReceiptScannerOpen] = useState(false);
 
   // Group spending for Food, Travel, Shopping
   const foodSpending = transactions
@@ -120,6 +125,9 @@ export default function DashboardPage() {
           </div>
         )}
 
+        {/* PWA Home Screen Install Banner */}
+        <PWAInstallBanner />
+
         {/* =========================================================================
             1. MAIN BALANCE SECTION
            ========================================================================= */}
@@ -182,38 +190,49 @@ export default function DashboardPage() {
         </div>
 
         {/* =========================================================================
-            2. SEND / QUICK ACTIONS / RECEIVE ACTION BUTTONS
+            2. SEND / SCAN OCR / RECEIVE / QUICK ACTIONS BUTTONS
            ========================================================================= */}
-        <div className="flex items-center justify-between gap-3 pt-1 select-none">
+        <div className="grid grid-cols-4 gap-2 pt-1 select-none">
           {/* Send pill */}
           <button
             type="button"
             onClick={handleOpenSend}
-            className="flex-1 flex items-center justify-center gap-2 rounded-full bg-[#DDF3FF] dark:bg-slate-800 dark:border dark:border-slate-700 py-3.5 px-4 text-xs font-bold text-slate-900 dark:text-white shadow-xs active:scale-[0.96] transition-transform min-h-[46px] touch-manipulation cursor-pointer"
+            className="flex flex-col sm:flex-row items-center justify-center gap-1.5 rounded-2xl bg-[#DDF3FF] dark:bg-slate-800 dark:border dark:border-slate-700 py-2.5 sm:py-3.5 px-2 text-xs font-bold text-slate-900 dark:text-white shadow-xs active:scale-[0.96] transition-transform min-h-[46px] touch-manipulation cursor-pointer"
           >
             <ArrowUpRight className="h-4 w-4 text-[#4A90FF] dark:text-[#70D6F7]" />
             <span>Send</span>
           </button>
 
-          {/* Center Circular Quick Action Hub Button */}
+          {/* Scan Receipt pill */}
           <button
             type="button"
-            onClick={() => setIsQuickActionsOpen(true)}
-            aria-label="Open Quick Financial Hub"
-            title="Quick Financial Actions Hub"
-            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-ref-blue text-white shadow-2xs active:scale-[0.96] transition-transform ring-4 ring-white/80 dark:ring-slate-800 touch-manipulation cursor-pointer"
+            onClick={() => setIsReceiptScannerOpen(true)}
+            className="flex flex-col sm:flex-row items-center justify-center gap-1.5 rounded-2xl bg-gradient-to-tr from-sky-500/15 via-indigo-500/15 to-purple-500/15 dark:bg-slate-800 dark:border dark:border-sky-700/60 py-2.5 sm:py-3.5 px-2 text-xs font-bold text-sky-900 dark:text-sky-200 shadow-xs active:scale-[0.96] transition-transform min-h-[46px] touch-manipulation cursor-pointer"
           >
-            <LayoutGrid className="h-5 w-5 stroke-[2.5px]" />
+            <Camera className="h-4 w-4 text-sky-600 dark:text-sky-400" />
+            <span>Scan OCR</span>
           </button>
 
           {/* Receive pill */}
           <button
             type="button"
             onClick={handleOpenReceive}
-            className="flex-1 flex items-center justify-center gap-2 rounded-full bg-[#DDF3FF] dark:bg-slate-800 dark:border dark:border-slate-700 py-3.5 px-4 text-xs font-bold text-slate-900 dark:text-white shadow-xs active:scale-[0.96] transition-transform min-h-[46px] touch-manipulation cursor-pointer"
+            className="flex flex-col sm:flex-row items-center justify-center gap-1.5 rounded-2xl bg-[#DDF3FF] dark:bg-slate-800 dark:border dark:border-slate-700 py-2.5 sm:py-3.5 px-2 text-xs font-bold text-slate-900 dark:text-white shadow-xs active:scale-[0.96] transition-transform min-h-[46px] touch-manipulation cursor-pointer"
           >
             <ArrowDownLeft className="h-4 w-4 text-[#4A90FF] dark:text-[#70D6F7]" />
             <span>Receive</span>
+          </button>
+
+          {/* Hub Button */}
+          <button
+            type="button"
+            onClick={() => setIsQuickActionsOpen(true)}
+            aria-label="Open Quick Financial Hub"
+            title="Quick Financial Actions Hub"
+            className="flex flex-col sm:flex-row items-center justify-center gap-1.5 rounded-2xl bg-ref-blue text-white shadow-xs active:scale-[0.96] transition-transform min-h-[46px] touch-manipulation cursor-pointer font-bold text-xs"
+          >
+            <LayoutGrid className="h-4 w-4 stroke-[2.5px]" />
+            <span>More</span>
           </button>
         </div>
 
@@ -344,7 +363,12 @@ export default function DashboardPage() {
         </div>
 
         {/* =========================================================================
-            6. UPCOMING BILLS & OBLIGATIONS (Interactive Section)
+            6. "CAN I AFFORD THIS?" REALITY CHECK WIDGET
+           ========================================================================= */}
+        <CanIAffordThisCard />
+
+        {/* =========================================================================
+            7. UPCOMING BILLS & OBLIGATIONS (Interactive Section)
            ========================================================================= */}
         <div className="rounded-3xl p-5 bg-white/95 dark:bg-slate-800/90 border border-sky-100/80 dark:border-slate-700 shadow-xs space-y-3">
           <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-700">
@@ -481,11 +505,16 @@ export default function DashboardPage() {
         onOpenReceive={handleOpenReceive}
         onOpenBill={handleOpenBill}
         onOpenPlanner={handleOpenPlanner}
+        onOpenScanReceipt={() => setIsReceiptScannerOpen(true)}
       />
       <TransactionDetailModal
         transaction={selectedTxForDetail}
         isOpen={Boolean(selectedTxForDetail)}
         onClose={() => setSelectedTxForDetail(null)}
+      />
+      <ReceiptScannerModal
+        isOpen={isReceiptScannerOpen}
+        onClose={() => setIsReceiptScannerOpen(false)}
       />
     </AppShell>
   );

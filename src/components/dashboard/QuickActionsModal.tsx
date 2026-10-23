@@ -12,6 +12,7 @@ import {
   CreditCard,
   BarChart3,
   Sparkles,
+  Camera,
 } from "lucide-react";
 
 interface QuickActionsModalProps {
@@ -21,6 +22,7 @@ interface QuickActionsModalProps {
   onOpenReceive: () => void;
   onOpenBill: () => void;
   onOpenPlanner: () => void;
+  onOpenScanReceipt?: () => void;
 }
 
 export function QuickActionsModal({
@@ -30,10 +32,23 @@ export function QuickActionsModal({
   onOpenReceive,
   onOpenBill,
   onOpenPlanner,
+  onOpenScanReceipt,
 }: QuickActionsModalProps) {
   if (!isOpen) return null;
 
   const actions = [
+    {
+      title: "Scan Receipt",
+      desc: "GCash / Maya OCR",
+      icon: Camera,
+      color: "bg-gradient-to-tr from-sky-500/20 to-indigo-500/20 text-sky-600 dark:text-sky-300",
+      onClick: () => {
+        onClose();
+        if (onOpenScanReceipt) {
+          onOpenScanReceipt();
+        }
+      },
+    },
     {
       title: "Send / Expense",
       desc: "Log daily spending",
