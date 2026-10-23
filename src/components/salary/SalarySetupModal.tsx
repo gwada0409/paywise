@@ -136,12 +136,12 @@ export function SalarySetupModal({ isOpen, onClose }: SalarySetupModalProps) {
   const calculatedDetails = calculateEstimatedNet(grossSalary);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200">
-      <div className="relative w-full max-w-lg overflow-hidden rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-2xl flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200 select-none touch-manipulation">
+      <div className="relative w-full max-w-lg overflow-hidden rounded-t-[32px] sm:rounded-3xl bg-white dark:bg-slate-900 border-t sm:border border-slate-200/80 dark:border-slate-800 shadow-2xl flex flex-col max-h-[92dvh] sm:max-h-[90vh]">
         {/* Header */}
-        <div className="flex items-center justify-between p-5 border-b border-slate-100 dark:border-slate-800 shrink-0">
+        <div className="flex items-center justify-between p-4 sm:p-5 border-b border-slate-100 dark:border-slate-800 shrink-0">
           <div className="flex items-center gap-2.5">
-            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary/10 text-primary shrink-0">
               <Banknote className="h-5 w-5" />
             </div>
             <div>
@@ -156,14 +156,14 @@ export function SalarySetupModal({ isOpen, onClose }: SalarySetupModalProps) {
 
           <button
             onClick={onClose}
-            className="p-1.5 rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
+            className="flex h-10 w-10 min-h-[44px] min-w-[44px] items-center justify-center rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 active:scale-95 transition-all"
           >
-            <X className="h-4 w-4" />
+            <X className="h-5 w-5" />
           </button>
         </div>
 
         {/* Scrollable Body */}
-        <div className="p-5 overflow-y-auto space-y-5">
+        <div className="p-4 sm:p-5 overflow-y-auto space-y-5">
           {/* 1. Monthly Net Pay */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
@@ -405,18 +405,18 @@ export function SalarySetupModal({ isOpen, onClose }: SalarySetupModalProps) {
         </div>
 
         {/* Footer Actions */}
-        <div className="p-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/90 flex items-center justify-end gap-2.5 shrink-0">
+        <div className="p-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/90 flex items-center justify-end gap-2.5 shrink-0 pb-[max(env(safe-area-inset-bottom),1rem)]">
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 text-xs font-bold rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+            className="flex-1 sm:flex-initial px-4 py-2.5 min-h-[44px] text-xs font-bold rounded-2xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 active:scale-95 transition-all cursor-pointer"
           >
             Cancel
           </button>
           <button
             type="button"
             onClick={handleSave}
-            className="px-5 py-2 text-xs font-extrabold rounded-xl bg-primary text-white shadow-xs hover:opacity-95 active:scale-95 transition-all cursor-pointer flex items-center gap-1.5"
+            className="flex-1 sm:flex-initial px-5 py-2.5 min-h-[44px] text-xs font-extrabold rounded-2xl bg-primary text-white shadow-xs hover:opacity-95 active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-1.5"
           >
             <Check className="h-4 w-4" />
             Save Salary Settings

@@ -251,9 +251,10 @@ export function SMSClipboardBanner({
 
           <button
             onClick={handleDismiss}
-            className="rounded-full p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
+            aria-label="Dismiss banner"
+            className="flex h-10 w-10 min-h-[44px] min-w-[44px] items-center justify-center rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 shrink-0 active:scale-95 transition-all"
           >
-            <X className="h-4 w-4" />
+            <X className="h-5 w-5" />
           </button>
         </div>
 
@@ -262,16 +263,16 @@ export function SMSClipboardBanner({
           <button
             type="button"
             onClick={handle1TapLog}
-            className="flex-1 flex items-center justify-center gap-1.5 rounded-2xl bg-primary px-4 py-2 text-xs font-extrabold text-white shadow-xs hover:opacity-95 active:scale-98 transition-all cursor-pointer"
+            className="flex-1 flex items-center justify-center gap-1.5 rounded-2xl bg-primary px-4 py-2.5 min-h-[44px] text-xs font-extrabold text-white shadow-xs hover:opacity-95 active:scale-98 transition-all cursor-pointer"
           >
-            <Zap className="h-3.5 w-3.5" />
+            <Zap className="h-4 w-4" />
             1-Tap Log Expense
           </button>
 
           <button
             type="button"
             onClick={handleOpenInFullForm}
-            className="flex items-center gap-1 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 active:scale-98 transition-all cursor-pointer"
+            className="flex items-center justify-center gap-1 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3.5 py-2.5 min-h-[44px] text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 active:scale-98 transition-all cursor-pointer"
           >
             <Edit2 className="h-3.5 w-3.5" />
             Edit
@@ -371,19 +372,19 @@ export function SMSClipboardBanner({
 
   // Collapsed quick trigger pill
   return (
-    <div className="flex items-center justify-between rounded-2xl bg-sky-50 dark:bg-slate-800/60 border border-sky-100 dark:border-slate-800 px-3.5 py-2">
-      <div className="flex items-center gap-2">
-        <Sparkles className="h-3.5 w-3.5 text-primary" />
-        <span className="text-[11px] font-bold text-slate-700 dark:text-slate-200">
+    <div className="flex items-center justify-between gap-2 rounded-2xl bg-sky-50 dark:bg-slate-800/60 border border-sky-100 dark:border-slate-800 px-3.5 py-2.5 min-h-[48px]">
+      <div className="flex items-center gap-2 min-w-0">
+        <Sparkles className="h-4 w-4 text-primary shrink-0" />
+        <span className="text-xs font-bold text-slate-700 dark:text-slate-200 truncate">
           Copied a GCash or Maya payment?
         </span>
       </div>
       <button
         type="button"
         onClick={checkClipboard}
-        className="inline-flex items-center gap-1 rounded-full bg-white dark:bg-slate-700 px-2.5 py-1 text-[11px] font-extrabold text-primary shadow-2xs hover:bg-slate-50 active:scale-95 transition-all cursor-pointer"
+        className="inline-flex items-center gap-1.5 rounded-full bg-white dark:bg-slate-700 px-3 py-1.5 min-h-[38px] text-xs font-extrabold text-primary shadow-2xs hover:bg-slate-50 active:scale-95 transition-all cursor-pointer shrink-0"
       >
-        <ClipboardCopy className="h-3 w-3" />
+        <ClipboardCopy className="h-3.5 w-3.5" />
         1-Tap Fast-Log
       </button>
     </div>

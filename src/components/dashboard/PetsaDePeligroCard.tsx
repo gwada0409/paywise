@@ -89,10 +89,11 @@ export function PetsaDePeligroCard({
         <button
           type="button"
           onClick={() => setIsDismissed(true)}
-          className="rounded-full p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+          className="flex h-10 w-10 min-h-[44px] min-w-[44px] items-center justify-center rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 active:scale-95 transition-all shrink-0"
           title="Dismiss alert"
+          aria-label="Dismiss alert"
         >
-          <X className="h-4 w-4" />
+          <X className="h-5 w-5" />
         </button>
       </div>
 
@@ -136,7 +137,7 @@ export function PetsaDePeligroCard({
         <button
           type="button"
           onClick={() => setShowTips(!showTips)}
-          className="w-full flex items-center justify-between text-xs font-bold text-slate-700 dark:text-slate-300 hover:text-primary transition-colors py-1"
+          className="w-full flex items-center justify-between text-xs font-bold text-slate-700 dark:text-slate-300 hover:text-primary transition-colors py-2 min-h-[44px] touch-manipulation cursor-pointer"
         >
           <span className="flex items-center gap-1.5">
             <ShieldCheck className="h-4 w-4 text-emerald-500" />

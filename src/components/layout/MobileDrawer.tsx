@@ -137,7 +137,7 @@ export function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
         <div className="flex h-16 items-center justify-between px-5 border-b border-slate-100 dark:border-slate-800">
           <div className="flex items-center gap-3">
             <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-xs">
-              <svg viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5">
+              <svg viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5 max-w-full">
                 <path d="M4 6h16M7 12h13M10 18h10" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
               </svg>
             </div>

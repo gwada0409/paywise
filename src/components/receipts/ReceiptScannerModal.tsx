@@ -284,11 +284,7 @@ export function ReceiptScannerModal({
             <div className="space-y-4">
               {/* Preview with Scanner Line Animation */}
               <div className="relative rounded-2xl overflow-hidden border border-border bg-slate-950 flex items-center justify-center max-h-56">
-                <img
-                  src={imagePreview}
-                  alt="Receipt Preview"
-                  className="w-full h-auto max-h-56 object-contain"
-                />
+                <img className="max-w-full w-full h-auto max-h-56 object-contain" src={imagePreview} alt="Receipt Preview" />
 
                 {isScanning && (
                   <div className="absolute inset-0 bg-sky-950/40 backdrop-blur-[1px] flex flex-col items-center justify-center text-white">
