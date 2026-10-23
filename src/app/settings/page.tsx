@@ -25,12 +25,15 @@ import {
   Landmark,
   Wallet,
   X,
+  Banknote,
+  Calendar,
 } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
 import { useFinance } from "@/lib/store/finance-context";
 import { usePWA } from "@/components/pwa/PWARegister";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { CurrencyDisplay } from "@/components/common/CurrencyDisplay";
+import { SalarySetupModal } from "@/components/salary/SalarySetupModal";
 import { AccountType, FinancialAccount } from "@/types";
 import { toast } from "sonner";
 
@@ -51,6 +54,7 @@ export default function SettingsPage() {
     updateAccountBalance,
     syncWithCloud,
     isSyncing,
+    salarySettings,
   } = useFinance();
   const { isInstallable, isInstalled, installPWA } = usePWA();
 
@@ -59,6 +63,7 @@ export default function SettingsPage() {
   const [editingAccount, setEditingAccount] = useState<FinancialAccount | null>(null);
   const [editBalance, setEditBalance] = useState<number>(0);
   const [isSavingProfile, setIsSavingProfile] = useState(false);
+  const [isSalaryModalOpen, setIsSalaryModalOpen] = useState(false);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   // Accounts state
@@ -209,6 +214,73 @@ export default function SettingsPage() {
             </div>
           </div>
         </form>
+
+        {/* Salary & Payday Schedule Configuration Card */}
+        <div className="rounded-[28px] sm:rounded-[32px] border border-border/60 dark:border-slate-700 bg-white/95 dark:bg-slate-800/90 p-6 sm:p-7 shadow-xs space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-border/50 dark:border-slate-700">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400">
+                <Banknote className="h-5 w-5" />
+              </div>
+              <div>
+                <h2 className="text-base font-bold text-ref-navy">Salary & Payday Schedule</h2>
+                <p className="text-xs text-ref-muted">
+                  Set take-home pay, 15th & 30th cutoffs, or monthly schedule
+                </p>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setIsSalaryModalOpen(true)}
+              className="inline-flex items-center gap-1.5 rounded-full bg-emerald-600 hover:bg-emerald-500 px-4 py-2 text-xs font-bold text-white shadow-2xs active:scale-95 transition-all cursor-pointer min-h-[38px]"
+            >
+              Update Salary
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+            <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-100 dark:border-slate-700/60">
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+                Monthly Net Salary
+              </span>
+              <span className="text-lg font-black text-slate-900 dark:text-white tabular-nums mt-0.5 block">
+                ₱{(salarySettings.monthly_net || 0).toLocaleString()}
+              </span>
+              <span className="text-[10px] text-slate-500 mt-0.5 block">
+                ~₱{Math.round((salarySettings.monthly_net || 0) / 30).toLocaleString()}/day pace
+              </span>
+            </div>
+
+            <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-100 dark:border-slate-700/60">
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+                Schedule Frequency
+              </span>
+              <span className="text-sm font-extrabold text-slate-900 dark:text-white mt-1 block">
+                {salarySettings.is_semi_monthly ? "Semi-Monthly (15th / 30th)" : "Monthly"}
+              </span>
+              <span className="text-[10px] text-slate-500 mt-0.5 block">
+                {salarySettings.is_semi_monthly ? "2 cutoffs per month" : "1 cutoff per month"}
+              </span>
+            </div>
+
+            <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-100 dark:border-slate-700/60">
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+                Cutoff Payday Expected
+              </span>
+              <span className="text-base font-extrabold text-primary tabular-nums mt-1 block">
+                {salarySettings.is_semi_monthly
+                  ? `₱${(salarySettings.payday_1_expected || 0).toLocaleString()} • Day ${salarySettings.payday_1_day || 15}`
+                  : `₱${(salarySettings.monthly_net || 0).toLocaleString()} • Day ${salarySettings.payday_1_day || 30}`}
+              </span>
+              {salarySettings.is_semi_monthly && (
+                <span className="text-[10px] text-slate-500 mt-0.5 block">
+                  2nd: ₱{(salarySettings.payday_2_expected || 0).toLocaleString()} • Day {salarySettings.payday_2_day || 30}
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
 
         {/* Currency & Appearance Card */}
         <div className="rounded-[28px] sm:rounded-[32px] border border-border/60 dark:border-slate-700 bg-white/95 dark:bg-slate-800/90 p-6 sm:p-7 shadow-xs space-y-4">
@@ -697,6 +769,12 @@ export default function SettingsPage() {
           </div>
         </div>
       )}
+
+      {/* Salary & Payday Setup Modal */}
+      <SalarySetupModal
+        isOpen={isSalaryModalOpen}
+        onClose={() => setIsSalaryModalOpen(false)}
+      />
     </AppShell>
   );
 }

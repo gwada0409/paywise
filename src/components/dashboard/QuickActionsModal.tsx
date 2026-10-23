@@ -13,6 +13,8 @@ import {
   BarChart3,
   Sparkles,
   Camera,
+  ClipboardCopy,
+  Banknote,
 } from "lucide-react";
 
 interface QuickActionsModalProps {
@@ -23,6 +25,8 @@ interface QuickActionsModalProps {
   onOpenBill: () => void;
   onOpenPlanner: () => void;
   onOpenScanReceipt?: () => void;
+  onOpenSMSLogger?: () => void;
+  onOpenSalarySetup?: () => void;
 }
 
 export function QuickActionsModal({
@@ -33,6 +37,8 @@ export function QuickActionsModal({
   onOpenBill,
   onOpenPlanner,
   onOpenScanReceipt,
+  onOpenSMSLogger,
+  onOpenSalarySetup,
 }: QuickActionsModalProps) {
   if (!isOpen) return null;
 
@@ -46,6 +52,30 @@ export function QuickActionsModal({
         onClose();
         if (onOpenScanReceipt) {
           onOpenScanReceipt();
+        }
+      },
+    },
+    {
+      title: "Paste SMS",
+      desc: "GCash / Maya 1-Tap",
+      icon: ClipboardCopy,
+      color: "bg-sky-500/10 text-primary",
+      onClick: () => {
+        onClose();
+        if (onOpenSMSLogger) {
+          onOpenSMSLogger();
+        }
+      },
+    },
+    {
+      title: "Set Salary",
+      desc: "Cutoffs & Take-home",
+      icon: Banknote,
+      color: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
+      onClick: () => {
+        onClose();
+        if (onOpenSalarySetup) {
+          onOpenSalarySetup();
         }
       },
     },

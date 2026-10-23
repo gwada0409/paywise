@@ -21,12 +21,18 @@ import {
   AlertCircle,
   TrendingUp,
   X,
+  Edit3,
+  ClipboardCopy,
+  Banknote,
 } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
 import { useFinance } from "@/lib/store/finance-context";
 import { CurrencyDisplay } from "@/components/common/CurrencyDisplay";
 import { SpendingEqualizerCard } from "@/components/dashboard/SpendingEqualizerCard";
 import { CanIAffordThisCard } from "@/components/dashboard/CanIAffordThisCard";
+import { PetsaDePeligroCard } from "@/components/dashboard/PetsaDePeligroCard";
+import { SMSClipboardBanner } from "@/components/dashboard/SMSClipboardBanner";
+import { SalarySetupModal } from "@/components/salary/SalarySetupModal";
 import { PWAInstallBanner } from "@/components/pwa/PWAInstallBanner";
 import { ReceiptScannerModal } from "@/components/receipts/ReceiptScannerModal";
 import { TransactionBottomSheet } from "@/components/transactions/TransactionBottomSheet";
@@ -67,6 +73,54 @@ export default function DashboardPage() {
   const [isReceiptScannerOpen, setIsReceiptScannerOpen] = useState(false);
   const [selectedAccountForEdit, setSelectedAccountForEdit] = useState<FinancialAccount | null>(null);
   const [editBalanceAmount, setEditBalanceAmount] = useState<number>(0);
+  const [isSalaryModalOpen, setIsSalaryModalOpen] = useState(false);
+  const [isSMSLoggerOpen, setIsSMSLoggerOpen] = useState(false);
+  const [prefillTx, setPrefillTx] = useState<{
+    amount?: number;
+    title?: string;
+    category?: string;
+    accountId?: string;
+    paymentMethod?: any;
+    notes?: string;
+  } | undefined>(undefined);
+
+  // Check URL query actions for PWA home screen quick shortcuts
+  React.useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const action = params.get("action");
+      if (action === "scan") {
+        setIsReceiptScannerOpen(true);
+      } else if (action === "expense") {
+        setIsAddTxOpen(true);
+      } else if (action === "sms") {
+        setIsSMSLoggerOpen(true);
+      } else if (action === "salary") {
+        setIsSalaryModalOpen(true);
+      }
+      if (action) {
+        window.history.replaceState({}, "", window.location.pathname);
+      }
+    }
+  }, []);
+
+  const handleOpenAddTxWithPrefill = (prefill: {
+    amount: number;
+    description: string;
+    category: string;
+    account_id?: string;
+    payment_method?: string;
+  }) => {
+    setPrefillTx({
+      amount: prefill.amount,
+      title: prefill.description,
+      category: prefill.category,
+      accountId: prefill.account_id,
+      paymentMethod: prefill.payment_method as any,
+    });
+    setTxDefaultType("need");
+    setIsAddTxOpen(true);
+  };
 
   // Group spending for Food, Travel, Shopping
   const foodSpending = transactions
@@ -154,11 +208,19 @@ export default function DashboardPage() {
                   Philippine Demo Dataset Active
                 </p>
                 <p className="text-[11px] text-amber-700 dark:text-amber-300">
-                  Viewing Juan Dela Cruz sample transactions. Ready to record your own paydays?
+                  Viewing Juan Dela Cruz sample transactions & ₱55k demo salary. Ready to set your own?
                 </p>
               </div>
             </div>
             <div className="flex items-center gap-2 shrink-0">
+              <button
+                type="button"
+                onClick={() => setIsSalaryModalOpen(true)}
+                className="px-3 py-1.5 text-xs font-bold rounded-full bg-emerald-600 hover:bg-emerald-500 text-white active:scale-95 transition-all cursor-pointer shadow-2xs flex items-center gap-1"
+              >
+                <Banknote className="h-3.5 w-3.5" />
+                Set My Salary
+              </button>
               <button
                 type="button"
                 onClick={() => {
@@ -167,11 +229,27 @@ export default function DashboardPage() {
                 }}
                 className="px-3 py-1.5 text-xs font-bold rounded-full bg-white dark:bg-slate-800 text-amber-900 dark:text-amber-200 border border-amber-300 dark:border-amber-700 hover:bg-amber-50 active:scale-95 transition-all cursor-pointer shadow-2xs"
               >
-                Clear Demo & Start Fresh
+                Clear Demo
               </button>
             </div>
           </div>
         )}
+
+        {/* Petsa de Peligro Survival Mode Alert */}
+        <PetsaDePeligroCard
+          daysRemaining={nextPayday.daysRemaining}
+          dailyAllowance={dailyPace}
+          availableToSpend={spendableBreakdown.availableToSpend}
+          reservedBillsTotal={spendableBreakdown.reservedBillsTotal}
+          nextPaydayLabel={nextPayday.label}
+        />
+
+        {/* GCash / Maya SMS Clipboard Fast-Logger */}
+        <SMSClipboardBanner
+          isOpenExplicitly={isSMSLoggerOpen}
+          onClose={() => setIsSMSLoggerOpen(false)}
+          onOpenAddTx={handleOpenAddTxWithPrefill}
+        />
 
         {/* PWA Home Screen Install Banner */}
         <PWAInstallBanner />
@@ -276,14 +354,24 @@ export default function DashboardPage() {
               </span>
             </div>
 
-            <div className="pl-1">
-              <span className="text-[10px] sm:text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">
-                Expected Pay
-              </span>
-              <span className="text-xs sm:text-sm font-extrabold text-primary tabular-nums mt-0.5 block truncate">
+            <button
+              type="button"
+              onClick={() => setIsSalaryModalOpen(true)}
+              className="pl-1 text-center sm:text-left group hover:opacity-85 active:scale-95 transition-all cursor-pointer"
+              title="Tap to change your salary and payday cutoffs"
+            >
+              <div className="flex items-center justify-center sm:justify-start gap-1">
+                <span className="text-[10px] sm:text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">
+                  Expected Pay
+                </span>
+                <span className="text-[9px] px-1 py-0.2 rounded bg-primary/10 text-primary font-bold group-hover:bg-primary group-hover:text-white transition-colors">
+                  Edit ✏️
+                </span>
+              </div>
+              <span className="text-xs sm:text-sm font-extrabold text-primary tabular-nums mt-0.5 block truncate underline decoration-dotted decoration-primary/40 underline-offset-2">
                 ₱{isBalanceHidden ? "••••" : (nextPayday.expectedAmount || 0).toLocaleString()}
               </span>
-            </div>
+            </button>
           </div>
 
           {/* Active Accounts & Wallets Carousel Chips */}
@@ -411,14 +499,25 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            <button
-              type="button"
-              onClick={handleOpenPlanner}
-              className="inline-flex items-center gap-1 rounded-full bg-primary/10 text-primary hover:bg-primary/20 px-3 py-1.5 text-xs font-bold active:scale-95 transition-all cursor-pointer touch-manipulation"
-            >
-              <span>Plan Payday</span>
-              <ChevronRight className="h-3 w-3" />
-            </button>
+            <div className="flex items-center gap-1.5">
+              <button
+                type="button"
+                onClick={() => setIsSalaryModalOpen(true)}
+                className="inline-flex items-center gap-1 rounded-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 text-slate-700 dark:text-slate-200 hover:text-primary px-2.5 py-1.5 text-xs font-bold active:scale-95 transition-all cursor-pointer touch-manipulation"
+                title="Change salary amount or payday dates"
+              >
+                <Edit3 className="h-3 w-3" />
+                <span>Edit Cutoff</span>
+              </button>
+              <button
+                type="button"
+                onClick={handleOpenPlanner}
+                className="inline-flex items-center gap-1 rounded-full bg-primary/10 text-primary hover:bg-primary/20 px-3 py-1.5 text-xs font-bold active:scale-95 transition-all cursor-pointer touch-manipulation"
+              >
+                <span>Plan</span>
+                <ChevronRight className="h-3 w-3" />
+              </button>
+            </div>
           </div>
 
           {/* Progress bar of current cutoff */}
@@ -669,8 +768,12 @@ export default function DashboardPage() {
       {/* Reusable Functional Modals */}
       <TransactionBottomSheet
         isOpen={isAddTxOpen}
-        onClose={() => setIsAddTxOpen(false)}
+        onClose={() => {
+          setIsAddTxOpen(false);
+          setPrefillTx(undefined);
+        }}
         defaultType={txDefaultType}
+        initialValues={prefillTx}
       />
       <PaydayPlannerModal
         isOpen={isPlannerOpen}
@@ -692,6 +795,12 @@ export default function DashboardPage() {
         onOpenBill={handleOpenBill}
         onOpenPlanner={handleOpenPlanner}
         onOpenScanReceipt={() => setIsReceiptScannerOpen(true)}
+        onOpenSMSLogger={() => setIsSMSLoggerOpen(true)}
+        onOpenSalarySetup={() => setIsSalaryModalOpen(true)}
+      />
+      <SalarySetupModal
+        isOpen={isSalaryModalOpen}
+        onClose={() => setIsSalaryModalOpen(false)}
       />
       <TransactionDetailModal
         transaction={selectedTxForDetail}

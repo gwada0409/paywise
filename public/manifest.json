@@ -7,8 +7,8 @@
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait-primary",
-  "background_color": "#0F172A",
-  "theme_color": "#0F172A",
+  "background_color": "#0A111E",
+  "theme_color": "#0A111E",
   "categories": ["finance", "productivity", "utilities"],
   "icons": [
     {
@@ -50,31 +50,31 @@
   ],
   "shortcuts": [
     {
-      "name": "Dashboard",
-      "short_name": "Dashboard",
-      "description": "Open your semi-monthly financial dashboard",
-      "url": "/dashboard",
+      "name": "Scan Receipt OCR",
+      "short_name": "Scan Receipt",
+      "description": "Scan GCash, Maya, or paper receipts with Gemini Vision OCR",
+      "url": "/dashboard?action=scan",
       "icons": [{ "src": "/icon-192.svg", "sizes": "192x192" }]
     },
     {
-      "name": "AI Assistant",
-      "short_name": "Gemini AI",
-      "description": "Chat with your AI financial copilot",
-      "url": "/ai",
+      "name": "Quick Expense",
+      "short_name": "Add Expense",
+      "description": "Log an expense in 2 seconds",
+      "url": "/dashboard?action=expense",
       "icons": [{ "src": "/icon-192.svg", "sizes": "192x192" }]
     },
     {
-      "name": "Add Transaction",
-      "short_name": "New Tx",
-      "description": "Record an expense or need/want",
-      "url": "/transactions",
+      "name": "Paste Payment SMS",
+      "short_name": "SMS Logger",
+      "description": "1-tap log copied GCash or Maya SMS payment",
+      "url": "/dashboard?action=sms",
       "icons": [{ "src": "/icon-192.svg", "sizes": "192x192" }]
     },
     {
-      "name": "Reports & Analytics",
-      "short_name": "Reports",
-      "description": "View monthly spending and cashflow charts",
-      "url": "/reports",
+      "name": "Set Salary & Payday",
+      "short_name": "Salary Setup",
+      "description": "Configure your monthly take-home salary & cutoffs",
+      "url": "/dashboard?action=salary",
       "icons": [{ "src": "/icon-192.svg", "sizes": "192x192" }]
     }
   ]

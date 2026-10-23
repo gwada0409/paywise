@@ -12,6 +12,14 @@ interface TransactionBottomSheetProps {
   isOpen: boolean;
   onClose: () => void;
   defaultType?: TransactionType;
+  initialValues?: {
+    amount?: number;
+    title?: string;
+    category?: string;
+    paymentMethod?: PaymentMethod;
+    accountId?: string;
+    notes?: string;
+  };
 }
 
 const NEED_CATEGORIES = [
@@ -43,6 +51,7 @@ export function TransactionBottomSheet({
   isOpen,
   onClose,
   defaultType = "need",
+  initialValues,
 }: TransactionBottomSheetProps) {
   const { addTransaction, accounts, nextPayday } = useFinance();
 
@@ -75,21 +84,34 @@ export function TransactionBottomSheet({
 
   React.useEffect(() => {
     if (isOpen) {
-      if (uniqueAccounts.length > 0) {
-        setAccountId(uniqueAccounts[0].id);
-      }
-      setType(defaultType);
-      if (defaultType === "income") {
-        setCategory("Salary");
-      } else if (defaultType === "want") {
-        setCategory("Dining Out");
-      } else if (defaultType === "loan_payment") {
-        setCategory("Debt & Loans");
+      if (initialValues) {
+        if (initialValues.amount !== undefined) setAmount(initialValues.amount);
+        if (initialValues.title !== undefined) setTitle(initialValues.title);
+        if (initialValues.category !== undefined) setCategory(initialValues.category);
+        if (initialValues.paymentMethod !== undefined) setPaymentMethod(initialValues.paymentMethod);
+        if (initialValues.accountId !== undefined) setAccountId(initialValues.accountId);
+        if (initialValues.notes !== undefined) setNotes(initialValues.notes);
       } else {
-        setCategory("Groceries");
+        setAmount(0);
+        setTitle("");
+        setType(defaultType);
+        if (defaultType === "income") {
+          setCategory("Salary");
+        } else if (defaultType === "want") {
+          setCategory("Dining Out");
+        } else if (defaultType === "loan_payment") {
+          setCategory("Debt & Loans");
+        } else {
+          setCategory("Groceries");
+        }
+        if (uniqueAccounts.length > 0) {
+          setAccountId(uniqueAccounts[0].id);
+        }
+        setDate(new Date().toISOString().split("T")[0]);
+        setNotes("");
       }
     }
-  }, [isOpen, defaultType]);
+  }, [isOpen, defaultType, initialValues, uniqueAccounts]);
 
   if (!isOpen) return null;
 
