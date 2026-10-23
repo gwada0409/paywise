@@ -98,8 +98,8 @@ export async function fetchUserData(userId: string): Promise<UserCloudData | nul
         .limit(50),
     ]);
 
-    // Parse accounts
-    let accounts: FinancialAccount[] = (accountsRes.data || []).map((a: any) => ({
+    // Parse accounts and deduplicate by name
+    let rawAccounts: FinancialAccount[] = (accountsRes.data || []).map((a: any) => ({
       id: a.id,
       user_id: a.user_id,
       name: a.name,
@@ -110,40 +110,82 @@ export async function fetchUserData(userId: string): Promise<UserCloudData | nul
       created_at: a.created_at,
     }));
 
-    // If a registered user has 0 accounts, create a default "Cash on Hand" account in Supabase
-    if (accounts.length === 0) {
-      const defaultAccId = generateUUID();
-      const newAcc = {
-        id: defaultAccId,
-        user_id: userId,
-        name: "Cash on Hand",
-        type: "cash" as const,
-        balance: 0,
-        is_default: true,
-        is_archived: false,
-      };
+    // Deduplicate any duplicate accounts by name (e.g. two "Cash on Hand")
+    const seenNames = new Set<string>();
+    const deduplicatedAccounts: FinancialAccount[] = [];
+    const duplicateIdsToDelete: string[] = [];
 
-      const { data: createdAcc } = await supabase
-        .from("financial_accounts")
-        .insert(newAcc)
-        .select()
-        .single();
-
-      if (createdAcc) {
-        accounts = [
-          {
-            id: createdAcc.id,
-            user_id: createdAcc.user_id,
-            name: createdAcc.name,
-            type: createdAcc.type,
-            balance: Number(createdAcc.balance) || 0,
-            is_default: Boolean(createdAcc.is_default),
-            is_archived: Boolean(createdAcc.is_archived),
-            created_at: createdAcc.created_at,
-          },
-        ];
+    for (const acc of rawAccounts) {
+      const cleanKey = (acc.name || "").trim().toLowerCase();
+      if (seenNames.has(cleanKey)) {
+        duplicateIdsToDelete.push(acc.id);
       } else {
-        accounts = [newAcc];
+        seenNames.add(cleanKey);
+        deduplicatedAccounts.push(acc);
+      }
+    }
+
+    if (duplicateIdsToDelete.length > 0) {
+      try {
+        await supabase
+          .from("financial_accounts")
+          .delete()
+          .in("id", duplicateIdsToDelete);
+        console.log("[DB] Cleaned up duplicate accounts from cloud:", duplicateIdsToDelete);
+      } catch (err) {
+        console.warn("Could not delete duplicate accounts:", err);
+      }
+    }
+
+    let accounts: FinancialAccount[] = deduplicatedAccounts;
+
+    // Standard default Philippine accounts: MariBank, GCash, Maya, SeaBank, Cash on Hand
+    const defaultTemplates = [
+      { name: "MariBank", type: "bank" as const, is_default: true },
+      { name: "GCash", type: "gcash" as const, is_default: false },
+      { name: "Maya", type: "maya" as const, is_default: false },
+      { name: "SeaBank", type: "bank" as const, is_default: false },
+      { name: "Cash on Hand", type: "cash" as const, is_default: false },
+    ];
+
+    const missingAccountsToCreate: any[] = [];
+    for (const tpl of defaultTemplates) {
+      const exists = accounts.some(
+        (a) => (a.name || "").trim().toLowerCase() === tpl.name.toLowerCase()
+      );
+      if (!exists) {
+        missingAccountsToCreate.push({
+          id: generateUUID(),
+          user_id: userId,
+          name: tpl.name,
+          type: tpl.type,
+          balance: 0,
+          is_default: tpl.is_default,
+          is_archived: false,
+        });
+      }
+    }
+
+    if (missingAccountsToCreate.length > 0) {
+      const { data: createdAccs } = await supabase
+        .from("financial_accounts")
+        .insert(missingAccountsToCreate)
+        .select();
+
+      if (createdAccs && createdAccs.length > 0) {
+        const mapped = createdAccs.map((a: any) => ({
+          id: a.id,
+          user_id: a.user_id,
+          name: a.name,
+          type: a.type,
+          balance: Number(a.balance) || 0,
+          is_default: Boolean(a.is_default),
+          is_archived: Boolean(a.is_archived),
+          created_at: a.created_at,
+        }));
+        accounts = [...accounts, ...mapped];
+      } else {
+        accounts = [...accounts, ...missingAccountsToCreate];
       }
     }
 
@@ -658,16 +700,15 @@ export async function resetUserCloudData(userId: string) {
       supabase.from("budget_rules").delete().eq("user_id", userId),
     ]);
 
-    // Recreate a clean default Cash account with 0 balance
-    await supabase.from("financial_accounts").insert({
-      id: generateUUID(),
-      user_id: userId,
-      name: "Cash on Hand",
-      type: "cash",
-      balance: 0,
-      is_default: true,
-      is_archived: false,
-    });
+    // Recreate clean default Philippine accounts with 0 balance
+    const defaultAccounts = [
+      { id: generateUUID(), user_id: userId, name: "MariBank", type: "bank", balance: 0, is_default: true, is_archived: false },
+      { id: generateUUID(), user_id: userId, name: "GCash", type: "gcash", balance: 0, is_default: false, is_archived: false },
+      { id: generateUUID(), user_id: userId, name: "Maya", type: "maya", balance: 0, is_default: false, is_archived: false },
+      { id: generateUUID(), user_id: userId, name: "SeaBank", type: "bank", balance: 0, is_default: false, is_archived: false },
+      { id: generateUUID(), user_id: userId, name: "Cash on Hand", type: "cash", balance: 0, is_default: false, is_archived: false },
+    ];
+    await supabase.from("financial_accounts").insert(defaultAccounts);
   } catch (err) {
     console.error("Failed to reset user cloud data:", err);
   }

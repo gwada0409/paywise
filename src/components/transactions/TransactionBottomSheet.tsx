@@ -56,16 +56,27 @@ export function TransactionBottomSheet({
   const [notes, setNotes] = useState<string>("");
   const [isScannerOpen, setIsScannerOpen] = useState<boolean>(false);
 
+  // Deduplicate accounts by name
+  const uniqueAccounts = React.useMemo(() => {
+    const seen = new Set<string>();
+    return accounts.filter((a) => {
+      const key = (a.name || "").trim().toLowerCase();
+      if (!key || seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+  }, [accounts]);
+
   React.useEffect(() => {
-    if (accounts.length > 0 && (!accountId || !accounts.some((a) => a.id === accountId))) {
-      setAccountId(accounts[0].id);
+    if (uniqueAccounts.length > 0 && (!accountId || !uniqueAccounts.some((a) => a.id === accountId))) {
+      setAccountId(uniqueAccounts[0].id);
     }
-  }, [accounts, accountId]);
+  }, [uniqueAccounts, accountId]);
 
   React.useEffect(() => {
     if (isOpen) {
-      if (accounts.length > 0) {
-        setAccountId(accounts[0].id);
+      if (uniqueAccounts.length > 0) {
+        setAccountId(uniqueAccounts[0].id);
       }
       setType(defaultType);
       if (defaultType === "income") {
@@ -323,7 +334,7 @@ export function TransactionBottomSheet({
                 onChange={(e) => setAccountId(e.target.value)}
                 className="w-full rounded-xl border border-input bg-card px-3 py-2.5 text-sm font-medium text-foreground focus:outline-none focus:ring-2 focus:ring-primary min-h-[44px]"
               >
-                {accounts.map((acc) => (
+                {uniqueAccounts.map((acc) => (
                   <option key={acc.id} value={acc.id}>
                     {acc.name} (₱{acc.balance.toLocaleString()})
                   </option>

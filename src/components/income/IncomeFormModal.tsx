@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
-import { X, Check, CalendarDays, Coins } from "lucide-react";
+import React, { useState, useMemo } from "react";
+import { X, Check, CalendarDays, Coins, Plus, Landmark, Wallet } from "lucide-react";
 import { useFinance } from "@/lib/store/finance-context";
 import { CurrencyInput } from "../common/CurrencyInput";
-import { PaydayPeriod } from "@/types";
+import { PaydayPeriod, AccountType } from "@/types";
+import { toast } from "sonner";
 
 interface IncomeFormModalProps {
   isOpen: boolean;
@@ -19,22 +20,66 @@ export function IncomeFormModal({
   defaultPeriod = "payday_1",
   defaultAmount = 15000,
 }: IncomeFormModalProps) {
-  const { recordSalaryIncome, accounts } = useFinance();
+  const { recordSalaryIncome, accounts, addAccount } = useFinance();
 
   const [amount, setAmount] = useState<number>(defaultAmount);
   const [period, setPeriod] = useState<PaydayPeriod>(defaultPeriod);
   const [type, setType] = useState<"salary" | "bonus" | "overtime" | "other">("salary");
-  const [accountId, setAccountId] = useState<string>(accounts[0]?.id || "");
+  const [accountId, setAccountId] = useState<string>("");
   const [date, setDate] = useState<string>(new Date().toISOString().split("T")[0]);
   const [notes, setNotes] = useState<string>("");
 
+  // Quick inline add new account
+  const [isAddingNewAccount, setIsAddingNewAccount] = useState<boolean>(false);
+  const [newAccountName, setNewAccountName] = useState<string>("");
+  const [newAccountType, setNewAccountType] = useState<AccountType>("bank");
+
+  // Deduplicate accounts by clean name (guarantees zero duplicate "Cash on Hand")
+  const uniqueAccounts = useMemo(() => {
+    const seen = new Set<string>();
+    return accounts.filter((a) => {
+      const key = (a.name || "").trim().toLowerCase();
+      if (!key || seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+  }, [accounts]);
+
   React.useEffect(() => {
-    if (accounts.length > 0 && (!accountId || !accounts.some((a) => a.id === accountId))) {
-      setAccountId(accounts[0].id);
+    if (uniqueAccounts.length > 0 && (!accountId || !uniqueAccounts.some((a) => a.id === accountId))) {
+      // Prioritize MariBank, Bank accounts, or GCash/Maya for salary deposits
+      const preferred = uniqueAccounts.find(
+        (a) =>
+          a.name.toLowerCase().includes("mari") ||
+          a.name.toLowerCase().includes("gcash") ||
+          a.name.toLowerCase().includes("maya") ||
+          a.type === "bank"
+      );
+      setAccountId(preferred?.id || uniqueAccounts[0].id);
     }
-  }, [accounts, accountId]);
+  }, [uniqueAccounts, accountId]);
 
   if (!isOpen) return null;
+
+  const handleCreateAccount = (e: React.FormEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!newAccountName.trim()) {
+      toast.error("Please enter an account name");
+      return;
+    }
+
+    addAccount({
+      name: newAccountName.trim(),
+      type: newAccountType,
+      balance: 0,
+      is_default: false,
+    });
+
+    toast.success(`Added ${newAccountName.trim()} to your accounts!`);
+    setNewAccountName("");
+    setIsAddingNewAccount(false);
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -120,17 +165,27 @@ export function IncomeFormModal({
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-muted-foreground mb-1.5">
-                Credited To Account
-              </label>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="block text-xs font-semibold text-muted-foreground">
+                  Credited To Account
+                </label>
+                <button
+                  type="button"
+                  onClick={() => setIsAddingNewAccount(!isAddingNewAccount)}
+                  className="text-[11px] font-bold text-primary hover:underline flex items-center gap-0.5"
+                >
+                  <Plus className="h-3 w-3" />
+                  New
+                </button>
+              </div>
               <select
                 value={accountId}
                 onChange={(e) => setAccountId(e.target.value)}
                 className="w-full rounded-xl border border-input bg-card px-3 py-2.5 text-sm font-medium text-foreground focus:outline-none focus:ring-2 focus:ring-primary min-h-[44px]"
               >
-                {accounts.map((acc) => (
+                {uniqueAccounts.map((acc) => (
                   <option key={acc.id} value={acc.id}>
-                    {acc.name}
+                    {acc.name} ({acc.type.toUpperCase()})
                   </option>
                 ))}
               </select>
@@ -148,6 +203,55 @@ export function IncomeFormModal({
               />
             </div>
           </div>
+
+          {/* Inline Add New Account Mini-Form */}
+          {isAddingNewAccount && (
+            <div className="rounded-2xl border border-primary/30 bg-primary/5 p-3.5 space-y-2.5 animate-in fade-in duration-200">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-primary flex items-center gap-1.5">
+                  <Landmark className="h-3.5 w-3.5" />
+                  Add New E-Wallet or Bank
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setIsAddingNewAccount(false)}
+                  className="text-muted-foreground hover:text-foreground text-xs"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <input
+                  type="text"
+                  placeholder="e.g. MariBank, GoTyme, GrabPay"
+                  value={newAccountName}
+                  onChange={(e) => setNewAccountName(e.target.value)}
+                  className="w-full rounded-xl border border-input bg-card px-3 py-1.5 text-xs font-medium text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                />
+
+                <select
+                  value={newAccountType}
+                  onChange={(e) => setNewAccountType(e.target.value as AccountType)}
+                  className="w-full rounded-xl border border-input bg-card px-2.5 py-1.5 text-xs font-medium text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                >
+                  <option value="bank">Digital / Traditional Bank</option>
+                  <option value="gcash">GCash E-Wallet</option>
+                  <option value="maya">Maya E-Wallet</option>
+                  <option value="cash">Physical Cash</option>
+                  <option value="credit_card">Credit Card</option>
+                </select>
+              </div>
+
+              <button
+                type="button"
+                onClick={handleCreateAccount}
+                className="w-full py-1.5 rounded-xl bg-primary text-primary-foreground font-semibold text-xs active:scale-98 transition-transform"
+              >
+                Save & Select Account
+              </button>
+            </div>
+          )}
 
           <div>
             <label className="block text-xs font-semibold text-muted-foreground mb-1.5">

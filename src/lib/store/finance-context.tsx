@@ -133,6 +133,41 @@ const EMPTY_BUDGET_RULES: BudgetRules = {
   category_allocations: {},
 };
 
+export function cleanAndDeduplicateAccounts(accList: FinancialAccount[]): FinancialAccount[] {
+  const seen = new Set<string>();
+  const unique: FinancialAccount[] = [];
+
+  for (const acc of accList) {
+    const key = (acc.name || "").trim().toLowerCase();
+    if (key && !seen.has(key)) {
+      seen.add(key);
+      unique.push(acc);
+    }
+  }
+
+  // Ensure standard Philippine digital banks and e-wallets are available
+  const standardSeeds: Omit<FinancialAccount, "id">[] = [
+    { name: "MariBank", type: "bank", balance: 0, is_default: true },
+    { name: "GCash", type: "gcash", balance: 0, is_default: false },
+    { name: "Maya", type: "maya", balance: 0, is_default: false },
+    { name: "SeaBank", type: "bank", balance: 0, is_default: false },
+    { name: "Cash on Hand", type: "cash", balance: 0, is_default: false },
+  ];
+
+  for (const seed of standardSeeds) {
+    const key = seed.name.toLowerCase();
+    if (!seen.has(key)) {
+      seen.add(key);
+      unique.push({
+        ...seed,
+        id: generateUUID(),
+      });
+    }
+  }
+
+  return unique;
+}
+
 const DEFAULT_USER_PROFILE: UserProfile = {
   id: "guest",
   email: "guest@paywise.ph",
@@ -204,7 +239,7 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
         const parsed = JSON.parse(stored);
         if (parsed.salarySettings) setSalarySettings(parsed.salarySettings);
         if (parsed.budgetRules) setBudgetRules(parsed.budgetRules);
-        if (parsed.accounts) setAccounts(parsed.accounts);
+        if (parsed.accounts) setAccounts(cleanAndDeduplicateAccounts(parsed.accounts));
         if (parsed.transactions) setTransactions(parsed.transactions);
         if (parsed.incomeRecords) setIncomeRecords(parsed.incomeRecords);
         if (parsed.savingsGoals) setSavingsGoals(parsed.savingsGoals);
@@ -218,16 +253,8 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
         if (parsed.aiPreferences) setAiPreferencesState(parsed.aiPreferences);
         if (parsed.clientApiKey) setClientApiKey(parsed.clientApiKey);
       } else if (currentUserId !== "guest") {
-        // Authenticated user with no local cache yet: initialize clean state
-        setAccounts([
-          {
-            id: generateUUID(),
-            name: "Cash on Hand",
-            type: "cash",
-            balance: 0,
-            is_default: true,
-          },
-        ]);
+        // Authenticated user with no local cache yet: initialize clean state with standard Philippine accounts
+        setAccounts(cleanAndDeduplicateAccounts([]));
         setSalarySettings(EMPTY_SALARY_SETTINGS);
         setBudgetRules(EMPTY_BUDGET_RULES);
         setTransactions([]);
@@ -289,7 +316,7 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
           const cloudData = await fetchUserData(userId);
           if (cloudData) {
             if (cloudData.accounts && cloudData.accounts.length > 0) {
-              setAccounts(cloudData.accounts);
+              setAccounts(cleanAndDeduplicateAccounts(cloudData.accounts));
             }
             if (cloudData.salarySettings) {
               setSalarySettings(cloudData.salarySettings);
@@ -835,15 +862,7 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
 
     setSalarySettings(EMPTY_SALARY_SETTINGS);
     setBudgetRules(EMPTY_BUDGET_RULES);
-    setAccounts([
-      {
-        id: generateUUID(),
-        name: "Cash on Hand",
-        type: "cash",
-        balance: 0,
-        is_default: true,
-      },
-    ]);
+    setAccounts(cleanAndDeduplicateAccounts([]));
     setTransactions([]);
     setIncomeRecords([]);
     setSavingsGoals([]);
@@ -873,16 +892,9 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
   };
 
   const resetAllData = () => {
-    const freshAcc: FinancialAccount = {
-      id: generateUUID(),
-      name: "Cash on Hand",
-      type: "cash",
-      balance: 0,
-      is_default: true,
-    };
     setSalarySettings(EMPTY_SALARY_SETTINGS);
     setBudgetRules(EMPTY_BUDGET_RULES);
-    setAccounts([freshAcc]);
+    setAccounts(cleanAndDeduplicateAccounts([]));
     setIncomeRecords([]);
     setTransactions([]);
     setSavingsGoals([]);

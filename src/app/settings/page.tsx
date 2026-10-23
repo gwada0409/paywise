@@ -21,11 +21,17 @@ import {
   Download,
   LogOut,
   Check,
+  Plus,
+  Landmark,
+  Wallet,
+  X,
 } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
 import { useFinance } from "@/lib/store/finance-context";
 import { usePWA } from "@/components/pwa/PWARegister";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
+import { CurrencyDisplay } from "@/components/common/CurrencyDisplay";
+import { AccountType } from "@/types";
 import { toast } from "sonner";
 
 export default function SettingsPage() {
@@ -40,6 +46,8 @@ export default function SettingsPage() {
     isOnline,
     exportLocalData,
     importLocalData,
+    accounts,
+    addAccount,
   } = useFinance();
   const { isInstallable, isInstalled, installPWA } = usePWA();
 
@@ -47,6 +55,40 @@ export default function SettingsPage() {
   const [email, setEmail] = useState(userProfile?.email || "juan.delacruz@paywise.ph");
   const [isSavingProfile, setIsSavingProfile] = useState(false);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
+
+  // Accounts state
+  const [isAddAccountOpen, setIsAddAccountOpen] = useState(false);
+  const [newAccName, setNewAccName] = useState("");
+  const [newAccType, setNewAccType] = useState<AccountType>("bank");
+  const [newAccBalance, setNewAccBalance] = useState<number>(0);
+
+  const uniqueAccounts = React.useMemo(() => {
+    const seen = new Set<string>();
+    return accounts.filter((a) => {
+      const key = (a.name || "").trim().toLowerCase();
+      if (!key || seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+  }, [accounts]);
+
+  const handleCreateAccount = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newAccName.trim()) {
+      toast.error("Please enter an account name");
+      return;
+    }
+    addAccount({
+      name: newAccName.trim(),
+      type: newAccType,
+      balance: newAccBalance,
+      is_default: false,
+    });
+    toast.success(`Account "${newAccName.trim()}" added successfully!`);
+    setNewAccName("");
+    setNewAccBalance(0);
+    setIsAddAccountOpen(false);
+  };
 
   React.useEffect(() => {
     if (userProfile?.display_name) {
@@ -221,6 +263,154 @@ export default function SettingsPage() {
             <ChevronRight className="h-4 w-4" />
           </div>
         </Link>
+
+        {/* Bank Accounts & E-Wallets Management */}
+        <div className="rounded-[28px] sm:rounded-[32px] border border-border/60 dark:border-slate-700 bg-white/95 dark:bg-slate-800/90 p-6 sm:p-7 shadow-xs space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-border/50 dark:border-slate-700">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-emerald-50 dark:bg-slate-700 text-emerald-600 dark:text-emerald-400">
+                <Landmark className="h-5 w-5" />
+              </div>
+              <div>
+                <h2 className="text-base font-bold text-ref-navy">Bank Accounts & E-Wallets</h2>
+                <p className="text-xs text-ref-muted">MariBank, GCash, Maya, SeaBank, and other payment channels</p>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => setIsAddAccountOpen(true)}
+              className="inline-flex items-center gap-1.5 rounded-full bg-emerald-600 hover:bg-emerald-700 px-3.5 py-1.5 text-xs font-bold text-white shadow-2xs active:scale-95 transition-all cursor-pointer"
+            >
+              <Plus className="h-3.5 w-3.5" />
+              Add Account
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+            {uniqueAccounts.map((acc) => (
+              <div
+                key={acc.id}
+                className="flex items-center justify-between p-3.5 rounded-2xl border border-border/50 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/50"
+              >
+                <div className="flex items-center gap-2.5">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-primary shrink-0">
+                    {acc.type === "gcash" || acc.type === "maya" ? (
+                      <Wallet className="h-4 w-4" />
+                    ) : (
+                      <Landmark className="h-4 w-4" />
+                    )}
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                      {acc.name}
+                      {acc.is_default && (
+                        <span className="text-[9px] font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-950/80 px-1.5 py-0.2 rounded-md">
+                          Default
+                        </span>
+                      )}
+                    </p>
+                    <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">
+                      {acc.type}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="text-right">
+                  <CurrencyDisplay amount={acc.balance} size="sm" weight="bold" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Add Account Modal */}
+        {isAddAccountOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-200">
+            <div className="w-full max-w-sm rounded-3xl bg-card border border-border p-6 shadow-2xl space-y-4">
+              <div className="flex items-center justify-between pb-2 border-b border-border">
+                <div className="flex items-center gap-2">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600">
+                    <Landmark className="h-4 w-4" />
+                  </div>
+                  <h3 className="text-sm font-bold text-foreground">Add New Account</h3>
+                </div>
+                <button
+                  onClick={() => setIsAddAccountOpen(false)}
+                  className="p-1 rounded-full text-muted-foreground hover:bg-muted"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+
+              <form onSubmit={handleCreateAccount} className="space-y-3 pt-1">
+                <div>
+                  <label className="text-xs font-semibold text-muted-foreground block mb-1">
+                    Account Name
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. MariBank, GoTyme, GrabPay, BPI"
+                    value={newAccName}
+                    onChange={(e) => setNewAccName(e.target.value)}
+                    className="w-full px-3 py-2 text-xs rounded-xl bg-muted/40 border border-border focus:outline-none focus:ring-2 focus:ring-primary/40 font-medium"
+                    autoFocus
+                  />
+                </div>
+
+                <div>
+                  <label className="text-xs font-semibold text-muted-foreground block mb-1">
+                    Account Type
+                  </label>
+                  <select
+                    value={newAccType}
+                    onChange={(e) => setNewAccType(e.target.value as AccountType)}
+                    className="w-full px-3 py-2 text-xs rounded-xl bg-muted/40 border border-border focus:outline-none focus:ring-2 focus:ring-primary/40 font-medium"
+                  >
+                    <option value="bank">Digital / Traditional Bank</option>
+                    <option value="gcash">GCash E-Wallet</option>
+                    <option value="maya">Maya E-Wallet</option>
+                    <option value="cash">Physical Cash</option>
+                    <option value="credit_card">Credit Card</option>
+                    <option value="other">Other Account</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="text-xs font-semibold text-muted-foreground block mb-1">
+                    Starting Balance (PHP)
+                  </label>
+                  <div className="relative">
+                    <span className="absolute left-3 top-2 text-xs font-bold text-muted-foreground">₱</span>
+                    <input
+                      type="number"
+                      step="0.01"
+                      value={newAccBalance || ""}
+                      onChange={(e) => setNewAccBalance(parseFloat(e.target.value) || 0)}
+                      placeholder="0.00"
+                      className="w-full pl-7 pr-3 py-2 text-xs rounded-xl bg-muted/40 border border-border focus:outline-none focus:ring-2 focus:ring-primary/40 font-bold"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setIsAddAccountOpen(false)}
+                    className="flex-1 py-2 rounded-xl border border-border text-xs font-semibold text-muted-foreground hover:bg-muted"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="flex-1 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md active:scale-95 transition-all"
+                  >
+                    Create Account
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
 
         {/* PWA & Offline Storage Status */}
         <div className="rounded-[28px] sm:rounded-[32px] border border-border/60 dark:border-slate-700 bg-white/95 dark:bg-slate-800/90 p-6 sm:p-7 shadow-xs space-y-4">
