@@ -179,11 +179,7 @@ export default function DashboardPage() {
         {/* =========================================================================
             1. MASTER SPENDABLE WALLET HERO CARD
            ========================================================================= */}
-        <div className="relative overflow-hidden rounded-[30px] p-5 sm:p-6 bg-white/95 dark:bg-slate-900/95 border border-slate-200/80 dark:border-slate-800 shadow-sm backdrop-blur-xl">
-          {/* Subtle top atmospheric background glow */}
-          <div className="absolute top-0 right-0 -mr-16 -mt-16 w-48 h-48 rounded-full bg-sky-400/10 dark:bg-sky-500/10 blur-3xl pointer-events-none" />
-          <div className="absolute bottom-0 left-0 -ml-16 -mb-16 w-48 h-48 rounded-full bg-indigo-500/10 blur-3xl pointer-events-none" />
-
+        <div className="relative overflow-hidden rounded-[30px] p-5 sm:p-6 bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm">
           {/* Top Row: Hero Title + Privacy Toggle */}
           <div className="flex items-center justify-between relative z-10">
             <div className="flex items-center gap-2">

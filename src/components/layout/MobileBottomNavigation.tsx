@@ -49,8 +49,8 @@ export function MobileBottomNavigation() {
   ];
 
   return (
-    <nav className="fixed bottom-3 left-3 right-3 sm:left-6 sm:right-6 z-40 block md:hidden max-w-md mx-auto select-none touch-manipulation pb-safe">
-      <div className="relative h-[62px] w-full rounded-[28px] bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl border border-slate-200/80 dark:border-slate-800/80 shadow-[0_12px_32px_rgba(0,0,0,0.12)] dark:shadow-[0_12px_36px_rgba(0,0,0,0.6)] flex items-center justify-between px-2">
+    <nav className="fixed bottom-0 inset-x-0 z-40 block md:hidden w-full bg-white dark:bg-[#0B111D] border-t border-slate-200/80 dark:border-slate-800 shadow-[0_-4px_24px_rgba(0,0,0,0.12)] select-none touch-manipulation pb-[max(env(safe-area-inset-bottom),1rem)] pt-1.5 px-3">
+      <div className="max-w-md mx-auto flex items-center justify-between h-14">
         {navItems.map((item) => {
           if (item.isCenter) {
             return (
@@ -59,10 +59,10 @@ export function MobileBottomNavigation() {
                   href={item.href}
                   prefetch={true}
                   aria-label="PayWise AI Assistant"
-                  className="group relative -translate-y-3 flex items-center justify-center touch-manipulation cursor-pointer select-none active:scale-90 transition-transform"
+                  className="group relative -translate-y-4 flex items-center justify-center touch-manipulation cursor-pointer select-none active:scale-90 transition-transform"
                 >
-                  <div className="relative flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-tr from-sky-500 via-indigo-600 to-purple-600 text-white shadow-lg shadow-sky-500/35 ring-4 ring-white dark:ring-slate-900 group-hover:shadow-sky-500/50 transition-all">
-                    <Sparkles className="h-5.5 w-5.5 text-white stroke-[2.2px] drop-shadow-xs" />
+                  <div className="relative flex h-13 w-13 items-center justify-center rounded-full bg-gradient-to-tr from-sky-500 via-indigo-600 to-purple-600 text-white shadow-lg shadow-sky-500/35 ring-4 ring-white dark:ring-[#0B111D] group-hover:shadow-sky-500/50 transition-all">
+                    <Sparkles className="h-6 w-6 text-white stroke-[2.2px] drop-shadow-xs" />
                     {item.isActive && (
                       <span className="absolute -bottom-1 h-1.5 w-1.5 rounded-full bg-white ring-2 ring-sky-500" />
                     )}
