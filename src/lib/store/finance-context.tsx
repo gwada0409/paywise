@@ -475,39 +475,34 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
 
     setTransactions((prev) => [newTx, ...prev]);
 
-    let updatedAccountBalance: number | undefined;
+    // Calculate synchronously so newBal is guaranteed defined
+    const targetAcc = accounts.find((a) => a.id === targetAccountId);
+    const prevBalance = targetAcc ? targetAcc.balance : 0;
+    const delta = tx.type === "income" ? tx.amount : -tx.amount;
+    const newBal = roundMoney(prevBalance + delta);
+
     setAccounts((prev) =>
-      prev.map((acc) => {
-        if (acc.id === targetAccountId) {
-          const deduction = tx.type === "income" ? -tx.amount : tx.amount;
-          const newBal = roundMoney(acc.balance - deduction);
-          updatedAccountBalance = newBal;
-          return { ...acc, balance: newBal };
-        }
-        return acc;
-      })
+      prev.map((acc) => (acc.id === targetAccountId ? { ...acc, balance: newBal } : acc))
     );
 
     if (userProfile.id && userProfile.id !== "guest") {
-      syncInsertTransaction(userProfile.id, newTx, updatedAccountBalance).catch(console.error);
+      syncInsertTransaction(userProfile.id, newTx, newBal).catch(console.error);
     }
   };
 
   const deleteTransaction = (id: string) => {
     const tx = transactions.find((t) => t.id === id);
     let revertedBalance: number | undefined;
+
     if (tx && tx.account_id) {
-      setAccounts((prev) =>
-        prev.map((acc) => {
-          if (acc.id === tx.account_id) {
-            const revert = tx.type === "income" ? -tx.amount : tx.amount;
-            const newBal = roundMoney(acc.balance + revert);
-            revertedBalance = newBal;
-            return { ...acc, balance: newBal };
-          }
-          return acc;
-        })
-      );
+      const targetAcc = accounts.find((a) => a.id === tx.account_id);
+      if (targetAcc) {
+        const revert = tx.type === "income" ? -tx.amount : tx.amount;
+        revertedBalance = roundMoney(targetAcc.balance + revert);
+        setAccounts((prev) =>
+          prev.map((acc) => (acc.id === tx.account_id ? { ...acc, balance: revertedBalance! } : acc))
+        );
+      }
     }
     setTransactions((prev) => prev.filter((t) => t.id !== id));
 
@@ -670,17 +665,14 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
 
     let newAccBalance: number | undefined;
     if (accountId) {
-      setAccounts((prev) =>
-        prev.map((acc) => {
-          if (acc.id === accountId) {
-            const accDelta = type === "deposit" ? -amount : amount;
-            const newBal = roundMoney(acc.balance + accDelta);
-            newAccBalance = newBal;
-            return { ...acc, balance: newBal };
-          }
-          return acc;
-        })
-      );
+      const targetAcc = accounts.find((a) => a.id === accountId);
+      if (targetAcc) {
+        const accDelta = type === "deposit" ? -amount : amount;
+        newAccBalance = roundMoney(targetAcc.balance + accDelta);
+        setAccounts((prev) =>
+          prev.map((acc) => (acc.id === accountId ? { ...acc, balance: newAccBalance! } : acc))
+        );
+      }
     }
 
     if (userProfile.id && userProfile.id !== "guest") {
@@ -772,16 +764,13 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
     let newAccBalance: number | undefined;
     const targetAccId = accountId || accounts[0]?.id;
     if (targetAccId) {
-      setAccounts((prev) =>
-        prev.map((acc) => {
-          if (acc.id === targetAccId) {
-            const newBal = roundMoney(acc.balance - amount);
-            newAccBalance = newBal;
-            return { ...acc, balance: newBal };
-          }
-          return acc;
-        })
-      );
+      const targetAcc = accounts.find((a) => a.id === targetAccId);
+      if (targetAcc) {
+        newAccBalance = roundMoney(targetAcc.balance - amount);
+        setAccounts((prev) =>
+          prev.map((acc) => (acc.id === targetAccId ? { ...acc, balance: newAccBalance! } : acc))
+        );
+      }
     }
 
     if (userProfile.id && userProfile.id !== "guest") {
@@ -838,6 +827,48 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
         });
       } catch (err) {
         console.warn("Could not sync profile name to Supabase:", err);
+      }
+    }
+
+    // If user id changed or signed in, immediately load their user-keyed records and fetch from cloud
+    if (profileUpdate.id && profileUpdate.id !== "guest") {
+      const userKey = getStorageKey(profileUpdate.id);
+      try {
+        const stored = localStorage.getItem(userKey);
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (parsed.accounts) setAccounts(cleanAndDeduplicateAccounts(parsed.accounts));
+          if (parsed.transactions) setTransactions(parsed.transactions);
+          if (parsed.incomeRecords) setIncomeRecords(parsed.incomeRecords);
+          if (parsed.salarySettings) setSalarySettings(parsed.salarySettings);
+          if (parsed.budgetRules) setBudgetRules(parsed.budgetRules);
+          if (parsed.bills) setBills(parsed.bills);
+          if (parsed.savingsGoals) setSavingsGoals(parsed.savingsGoals);
+          if (parsed.savingsMovements) setSavingsMovements(parsed.savingsMovements);
+          if (parsed.loans) setLoans(parsed.loans);
+        }
+      } catch {}
+
+      if (isSupabaseConfigured()) {
+        fetchUserData(profileUpdate.id)
+          .then((cloudData) => {
+            if (cloudData) {
+              if (cloudData.accounts && cloudData.accounts.length > 0) {
+                setAccounts(cleanAndDeduplicateAccounts(cloudData.accounts));
+              }
+              if (cloudData.salarySettings) setSalarySettings(cloudData.salarySettings);
+              if (cloudData.budgetRules) setBudgetRules(cloudData.budgetRules);
+              setTransactions(cloudData.transactions || []);
+              setIncomeRecords(cloudData.incomeRecords || []);
+              setSavingsGoals(cloudData.savingsGoals || []);
+              setSavingsMovements(cloudData.savingsMovements || []);
+              setBills(cloudData.bills || []);
+              setLoans(cloudData.loans || []);
+              setNotifications(cloudData.notifications || []);
+              setIsDemoMode(false);
+            }
+          })
+          .catch(console.error);
       }
     }
   };

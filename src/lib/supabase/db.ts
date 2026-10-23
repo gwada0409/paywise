@@ -1,4 +1,5 @@
 import { createClient, isSupabaseConfigured } from "./client";
+import { roundMoney } from "../utils";
 import {
   SalarySettings,
   BudgetRules,
@@ -324,6 +325,56 @@ export async function fetchUserData(userId: string): Promise<UserCloudData | nul
       created_at: n.created_at,
     }));
 
+    // Reconcile and guarantee account balances reflect transaction ledger if out of sync
+    for (const acc of accounts) {
+      const accTxs = transactions.filter((t) => t.account_id === acc.id);
+      if (accTxs.length > 0) {
+        const ledgerBalance = accTxs.reduce((sum, t) => {
+          return sum + (t.type === "income" ? t.amount : -t.amount);
+        }, 0);
+
+        if (acc.balance === 0 && ledgerBalance > 0) {
+          acc.balance = roundMoney(ledgerBalance);
+          try {
+            await supabase
+              .from("financial_accounts")
+              .update({ balance: acc.balance })
+              .eq("id", acc.id)
+              .eq("user_id", userId);
+            console.log(`[DB] Reconciled ${acc.name} balance to ₱${acc.balance}`);
+          } catch (e) {
+            console.warn("Could not sync reconciled balance to cloud", e);
+          }
+        }
+      }
+    }
+
+    // If there are transactions with null or mismatched account_id, attribute to default account
+    const defaultAcc = accounts.find((a) => a.is_default) || accounts[0];
+    if (defaultAcc) {
+      const unmatchedTxs = transactions.filter(
+        (t) => !t.account_id || !accounts.some((a) => a.id === t.account_id)
+      );
+      if (unmatchedTxs.length > 0) {
+        const unmatchedDelta = unmatchedTxs.reduce(
+          (sum, t) => sum + (t.type === "income" ? t.amount : -t.amount),
+          0
+        );
+        if (unmatchedDelta > 0 && defaultAcc.balance === 0) {
+          defaultAcc.balance = roundMoney(unmatchedDelta);
+          try {
+            await supabase
+              .from("financial_accounts")
+              .update({ balance: defaultAcc.balance })
+              .eq("id", defaultAcc.id)
+              .eq("user_id", userId);
+          } catch (e) {
+            console.warn("Could not sync unmatched delta to cloud", e);
+          }
+        }
+      }
+    }
+
     return {
       salarySettings,
       budgetRules,
@@ -370,14 +421,21 @@ export async function syncInsertTransaction(
       notes: tx.notes || null,
     };
 
-    await supabase.from("financial_transactions").insert(row);
+    const { error: txErr } = await supabase.from("financial_transactions").insert(row);
+    if (txErr) {
+      console.error("[DB] Failed to insert transaction to Supabase:", txErr);
+    }
 
     if (accountUuid && typeof newAccountBalance === "number") {
-      await supabase
+      const { error: accErr } = await supabase
         .from("financial_accounts")
         .update({ balance: newAccountBalance })
         .eq("id", accountUuid)
         .eq("user_id", userId);
+
+      if (accErr) {
+        console.error("[DB] Failed to update financial_accounts balance in Supabase:", accErr);
+      }
     }
   } catch (err) {
     console.error("Failed to sync transaction to Supabase:", err);
