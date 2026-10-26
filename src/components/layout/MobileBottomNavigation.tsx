@@ -12,25 +12,25 @@ import {
 
 /**
  * Optically Centered Gemini / PayWise AI Star Emblem.
- * Symmetrically balanced around (12, 12) so it never appears tilted or off-center
- * inside a circular mobile floating action button.
+ * Symmetrically balanced around (12, 12) with full-bleed diamond star tips
+ * and bold radiance facets so it never appears small, tilted, or off-center.
  */
-export function CenteredAIIcon({ className = "h-6 w-6" }: { className?: string }) {
+export function CenteredAIIcon({ className = "h-8 w-8" }: { className?: string }) {
   return (
     <svg className={`${className} max-w-full`} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
       {/* Primary Centered 4-Point AI Diamond Star */}
       <path
-        d="M12 2C12 7.2 7.2 12 2 12C7.2 12 12 16.8 12 22C12 16.8 16.8 12 22 12C16.8 12 12 7.2 12 2Z"
+        d="M12 1C12 6.8 6.8 12 1 12C6.8 12 12 17.2 12 23C12 17.2 17.2 12 23 12C17.2 12 12 6.8 12 1Z"
         fill="currentColor"
       />
       {/* Symmetrical diagonal radiance facet for depth and brilliance */}
       <path
-        d="M12 6.8C12 9.6 9.6 12 6.8 12C9.6 12 12 14.4 12 17.2C12 14.4 14.4 12 17.2 12C14.4 12 12 9.6 12 6.8Z"
+        d="M12 6C12 9.3 9.3 12 6 12C9.3 12 12 14.7 12 18C12 14.7 14.7 12 18 12C14.7 12 12 9.3 12 6Z"
         fill="white"
-        fillOpacity="0.32"
+        fillOpacity="0.38"
       />
       {/* Center glowing focal core */}
-      <circle cx="12" cy="12" r="1.3" fill="white" />
+      <circle cx="12" cy="12" r="1.6" fill="white" />
     </svg>
   );
 }
@@ -100,7 +100,7 @@ export function MobileBottomNavigation() {
       {/* Navigation Container */}
       <div className="relative z-10 max-w-md mx-auto">
         {/* 5-Column Navigation Row positioned inside the dock body */}
-        <div className="flex items-center justify-between h-[48px] mt-5 px-2">
+        <div className="flex items-center justify-between h-[52px] mt-4 px-2">
           {/* Left Wing (Home & Reports) */}
           {leftNavItems.map((item) => {
             const Icon = item.icon;
@@ -110,7 +110,7 @@ export function MobileBottomNavigation() {
                 href={item.href}
                 prefetch={true}
                 aria-label={item.label}
-                className={`flex-1 flex flex-col items-center justify-center min-h-[44px] py-1 touch-manipulation cursor-pointer select-none active:scale-95 transition-all ${
+                className={`flex-1 flex flex-col items-center justify-center min-h-[48px] py-1 touch-manipulation cursor-pointer select-none active:scale-95 transition-all ${
                   item.isActive
                     ? "text-[#4A90FF] font-bold"
                     : "text-slate-400 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
@@ -135,9 +135,21 @@ export function MobileBottomNavigation() {
             );
           })}
 
-          {/* Center Mountain Spacer (giving the elevated FAB dedicated breathing room) */}
-          <div className="flex-1 flex items-center justify-center pointer-events-none" aria-hidden="true">
-            <div className="w-13 h-13" />
+          {/* Center Column: Perfectly Centered AI FAB with Mountain Cradle */}
+          <div className="flex-1 flex items-center justify-center -translate-y-1">
+            <Link
+              href="/ai"
+              prefetch={true}
+              aria-label="PayWise AI Copilot"
+              className="group relative flex items-center justify-center touch-manipulation cursor-pointer select-none active:scale-90 transition-transform"
+            >
+              <div className="relative flex h-13 w-13 items-center justify-center rounded-full bg-gradient-to-tr from-sky-500 via-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-500/35 ring-4 ring-white dark:ring-[#0A111E] group-hover:shadow-indigo-500/50 group-hover:scale-105 transition-all">
+                <CenteredAIIcon className="h-8 w-8 text-white drop-shadow-sm" />
+                {isAIActive && (
+                  <span className="absolute -bottom-1 h-1.5 w-1.5 rounded-full bg-white ring-2 ring-indigo-500" />
+                )}
+              </div>
+            </Link>
           </div>
 
           {/* Right Wing (Goals & Settings) */}
@@ -149,7 +161,7 @@ export function MobileBottomNavigation() {
                 href={item.href}
                 prefetch={true}
                 aria-label={item.label}
-                className={`flex-1 flex flex-col items-center justify-center min-h-[44px] py-1 touch-manipulation cursor-pointer select-none active:scale-95 transition-all ${
+                className={`flex-1 flex flex-col items-center justify-center min-h-[48px] py-1 touch-manipulation cursor-pointer select-none active:scale-95 transition-all ${
                   item.isActive
                     ? "text-[#4A90FF] font-bold"
                     : "text-slate-400 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
@@ -173,23 +185,6 @@ export function MobileBottomNavigation() {
               </Link>
             );
           })}
-        </div>
-
-        {/* Center AI FAB: Perched gracefully atop the mountain crest */}
-        <div className="absolute left-1/2 -translate-x-1/2 -top-2.5 z-20 flex items-center justify-center">
-          <Link
-            href="/ai"
-            prefetch={true}
-            aria-label="PayWise AI Copilot"
-            className="group relative flex items-center justify-center touch-manipulation cursor-pointer select-none active:scale-90 transition-transform"
-          >
-            <div className="relative flex h-13 w-13 items-center justify-center rounded-full bg-gradient-to-tr from-sky-500 via-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-500/35 ring-4 ring-white dark:ring-[#0A111E] group-hover:shadow-indigo-500/50 group-hover:scale-105 transition-all">
-              <CenteredAIIcon className="h-6 w-6 text-white drop-shadow-sm" />
-              {isAIActive && (
-                <span className="absolute -bottom-1 h-1.5 w-1.5 rounded-full bg-white ring-2 ring-indigo-500" />
-              )}
-            </div>
-          </Link>
         </div>
       </div>
     </nav>
